@@ -166,7 +166,7 @@ public class ScanResultTracker {
                     "select count(distinct " +columnName + ") from scan_results;")
                     .getFirstResult()[0]);
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Error while quering unique count.", e);
+            Log.e(LOG_TAG, "Error while querying unique count.", e);
             throw new RuntimeException(e);
         } finally {
             if (databaseHelper != null) {
