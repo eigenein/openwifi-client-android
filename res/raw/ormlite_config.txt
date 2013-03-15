@@ -1,5 +1,5 @@
 #
-# generated on 2013/03/15 07:45:17
+# generated on 2013/03/16 02:14:12
 #
 # --table-start--
 dataClass=info.eigenein.openwifi.persistency.entities.StoredScanResult
@@ -30,12 +30,6 @@ columnName=capabilities
 # --field-start--
 fieldName=level
 columnName=level
-# --field-end--
-# --field-start--
-fieldName=timestamp
-columnName=timestamp
-canBeNull=false
-indexName=scan_results_timestamp_idx
 # --field-end--
 # --field-start--
 fieldName=location

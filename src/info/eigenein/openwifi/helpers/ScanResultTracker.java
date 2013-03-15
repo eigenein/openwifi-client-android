@@ -6,6 +6,7 @@ import android.net.wifi.ScanResult;
 import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.Where;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
@@ -59,14 +60,14 @@ public class ScanResultTracker {
      * Gets the unique BSSID count (that is an access point count).
      */
     public static long getUniqueBssidCount(Context context) {
-        return getScanResultDistinctCount(context, "bssid");
+        return getScanResultDistinctCount(context, StoredScanResult.BSSID);
     }
 
     /**
      * Gets the unique SSID count (that is a network count).
      */
     public static long getUniqueSsidCount(Context context) {
-        return getScanResultDistinctCount(context, "ssid");
+        return getScanResultDistinctCount(context, StoredScanResult.SSID);
     }
 
     /**
@@ -79,9 +80,86 @@ public class ScanResultTracker {
             Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
             return scanResultDao.countOf();
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Error while quering scan result count count.", e);
+            Log.e(LOG_TAG, "Error while querying scan result count count.", e);
             throw new RuntimeException(e);
         } finally {
+            if (databaseHelper != null) {
+                OpenHelperManager.releaseHelper();
+                //noinspection UnusedAssignment
+                databaseHelper = null;
+            }
+        }
+    }
+
+    /**
+     * Gets the stored scan results in the specified area.
+     */
+    public static List<StoredScanResult> getScanResults(
+            Context context,
+            double minLatitude,
+            double minLongitude,
+            double maxLatitude,
+            double maxLongitude,
+            String orderByColumn) {
+        Log.v(LOG_TAG, String.format("getScanResults %s %s %s %s",
+                minLatitude,
+                minLongitude,
+                maxLatitude,
+                maxLongitude));
+
+        DatabaseHelper databaseHelper = null;
+        GenericRawResults<StoredScanResult> rawScanResults = null;
+
+        try {
+            databaseHelper = getDatabaseHelper(context);
+
+            Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
+            Dao<StoredLocation, Long> locationDao = getLocationDao(databaseHelper);
+
+            final String query = "select sr1.*\n" +
+                    "from scan_results sr1\n" +
+                    "join scan_results sr2\n" +
+                    "on sr1.bssid = sr2.bssid and sr1.location_timestamp >= sr2.location_timestamp\n" +
+                    "join locations loc\n" +
+                    "on loc.timestamp = sr1.location_timestamp\n" +
+                    "where loc.latitude >= ? and loc.latitude <= ?\n" +
+                    "and loc.longitude >= ? and loc.longitude <= ?\n" +
+                    "group by sr1.bssid, sr1.location_timestamp\n" +
+                    "having count(*) <= 3\n" +
+                    "order by sr1." + orderByColumn + "\n" +
+                    "limit ?;";
+            final int scanResultCountLimit = 64;
+
+            rawScanResults = scanResultDao.queryRaw(
+                    query,
+                    scanResultDao.getRawRowMapper(),
+                    Double.toString(minLatitude),
+                    Double.toString(maxLatitude),
+                    Double.toString(minLongitude),
+                    Double.toString(maxLongitude),
+                    Integer.toString(scanResultCountLimit));
+            List<StoredScanResult> scanResults = rawScanResults.getResults();
+
+            if (scanResults.size() != scanResultCountLimit) {
+                for (StoredScanResult scanResult : scanResults) {
+                    locationDao.refresh(scanResult.getLocation());
+                }
+                return scanResults;
+            } else {
+                // Return null to tell that the result limit is reached.
+                return null;
+            }
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Error while querying scan results.", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (rawScanResults != null) {
+                try {
+                    rawScanResults.close();
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Could not close scan results.", e);
+                }
+            }
             if (databaseHelper != null) {
                 OpenHelperManager.releaseHelper();
                 //noinspection UnusedAssignment
@@ -130,8 +208,7 @@ public class ScanResultTracker {
         if (storedScanResult == null) {
             storedScanResult = new StoredScanResult(
                     scanResult,
-                    storedLocation,
-                    System.currentTimeMillis());
+                    storedLocation);
             scanResultDao.create(storedScanResult);
         } else {
             Log.v(LOG_TAG, "Not creating the scan result - already exists.");

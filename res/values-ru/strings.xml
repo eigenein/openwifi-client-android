@@ -25,4 +25,8 @@
     <string name="unique_bssid_count">Точки доступа</string>
     <string name="unique_ssid_count">Сети</string>
     <string name="scan_result_count">Результаты сканирования</string>
+    <string name="advanced_settings">Расширенные</string>
+    <string name="show_scan_results">Результаты сканирования</string>
+    <string name="show_scan_results_summary">Отображать указатели непосредственно по результатам сканирования</string>
+    <string name="too_many_scan_results_here">Слишком много результатов в этой области.\nУвеличьте масштаб.</string>
 </resources>

@@ -36,7 +36,23 @@ public class StoredLocation {
         this.timestamp = location.getTime();
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
     public long getTimestamp() {
         return timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "StoredLocation[latitude=%s, longitude=%s]",
+                latitude,
+                longitude);
     }
 }

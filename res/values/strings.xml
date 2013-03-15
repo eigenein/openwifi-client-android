@@ -25,4 +25,8 @@
     <string name="unique_bssid_count">Access Point Count</string>
     <string name="unique_ssid_count">Network Count</string>
     <string name="scan_result_count">Scan Result Count</string>
+    <string name="advanced_settings">Advanced</string>
+    <string name="show_scan_results">Scan Results</string>
+    <string name="show_scan_results_summary">Show raw scan result pointers</string>
+    <string name="too_many_scan_results_here">Too many scan results in this area.\nPlease zoom in.</string>
 </resources>

@@ -24,4 +24,13 @@
             android:summary="@string/is_network_provider_enabled_summary"
             android:defaultValue="true"/>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/advanced_settings"
+        android:key="advanced_settings">
+        <CheckBoxPreference
+            android:key="show_scan_results"
+            android:title="@string/show_scan_results"
+            android:summary="@string/show_scan_results_summary"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
 </PreferenceScreen>

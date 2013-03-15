@@ -2,32 +2,48 @@ package info.eigenein.openwifi.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.MapLayerHelper;
+import info.eigenein.openwifi.helpers.ScanResultTracker;
 import info.eigenein.openwifi.helpers.ScanServiceManager;
+import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 import ru.yandex.yandexmapkit.MapController;
 import ru.yandex.yandexmapkit.MapView;
+import ru.yandex.yandexmapkit.OverlayManager;
+import ru.yandex.yandexmapkit.map.MapEvent;
 import ru.yandex.yandexmapkit.map.MapLayer;
+import ru.yandex.yandexmapkit.map.OnMapListener;
+import ru.yandex.yandexmapkit.overlay.Overlay;
+import ru.yandex.yandexmapkit.overlay.OverlayItem;
+import ru.yandex.yandexmapkit.utils.GeoPoint;
+import ru.yandex.yandexmapkit.utils.ScreenPoint;
 
 import java.util.List;
 
 /**
  * Main application activity with the map.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnMapListener {
+    private final static String LOG_TAG = MainActivity.class.getCanonicalName();
+
     private final static float DEFAULT_ZOOM = 17.0f;
 
     private final static String MAP_LAYER_REQUEST_NAME_KEY = "map_layer_request_name";
+
+    private Overlay scanResultsOverlay = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,14 +66,13 @@ public class MainActivity extends Activity {
         // Setup map.
         final MapController mapController = mapView.getMapController();
         mapController.setZoomCurrent(DEFAULT_ZOOM);
+        mapController.addMapListener(this);
 
-        // Setup map layer.
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String layerRequestName = preferences.getString(MAP_LAYER_REQUEST_NAME_KEY, null);
-        if (layerRequestName != null) {
-            mapController.setCurrentMapLayer(
-                    mapController.getMapLayerByLayerRequestName(layerRequestName));
-        }
+        // Initialize overlays.
+        final OverlayManager overlayManager = mapController.getOverlayManager();
+        // Create scan results overlay.
+        scanResultsOverlay = new Overlay(mapController);
+        overlayManager.addOverlay(scanResultsOverlay);
     }
 
     @Override
@@ -84,11 +99,20 @@ public class MainActivity extends Activity {
         super.onStart();
 
         final MapView mapView = (MapView)findViewById(R.id.mapView);
+        final MapController mapController = mapView.getMapController();
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         // Setup map.
-        SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        mapView.getMapController().setHDMode(preferences.getBoolean(
-                SettingsActivity.IS_HD_MODE_ENABLED_KEY, false));
+        mapController.setHDMode(preferences.getBoolean(SettingsActivity.IS_HD_MODE_ENABLED_KEY, false));
+
+        // Setup map layer.
+        String layerRequestName = preferences.getString(MAP_LAYER_REQUEST_NAME_KEY, null);
+        if (layerRequestName != null) {
+            mapController.setCurrentMapLayer(mapController.getMapLayerByLayerRequestName(layerRequestName));
+        }
+
+        // Setup overlays.
+        refreshScanResultsOverlay();
     }
 
     @Override
@@ -118,6 +142,17 @@ public class MainActivity extends Activity {
         }
     }
 
+    @Override
+    public void onMapActionEvent(MapEvent mapEvent) {
+        switch (mapEvent.getMsg()) {
+            case MapEvent.MSG_SCALE_END:
+            case MapEvent.MSG_ZOOM_END:
+            case MapEvent.MSG_SCROLL_END:
+                refreshScanResultsOverlay();
+                break;
+        }
+    }
+
     private void showChooseMapLayerDialog() {
         // Obtain map layers.
         final MapView mapView = (MapView)findViewById(R.id.mapView);
@@ -140,5 +175,56 @@ public class MainActivity extends Activity {
                         editor.commit();
                     }
         }).create().show();
+    }
+
+    /**
+     * Refreshes the scan results on the map.
+     */
+    private void refreshScanResultsOverlay() {
+        final MapView mapView = (MapView)findViewById(R.id.mapView);
+        final MapController mapController = mapView.getMapController();
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        scanResultsOverlay.clearOverlayItems();
+        if (!preferences.getBoolean(SettingsActivity.SHOW_SCAN_RESULTS_KEY, false)) {
+            return;
+        }
+
+        // Get map bounds.
+        ScreenPoint leftTop = new ScreenPoint(0.0f, 0.0f);
+        GeoPoint leftTopGeoPoint = mapController.getGeoPoint(leftTop);
+        ScreenPoint bottomRight = new ScreenPoint(mapView.getWidth(), mapView.getHeight());
+        GeoPoint bottomRightGeoPoint = mapController.getGeoPoint(bottomRight);
+
+        // Retrieve scan results.
+        List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
+                this,
+                bottomRightGeoPoint.getLat(),
+                leftTopGeoPoint.getLon(),
+                leftTopGeoPoint.getLat(),
+                bottomRightGeoPoint.getLon(),
+                StoredScanResult.LOCATION_TIMESTAMP);
+
+        if (scanResults != null) {
+            final Drawable locationDrawable = getResources().getDrawable(R.drawable.ic_location);
+            long last_location_timestamp = 0;
+            // Add scan results onto the map.
+            for (StoredScanResult storedScanResult : scanResults) {
+                // Show only different locations.
+                if (storedScanResult.getLocation().getTimestamp() != last_location_timestamp) {
+                    OverlayItem item = new OverlayItem(
+                            new GeoPoint(
+                                    storedScanResult.getLocation().getLatitude(),
+                                    storedScanResult.getLocation().getLongitude()),
+                            locationDrawable);
+                    scanResultsOverlay.addOverlayItem(item);
+                    last_location_timestamp = storedScanResult.getLocation().getTimestamp();
+                    Log.v(LOG_TAG, "storedScanResult.getLocation() " + storedScanResult.getLocation());
+                }
+            }
+            mapView.refreshDrawableState();
+        } else {
+            Toast.makeText(this, getString(R.string.too_many_scan_results_here), Toast.LENGTH_SHORT).show();
+        }
     }
 }
