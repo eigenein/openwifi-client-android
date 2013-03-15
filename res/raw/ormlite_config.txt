@@ -1,0 +1,54 @@
+#
+# generated on 2013/03/15 07:45:17
+#
+# --table-start--
+dataClass=info.eigenein.openwifi.persistency.entities.StoredScanResult
+tableName=scan_results
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=bssid
+columnName=bssid
+width=17
+canBeNull=false
+uniqueIndexName=scan_results_bssid_location_timestamp_idx
+# --field-end--
+# --field-start--
+fieldName=ssid
+columnName=ssid
+canBeNull=false
+indexName=scan_results_ssid_idx
+# --field-end--
+# --field-start--
+fieldName=capabilities
+columnName=capabilities
+# --field-end--
+# --field-start--
+fieldName=level
+columnName=level
+# --field-end--
+# --field-start--
+fieldName=timestamp
+columnName=timestamp
+canBeNull=false
+indexName=scan_results_timestamp_idx
+# --field-end--
+# --field-start--
+fieldName=location
+columnName=location_timestamp
+foreign=true
+uniqueIndexName=scan_results_bssid_location_timestamp_idx
+foreignColumnName=timestamp
+# --field-end--
+# --field-start--
+fieldName=synced
+columnName=synced
+canBeNull=false
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
