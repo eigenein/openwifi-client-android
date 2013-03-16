@@ -22,6 +22,11 @@ public class ScanResultTracker {
     private static final String LOG_TAG = ScanResultTracker.class.getCanonicalName();
 
     /**
+     * Maximum allowed accuracy for the location.
+     */
+    private static final int MAX_ACCURACY = 250;
+
+    /**
      * Adds the scan results to the database.
      */
     public static void add(Context context, Location location, List<ScanResult> scanResults) {
@@ -121,6 +126,7 @@ public class ScanResultTracker {
                     "on loc.timestamp = sr1.location_timestamp\n" +
                     "where loc.latitude >= ? and loc.latitude <= ?\n" +
                     "and loc.longitude >= ? and loc.longitude <= ?\n" +
+                    "and loc.accuracy <= ?" +
                     "group by sr1.bssid, sr1.location_timestamp\n" +
                     "having count(*) <= 3\n" +
                     "order by sr1.bssid, sr1.location_timestamp desc;";
@@ -130,7 +136,8 @@ public class ScanResultTracker {
                     Double.toString(minLatitude),
                     Double.toString(maxLatitude),
                     Double.toString(minLongitude),
-                    Double.toString(maxLongitude))
+                    Double.toString(maxLongitude),
+                    Integer.toString(MAX_ACCURACY))
                     .getResults();
             // Preload locations.
             // TODO: this may take a lot of time. Optimize.
