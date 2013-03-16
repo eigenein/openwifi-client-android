@@ -1,5 +1,5 @@
 #
-# generated on 2013/03/16 11:24:06
+# generated on 2013/03/16 11:55:46
 #
 # --table-start--
 dataClass=info.eigenein.openwifi.persistency.entities.StoredScanResult
