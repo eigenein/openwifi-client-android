@@ -18,6 +18,7 @@ import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
+import info.eigenein.openwifi.helpers.location.L;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 import org.apache.commons.collections.map.MultiKeyMap;
@@ -32,8 +33,6 @@ import java.util.Map;
  */
 public class MainActivity extends MapActivity {
     private final static int DEFAULT_ZOOM = 17;
-
-    private final static double TO_E6_FIX = 1.0e6;
 
     private MapView mapView = null;
 
@@ -188,13 +187,13 @@ public class MainActivity extends MapActivity {
         final double gridCells = 8.0;
         // Run task to retrieve the scan results and process them into a cluster list.
         refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(
-                seGeoPoint.getLatitudeE6() / TO_E6_FIX,
-                nwGeoPoint.getLongitudeE6() / TO_E6_FIX,
-                nwGeoPoint.getLatitudeE6() / TO_E6_FIX,
-                seGeoPoint.getLongitudeE6() / TO_E6_FIX,
+                L.toDegrees(seGeoPoint.getLatitudeE6()),
+                L.toDegrees(nwGeoPoint.getLongitudeE6()),
+                L.toDegrees(nwGeoPoint.getLatitudeE6()),
+                L.toDegrees(seGeoPoint.getLongitudeE6()),
                 Math.min(
-                        (nwGeoPoint.getLatitudeE6() - seGeoPoint.getLatitudeE6()) / TO_E6_FIX / gridCells,
-                        (seGeoPoint.getLongitudeE6() - nwGeoPoint.getLongitudeE6()) / TO_E6_FIX / gridCells
+                        L.toDegrees(nwGeoPoint.getLatitudeE6() - seGeoPoint.getLatitudeE6()) / gridCells,
+                        L.toDegrees(seGeoPoint.getLongitudeE6() - nwGeoPoint.getLongitudeE6()) / gridCells
                 )
         );
         refreshScanResultsAsyncTask.execute();
