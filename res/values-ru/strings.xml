@@ -18,4 +18,5 @@
     <string name="unique_ssid_count">Сети</string>
     <string name="scan_result_count">Результаты сканирования</string>
     <string name="show_my_location">Мое местоположение</string>
+    <string name="map_view">Вид</string>
 </resources>

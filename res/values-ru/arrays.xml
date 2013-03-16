@@ -6,4 +6,8 @@
         <item>5 минут</item>
         <item>10 минут</item>
     </string-array>
+    <string-array name="map_views">
+        <item>Карта</item>
+        <item>Спутник</item>
+    </string-array>
 </resources>

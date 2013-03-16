@@ -1,5 +1,7 @@
 package info.eigenein.openwifi.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,6 +35,8 @@ public class MainActivity extends MapActivity {
 
     private final static double TO_E6_FIX = 1.0e6;
 
+    private MapView mapView = null;
+
     private MyLocationOverlay myLocationOverlay = null;
 
     private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
@@ -49,7 +53,7 @@ public class MainActivity extends MapActivity {
         }
 
         // Setup map.
-        final MapView mapView = (MapView)findViewById(R.id.mapView);
+        mapView = (MapView)findViewById(R.id.mapView);
         mapView.setBuiltInZoomControls(true);
         // Setup map controller.
         final MapController mapController = mapView.getController();
@@ -131,8 +135,25 @@ public class MainActivity extends MapActivity {
                 startActivity(new Intent(this, StatisticsActivity.class));
                 return true;
             case R.id.show_my_location_menuitem:
-                final MapView mapView = (MapView)findViewById(R.id.mapView);
                 mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+                return true;
+            case R.id.map_view_menuitem:
+                final CharSequence[] items = getResources().getTextArray(R.array.map_views);
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.map_view))
+                        .setItems(items, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int item) {
+                                switch (item) {
+                                    case 0:
+                                        mapView.setSatellite(false);
+                                        break;
+                                    case 1:
+                                        mapView.setSatellite(true);
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -148,8 +169,6 @@ public class MainActivity extends MapActivity {
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap() {
-        final MapView mapView = (MapView)findViewById(R.id.mapView);
-
         // Check if the task is already running.
         if (refreshScanResultsAsyncTask != null) {
             // Cancel old task.

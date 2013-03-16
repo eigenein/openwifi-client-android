@@ -18,4 +18,5 @@
     <string name="unique_ssid_count">Network Count</string>
     <string name="scan_result_count">Scan Result Count</string>
     <string name="show_my_location">Show My Location</string>
+    <string name="map_view">Map View</string>
 </resources>
