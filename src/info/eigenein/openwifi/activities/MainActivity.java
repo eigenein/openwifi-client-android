@@ -130,6 +130,10 @@ public class MainActivity extends MapActivity {
             case R.id.statistics_menuitem:
                 startActivity(new Intent(this, StatisticsActivity.class));
                 return true;
+            case R.id.show_my_location_menuitem:
+                final MapView mapView = (MapView)findViewById(R.id.mapView);
+                mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
