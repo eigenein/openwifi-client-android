@@ -2,6 +2,7 @@ package info.eigenein.openwifi.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,13 +15,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.j256.ormlite.dao.GenericRawResults;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.LocationProcessor;
+import info.eigenein.openwifi.helpers.entities.Area;
+import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
+import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.ui.MapLayerHelper;
 import info.eigenein.openwifi.helpers.ScanResultTracker;
 import info.eigenein.openwifi.helpers.ScanServiceManager;
+import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
+import org.apache.commons.collections.map.MultiKeyMap;
 import ru.yandex.yandexmapkit.MapController;
 import ru.yandex.yandexmapkit.MapView;
 import ru.yandex.yandexmapkit.OverlayManager;
@@ -31,8 +37,10 @@ import ru.yandex.yandexmapkit.overlay.Overlay;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 import ru.yandex.yandexmapkit.utils.ScreenPoint;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main application activity with the map.
@@ -187,68 +195,175 @@ public class MainActivity extends Activity implements OnMapListener {
         final MapView mapView = (MapView)findViewById(R.id.mapView);
         final MapController mapController = mapView.getMapController();
 
-        // Get map bounds.
-        ScreenPoint leftTop = new ScreenPoint(0.0f, 0.0f);
-        GeoPoint leftTopGeoPoint = mapController.getGeoPoint(leftTop);
-        ScreenPoint bottomRight = new ScreenPoint(mapView.getWidth(), mapView.getHeight());
-        GeoPoint bottomRightGeoPoint = mapController.getGeoPoint(bottomRight);
-
-        // Retrieve scan results.
-        GenericRawResults<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
-                this,
-                bottomRightGeoPoint.getLat(),
-                leftTopGeoPoint.getLon(),
-                leftTopGeoPoint.getLat(),
-                bottomRightGeoPoint.getLon()
-        );
-        // And run the task to process them.
+        // Check if the task is already running.
         if (refreshScanResultsAsyncTask != null) {
             // Cancel old task.
             refreshScanResultsAsyncTask.cancel(true);
             refreshScanResultsAsyncTask = null;
         }
+
+        // Get map bounds.
+        ScreenPoint leftTop = new ScreenPoint(0.0f, 0.0f);
+        GeoPoint leftTopGeoPoint = mapController.getGeoPoint(leftTop);
+        ScreenPoint bottomRight = new ScreenPoint(mapView.getWidth(), mapView.getHeight());
+        GeoPoint bottomRightGeoPoint = mapController.getGeoPoint(bottomRight);
         // Count of cells that should fit the screen dimension.
         final double gridCells = 8.0;
-        refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(Math.min(
-                (leftTopGeoPoint.getLat() - bottomRightGeoPoint.getLat()) / gridCells,
-                (bottomRightGeoPoint.getLon() - leftTopGeoPoint.getLon()) / gridCells
-        ));
-        refreshScanResultsAsyncTask.execute(scanResults);
+        // Run task to retrieve the scan results and process them into a cluster list.
+        refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(
+                this,
+                bottomRightGeoPoint.getLat(),
+                leftTopGeoPoint.getLon(),
+                leftTopGeoPoint.getLat(),
+                bottomRightGeoPoint.getLon(),
+                Math.min(
+                        (leftTopGeoPoint.getLat() - bottomRightGeoPoint.getLat()) / gridCells,
+                        (bottomRightGeoPoint.getLon() - leftTopGeoPoint.getLon()) / gridCells
+                )
+        );
+        refreshScanResultsAsyncTask.execute();
     }
 
     /**
      * Used to aggregate the scan results from the application database.
      */
-    public class RefreshScanResultsAsyncTask extends AsyncTask<GenericRawResults<StoredScanResult>, Void, ClusterList> {
-        private double gridSize;
+    public class RefreshScanResultsAsyncTask extends AsyncTask<Void, Void, ClusterList> {
+        private final String LOG_TAG = RefreshScanResultsAsyncTask.class.getCanonicalName();
 
-        public RefreshScanResultsAsyncTask(double gridSize) {
+        private final Context context;
+
+        private final double minLatitude;
+
+        private final double minLongitude;
+
+        private final double maxLatitude;
+
+        private final double maxLongitude;
+
+        private final double gridSize;
+
+        /**
+         * Groups scan results into the grid by their location.
+         * (int, int) -> StoredScanResult
+         */
+        private final MultiKeyMap cellToScanResultCache = new MultiKeyMap();
+
+        public RefreshScanResultsAsyncTask(
+                Context context,
+                double minLatitude,
+                double minLongitude,
+                double maxLatitude,
+                double maxLongitude,
+                double gridSize) {
+            Log.d(LOG_TAG, String.format(
+                    "RefreshScanResultsAsyncTask[minLat=%s, minLon=%s, maxLat=%s, maxLon=%s, gridSize=%s]",
+                    minLatitude,
+                    minLongitude,
+                    maxLatitude,
+                    maxLongitude,
+                    gridSize));
+            this.context = context;
+            this.minLatitude = minLatitude;
+            this.minLongitude = minLongitude;
+            this.maxLatitude = maxLatitude;
+            this.maxLongitude = maxLongitude;
             this.gridSize = gridSize;
         }
 
         @Override
-        protected ClusterList doInBackground(
-                GenericRawResults<StoredScanResult>... params) {
-            return doInBackgroundOne(params[0]);
+        protected ClusterList doInBackground(Void... params) {
+            // Retrieve scan results.
+            List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
+                    context,
+                    minLatitude,
+                    minLongitude,
+                    maxLatitude,
+                    maxLongitude
+            );
+            Log.v(LOG_TAG, "scanResults.size " + scanResults.size());
+            // Process them.
+            for (StoredScanResult scanResult : scanResults) {
+                // Check if we're cancelled.
+                if (isCancelled()) {
+                    return null;
+                }
+                // No - add the scan result.
+                addScanResult(scanResult);
+            }
+            return buildClusterList();
         }
 
         @Override
-        protected void onPostExecute(ClusterList aggregatedScanResult) {
-            scanResultsOverlay.clearOverlayItems();
+        protected void onPostExecute(ClusterList clusterList) {
+            // scanResultsOverlay.clearOverlayItems();
 
+            Log.d(LOG_TAG, "onPostExecute " + clusterList);
             // TODO: add new items.
         }
 
-        private ClusterList doInBackgroundOne(GenericRawResults<StoredScanResult> genericRawResults) {
-            try {
-                return null;
-            } finally {
-                try {
-                    genericRawResults.close();
-                } catch (SQLException e) {
-                    Log.e(LOG_TAG, "Could not close genericRawResults.", e);
-                }
+        @Override
+        protected void onCancelled(ClusterList result) {
+            Log.d(LOG_TAG, "onCancelled");
+        }
+
+        private void addScanResult(StoredScanResult scanResult) {
+            final StoredLocation location = scanResult.getLocation();
+
+            int key1 = (int)Math.floor(location.getLatitude() / gridSize);
+            int key2 = (int)Math.floor(location.getLongitude() / gridSize);
+
+            List<StoredScanResult> subCache = (List<StoredScanResult>)cellToScanResultCache.get(key1, key2);
+            if (subCache == null) {
+                subCache = new ArrayList<StoredScanResult>();
+                cellToScanResultCache.put(key1, key2, subCache);
             }
+
+            subCache.add(scanResult);
+        }
+
+        private ClusterList buildClusterList() {
+            ClusterList clusterList = new ClusterList();
+
+            // Iterate through grid cells.
+            for (Object o : cellToScanResultCache.values()) {
+                // Check if we're cancelled.
+                if (isCancelled()) {
+                    return null;
+                }
+
+                List<StoredScanResult> subCache = (List<StoredScanResult>)o;
+                HashMap<String, List<String>> ssidToBssidCache = new HashMap<String, List<String>>();
+
+                LocationProcessor locationProcessor = new LocationProcessor();
+                for (StoredScanResult scanResult : subCache) {
+                    // Check if we're cancelled.
+                    if (isCancelled()) {
+                        return null;
+                    }
+                    // Combine BSSIDs from the same SSIDs.
+                    List<String> bssids = ssidToBssidCache.get(scanResult.getSsid());
+                    if (bssids == null) {
+                        bssids = new ArrayList<String>();
+                        ssidToBssidCache.put(scanResult.getSsid(), bssids);
+                    }
+                    // Track the location.
+                    locationProcessor.add(scanResult.getLocation());
+                }
+
+                // Initialize a cluster.
+                Area area = locationProcessor.getArea();
+                Cluster cluster = new Cluster(area);
+                // And fill it with networks.
+                for (Map.Entry<String, List<String>> entry : ssidToBssidCache.entrySet()) {
+                    String[] bssids = new String[entry.getValue().size()];
+                    cluster.add(new Network(entry.getKey(), entry.getValue().toArray(bssids)));
+                }
+                // Finally, ass the cluster to the cluster list.
+                clusterList.add(cluster);
+                Log.v(LOG_TAG, "clusterList.add " + cluster);
+            }
+
+            return clusterList;
         }
     }
 }

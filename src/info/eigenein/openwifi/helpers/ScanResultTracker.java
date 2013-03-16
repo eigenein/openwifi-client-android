@@ -94,7 +94,7 @@ public class ScanResultTracker {
     /**
      * Gets the stored scan results in the specified area.
      */
-    public static GenericRawResults<StoredScanResult> getScanResults(
+    public static List<StoredScanResult> getScanResults(
             Context context,
             double minLatitude,
             double minLongitude,
@@ -123,14 +123,21 @@ public class ScanResultTracker {
                     "and loc.longitude >= ? and loc.longitude <= ?\n" +
                     "group by sr1.bssid, sr1.location_timestamp\n" +
                     "having count(*) <= 3\n" +
-                    "order by sr1.bssid, sr1.location_timestamp desc";
-            return scanResultDao.queryRaw(
+                    "order by sr1.bssid, sr1.location_timestamp desc;";
+            List<StoredScanResult> scanResults = scanResultDao.queryRaw(
                     query,
                     scanResultDao.getRawRowMapper(),
                     Double.toString(minLatitude),
                     Double.toString(maxLatitude),
                     Double.toString(minLongitude),
-                    Double.toString(maxLongitude));
+                    Double.toString(maxLongitude))
+                    .getResults();
+            // Preload locations.
+            // TODO: this may take a lot of time. Optimize.
+            for (StoredScanResult scanResult : scanResults) {
+                locationDao.refresh(scanResult.getLocation());
+            }
+            return scanResults;
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while querying scan results.", e);
             throw new RuntimeException(e);

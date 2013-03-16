@@ -18,4 +18,12 @@ public class ClusterList implements Iterable<Cluster> {
     public void add(Cluster cluster) {
         clusters.add(cluster);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "%s[%s]",
+                ClusterList.class.getSimpleName(),
+                clusters.size());
+    }
 }

@@ -59,6 +59,14 @@ public class StoredScanResult {
         this.location = location;
     }
 
+    public String getBssid() {
+        return bssid;
+    }
+
+    public String getSsid() {
+        return ssid;
+    }
+
     public StoredLocation getLocation() {
         return location;
     }

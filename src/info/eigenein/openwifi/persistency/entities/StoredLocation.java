@@ -36,6 +36,10 @@ public class StoredLocation {
         this.timestamp = location.getTime();
     }
 
+    public float getAccuracy() {
+        return accuracy;
+    }
+
     public double getLatitude() {
         return latitude;
     }
