@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/show_my_location_menuitem"
+          android:title="@string/show_my_location"
+          android:icon="@drawable/ic_location"
+          android:showAsAction="ifRoom"/>
     <item android:id="@+id/start_scan_menuitem"
           android:title="@string/start_scan"
           android:icon="@drawable/ic_play"
