@@ -3,12 +3,13 @@ package info.eigenein.openwifi.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
@@ -21,22 +22,23 @@ import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
 import info.eigenein.openwifi.helpers.map.ClusterOverlay;
+import info.eigenein.openwifi.helpers.map.MapViewListener;
+import info.eigenein.openwifi.helpers.map.TrackableMapView;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 import org.apache.commons.collections.map.MultiKeyMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Main application activity with the map.
  */
 public class MainActivity extends MapActivity {
+    private static final String LOG_TAG = MainActivity.class.getCanonicalName();
+
     private final static int DEFAULT_ZOOM = 17;
 
-    private MapView mapView = null;
+    private TrackableMapView mapView = null;
 
     private MyLocationOverlay myLocationOverlay = null;
 
@@ -56,8 +58,15 @@ public class MainActivity extends MapActivity {
         }
 
         // Setup map.
-        mapView = (MapView)findViewById(R.id.mapView);
+        mapView = (TrackableMapView)findViewById(R.id.mapView);
         mapView.setBuiltInZoomControls(true);
+        mapView.addMovedOrZoomedObserver(new MapViewListener() {
+            @Override
+            public void onMovedOrZoomed() {
+                Log.v(LOG_TAG, "mapView onMovedOrZoomed");
+                startRefreshingScanResultsOnMap();
+            }
+        });
         // Setup map controller.
         final MapController mapController = mapView.getController();
         // Setup current location.
@@ -97,14 +106,14 @@ public class MainActivity extends MapActivity {
     public void onStart() {
         super.onStart();
 
-        // Update overlays.
-        startRefreshingScanResultsOnMap();
-
+        // Initialize my location.
         if (myLocationOverlay != null) {
             // Enable my location.
             myLocationOverlay.enableMyLocation();
             myLocationOverlay.enableCompass();
         }
+        // Update overlays.
+        startRefreshingScanResultsOnMap();
     }
 
     @Override
@@ -172,6 +181,8 @@ public class MainActivity extends MapActivity {
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap() {
+        Log.v(LOG_TAG, "startRefreshingScanResultsOnMap");
+
         // Check if the task is already running.
         if (refreshScanResultsAsyncTask != null) {
             // Cancel old task.
@@ -181,6 +192,7 @@ public class MainActivity extends MapActivity {
 
         // Check map bounds.
         if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
+            Log.w(LOG_TAG, "Zero mapView span.");
             return;
         }
         // Get map bounds.
