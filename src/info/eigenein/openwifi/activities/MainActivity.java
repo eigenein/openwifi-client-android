@@ -3,6 +3,7 @@ package info.eigenein.openwifi.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
+import info.eigenein.openwifi.helpers.map.ClusterOverlay;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 import org.apache.commons.collections.map.MultiKeyMap;
@@ -39,6 +41,8 @@ public class MainActivity extends MapActivity {
     private MyLocationOverlay myLocationOverlay = null;
 
     private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
+
+    private List<Overlay> clusterOverlays = new ArrayList<Overlay>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -268,20 +272,17 @@ public class MainActivity extends MapActivity {
         protected void onPostExecute(ClusterList clusterList) {
             Log.d(LOG_TAG, "onPostExecute " + clusterList);
 
-            /*
-            scanResultsOverlay.clearOverlayItems();
-            Drawable clusterDrawable =  MainActivity.this.getResources().getDrawable(R.drawable.ic_cluster);
+            mapView.getOverlays().removeAll(clusterOverlays);
             for (Cluster cluster : clusterList) {
-                Area clusterArea = cluster.getArea();
-                OverlayItem clusterOverlayItem = new OverlayItem(
-                        new GeoPoint(
-                                clusterArea.getLatitude(),
-                                clusterArea.getLongitude()),
-                        clusterDrawable
+                Overlay clusterOverlay = new ClusterOverlay(
+                        MainActivity.this,
+                        cluster
                 );
-                scanResultsOverlay.addOverlayItem(clusterOverlayItem);
+                mapView.getOverlays().add(clusterOverlay);
+                // Track the overlays that we have added.
+                clusterOverlays.add(clusterOverlay);
             }
-            */
+            mapView.invalidate();
         }
 
         @Override

@@ -24,6 +24,10 @@ public class Area {
         return longitude;
     }
 
+    public float getAccuracy() {
+        return accuracy;
+    }
+
     @Override
     public String toString() {
         return String.format(

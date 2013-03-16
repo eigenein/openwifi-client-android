@@ -9,4 +9,8 @@ public class L {
     public static double toDegrees(int value) {
         return value / TO_E6_FIX;
     }
+
+    public static int toE6(double value) {
+        return (int)(value * TO_E6_FIX);
+    }
 }
