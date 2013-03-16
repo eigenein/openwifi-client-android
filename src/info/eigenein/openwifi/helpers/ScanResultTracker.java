@@ -94,13 +94,12 @@ public class ScanResultTracker {
     /**
      * Gets the stored scan results in the specified area.
      */
-    public static List<StoredScanResult> getScanResults(
+    public static GenericRawResults<StoredScanResult> getScanResults(
             Context context,
             double minLatitude,
             double minLongitude,
             double maxLatitude,
-            double maxLongitude,
-            String orderByColumn) {
+            double maxLongitude) {
         Log.v(LOG_TAG, String.format("getScanResults %s %s %s %s",
                 minLatitude,
                 minLongitude,
@@ -108,8 +107,6 @@ public class ScanResultTracker {
                 maxLongitude));
 
         DatabaseHelper databaseHelper = null;
-        GenericRawResults<StoredScanResult> rawScanResults = null;
-
         try {
             databaseHelper = getDatabaseHelper(context);
 
@@ -126,40 +123,18 @@ public class ScanResultTracker {
                     "and loc.longitude >= ? and loc.longitude <= ?\n" +
                     "group by sr1.bssid, sr1.location_timestamp\n" +
                     "having count(*) <= 3\n" +
-                    "order by sr1." + orderByColumn + "\n" +
-                    "limit ?;";
-            final int scanResultCountLimit = 64;
-
-            rawScanResults = scanResultDao.queryRaw(
+                    "order by sr1.bssid, sr1.location_timestamp desc";
+            return scanResultDao.queryRaw(
                     query,
                     scanResultDao.getRawRowMapper(),
                     Double.toString(minLatitude),
                     Double.toString(maxLatitude),
                     Double.toString(minLongitude),
-                    Double.toString(maxLongitude),
-                    Integer.toString(scanResultCountLimit));
-            List<StoredScanResult> scanResults = rawScanResults.getResults();
-
-            if (scanResults.size() != scanResultCountLimit) {
-                for (StoredScanResult scanResult : scanResults) {
-                    locationDao.refresh(scanResult.getLocation());
-                }
-                return scanResults;
-            } else {
-                // Return null to tell that the result limit is reached.
-                return null;
-            }
+                    Double.toString(maxLongitude));
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while querying scan results.", e);
             throw new RuntimeException(e);
         } finally {
-            if (rawScanResults != null) {
-                try {
-                    rawScanResults.close();
-                } catch (SQLException e) {
-                    Log.e(LOG_TAG, "Could not close scan results.", e);
-                }
-            }
             if (databaseHelper != null) {
                 OpenHelperManager.releaseHelper();
                 //noinspection UnusedAssignment

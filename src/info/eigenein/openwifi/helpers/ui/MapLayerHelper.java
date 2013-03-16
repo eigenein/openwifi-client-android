@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers;
+package info.eigenein.openwifi.helpers.ui;
 
 import android.content.Context;
 import info.eigenein.openwifi.R;

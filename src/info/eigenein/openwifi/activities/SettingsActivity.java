@@ -18,8 +18,6 @@ public class SettingsActivity extends PreferenceActivity
 
     public static final String IS_NETWORK_PROVIDER_ENABLED_KEY = "is_network_provider_enabled";
 
-    public static final String SHOW_SCAN_RESULTS_KEY = "show_scan_results";
-
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {

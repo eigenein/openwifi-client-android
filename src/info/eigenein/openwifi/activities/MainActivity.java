@@ -2,11 +2,10 @@ package info.eigenein.openwifi.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,8 +14,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+import com.j256.ormlite.dao.GenericRawResults;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.MapLayerHelper;
+import info.eigenein.openwifi.helpers.entities.ClusterList;
+import info.eigenein.openwifi.helpers.ui.MapLayerHelper;
 import info.eigenein.openwifi.helpers.ScanResultTracker;
 import info.eigenein.openwifi.helpers.ScanServiceManager;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
@@ -27,10 +28,10 @@ import ru.yandex.yandexmapkit.map.MapEvent;
 import ru.yandex.yandexmapkit.map.MapLayer;
 import ru.yandex.yandexmapkit.map.OnMapListener;
 import ru.yandex.yandexmapkit.overlay.Overlay;
-import ru.yandex.yandexmapkit.overlay.OverlayItem;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 import ru.yandex.yandexmapkit.utils.ScreenPoint;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -44,6 +45,8 @@ public class MainActivity extends Activity implements OnMapListener {
     private final static String MAP_LAYER_REQUEST_NAME_KEY = "map_layer_request_name";
 
     private Overlay scanResultsOverlay = null;
+
+    private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,7 +115,7 @@ public class MainActivity extends Activity implements OnMapListener {
         }
 
         // Setup overlays.
-        refreshScanResultsOverlay();
+        startRefreshScanResultsOverlay();
     }
 
     @Override
@@ -148,7 +151,7 @@ public class MainActivity extends Activity implements OnMapListener {
             case MapEvent.MSG_SCALE_END:
             case MapEvent.MSG_ZOOM_END:
             case MapEvent.MSG_SCROLL_END:
-                refreshScanResultsOverlay();
+                startRefreshScanResultsOverlay();
                 break;
         }
     }
@@ -180,15 +183,9 @@ public class MainActivity extends Activity implements OnMapListener {
     /**
      * Refreshes the scan results on the map.
      */
-    private void refreshScanResultsOverlay() {
+    private void startRefreshScanResultsOverlay() {
         final MapView mapView = (MapView)findViewById(R.id.mapView);
         final MapController mapController = mapView.getMapController();
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        scanResultsOverlay.clearOverlayItems();
-        if (!preferences.getBoolean(SettingsActivity.SHOW_SCAN_RESULTS_KEY, false)) {
-            return;
-        }
 
         // Get map bounds.
         ScreenPoint leftTop = new ScreenPoint(0.0f, 0.0f);
@@ -197,34 +194,61 @@ public class MainActivity extends Activity implements OnMapListener {
         GeoPoint bottomRightGeoPoint = mapController.getGeoPoint(bottomRight);
 
         // Retrieve scan results.
-        List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
+        GenericRawResults<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
                 this,
                 bottomRightGeoPoint.getLat(),
                 leftTopGeoPoint.getLon(),
                 leftTopGeoPoint.getLat(),
-                bottomRightGeoPoint.getLon(),
-                StoredScanResult.LOCATION_TIMESTAMP);
+                bottomRightGeoPoint.getLon()
+        );
+        // And run the task to process them.
+        if (refreshScanResultsAsyncTask != null) {
+            // Cancel old task.
+            refreshScanResultsAsyncTask.cancel(true);
+            refreshScanResultsAsyncTask = null;
+        }
+        // Count of cells that should fit the screen dimension.
+        final double gridCells = 8.0;
+        refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(Math.min(
+                (leftTopGeoPoint.getLat() - bottomRightGeoPoint.getLat()) / gridCells,
+                (bottomRightGeoPoint.getLon() - leftTopGeoPoint.getLon()) / gridCells
+        ));
+        refreshScanResultsAsyncTask.execute(scanResults);
+    }
 
-        if (scanResults != null) {
-            final Drawable locationDrawable = getResources().getDrawable(R.drawable.ic_location);
-            long last_location_timestamp = 0;
-            // Add scan results onto the map.
-            for (StoredScanResult storedScanResult : scanResults) {
-                // Show only different locations.
-                if (storedScanResult.getLocation().getTimestamp() != last_location_timestamp) {
-                    OverlayItem item = new OverlayItem(
-                            new GeoPoint(
-                                    storedScanResult.getLocation().getLatitude(),
-                                    storedScanResult.getLocation().getLongitude()),
-                            locationDrawable);
-                    scanResultsOverlay.addOverlayItem(item);
-                    last_location_timestamp = storedScanResult.getLocation().getTimestamp();
-                    Log.v(LOG_TAG, "storedScanResult.getLocation() " + storedScanResult.getLocation());
+    /**
+     * Used to aggregate the scan results from the application database.
+     */
+    public class RefreshScanResultsAsyncTask extends AsyncTask<GenericRawResults<StoredScanResult>, Void, ClusterList> {
+        private double gridSize;
+
+        public RefreshScanResultsAsyncTask(double gridSize) {
+            this.gridSize = gridSize;
+        }
+
+        @Override
+        protected ClusterList doInBackground(
+                GenericRawResults<StoredScanResult>... params) {
+            return doInBackgroundOne(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(ClusterList aggregatedScanResult) {
+            scanResultsOverlay.clearOverlayItems();
+
+            // TODO: add new items.
+        }
+
+        private ClusterList doInBackgroundOne(GenericRawResults<StoredScanResult> genericRawResults) {
+            try {
+                return null;
+            } finally {
+                try {
+                    genericRawResults.close();
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Could not close genericRawResults.", e);
                 }
             }
-            mapView.refreshDrawableState();
-        } else {
-            Toast.makeText(this, getString(R.string.too_many_scan_results_here), Toast.LENGTH_SHORT).show();
         }
     }
 }
