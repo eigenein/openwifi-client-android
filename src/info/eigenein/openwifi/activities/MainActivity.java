@@ -220,6 +220,9 @@ public class MainActivity extends MapActivity {
     public class RefreshScanResultsAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         private final String LOG_TAG = RefreshScanResultsAsyncTask.class.getCanonicalName();
 
+        // TODO: make this configurable.
+        private final int MAX_SCAN_RESULTS_FOR_BSSID = 4;
+
         private final double minLatitude;
 
         private final double minLongitude;
@@ -269,13 +272,23 @@ public class MainActivity extends MapActivity {
             );
             Log.v(LOG_TAG, "scanResults.size() " + scanResults.size());
             // Process them.
+            HashMap<String, Integer> bssidToCountCache = new HashMap<String, Integer>();
             for (StoredScanResult scanResult : scanResults) {
                 // Check if we're cancelled.
                 if (isCancelled()) {
                     return null;
                 }
-                // No - add the scan result.
-                addScanResult(scanResult);
+                // Increment scan result count for this BSSID.
+                Integer count = bssidToCountCache.get(scanResult.getBssid());
+                if (count == null) {
+                    count = 0;
+                }
+                count += 1;
+                bssidToCountCache.put(scanResult.getBssid(), count);
+                // Check if there are too much results for the BSSID.
+                if (count <= MAX_SCAN_RESULTS_FOR_BSSID) {
+                    addScanResult(scanResult);
+                }
             }
             return buildClusterList();
         }
