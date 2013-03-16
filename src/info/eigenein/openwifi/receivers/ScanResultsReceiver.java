@@ -21,12 +21,21 @@ import java.util.List;
 public class ScanResultsReceiver extends BroadcastReceiver {
     private static final String LOG_TAG = ScanResultsReceiver.class.getCanonicalName();
 
+    /**
+     * Maximum allowed accuracy for the location.
+     */
+    private static final int MAX_ACCURACY = 250;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         // Check current location.
         Location location = LocationTracker.getInstance().getLocation(context);
         if (location == null) {
             Log.w(LOG_TAG, "getLocation returned null.");
+            return;
+        }
+        if (location.getAccuracy() > MAX_ACCURACY) {
+            Log.w(LOG_TAG, "extra large accuracy " + location.getAccuracy());
             return;
         }
 
@@ -60,5 +69,9 @@ public class ScanResultsReceiver extends BroadcastReceiver {
             Log.d(LOG_TAG, "No open access points here.");
         }
         Log.i(LOG_TAG, "Done processing scan results.");
+    }
+
+    public void cleanup() {
+
     }
 }

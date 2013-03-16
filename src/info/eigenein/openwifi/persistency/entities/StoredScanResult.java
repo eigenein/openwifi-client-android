@@ -44,7 +44,7 @@ public class StoredScanResult {
             foreignColumnName = "timestamp")
     private StoredLocation location;
 
-    @DatabaseField(columnName = "synced", canBeNull = false)
+    @DatabaseField(columnName = "synced", canBeNull = false, index = true)
     private boolean synced;
 
     public StoredScanResult() {
@@ -69,5 +69,17 @@ public class StoredScanResult {
 
     public StoredLocation getLocation() {
         return location;
+    }
+
+    public void setLocation(StoredLocation location) {
+        this.location = location;
+    }
+
+    public void setBssid(String bssid) {
+        this.bssid = bssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
     }
 }

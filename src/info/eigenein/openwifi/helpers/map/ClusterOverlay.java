@@ -2,8 +2,6 @@ package info.eigenein.openwifi.helpers.map;
 
 import android.content.Context;
 import android.graphics.*;
-import android.graphics.drawable.Drawable;
-import android.util.FloatMath;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -14,6 +12,11 @@ import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.location.L;
 
 public class ClusterOverlay extends Overlay {
+    private static final float TEXT_OFFSET = 8.0f;
+
+    private static final Paint defaultPaint = new Paint();
+
+    private final String clusterSizeString;
 
     private final GeoPoint geoPoint;
 
@@ -21,10 +24,16 @@ public class ClusterOverlay extends Overlay {
 
     private final Bitmap clusterBitmap;
 
+    static
+    {
+        defaultPaint.setTextSize(16.0f);
+    }
+
     public ClusterOverlay(Context context, Cluster cluster) {
         this.clusterBitmap = BitmapFactory.decodeResource(
                 context.getResources(),
                 R.drawable.ic_cluster);
+        this.clusterSizeString = Integer.toString(cluster.size());
         this.area = cluster.getArea();
         this.geoPoint = new GeoPoint(
                 L.toE6(area.getLatitude()),
@@ -49,17 +58,21 @@ public class ClusterOverlay extends Overlay {
                 projection.metersToEquatorPixels(area.getAccuracy()) *
                         (1.0 / Math.cos(Math.toRadians(area.getLatitude()))));
 
-        Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
-        paint.setAlpha(32);
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        Paint circlePaint = new Paint();
+        circlePaint.setColor(Color.BLACK);
+        circlePaint.setAlpha(32);
+        circlePaint.setAntiAlias(true);
+        circlePaint.setStyle(Paint.Style.FILL);
 
-        canvas.drawCircle((float)point.x, (float)point.y, radius, paint);
+        final float x = (float)point.x;
+        final float y = (float)point.y;
+
+        canvas.drawCircle(x, y, radius, circlePaint);
         canvas.drawBitmap(
                 clusterBitmap,
-                (float)(point.x - clusterBitmap.getWidth() / 2.0),
-                (float)(point.y - clusterBitmap.getHeight() / 2.0),
-                new Paint());
+                x - clusterBitmap.getWidth() / 2.0f,
+                y - clusterBitmap.getHeight() / 2.0f,
+                defaultPaint);
+        canvas.drawText(clusterSizeString, x + TEXT_OFFSET, y - TEXT_OFFSET, defaultPaint);
     }
 }

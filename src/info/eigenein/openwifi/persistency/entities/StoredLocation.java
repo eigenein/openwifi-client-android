@@ -9,13 +9,13 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "locations")
 public class StoredLocation {
-    @DatabaseField(columnName = "accuracy", canBeNull = false)
+    @DatabaseField(columnName = "accuracy", canBeNull = false, index = true)
     private float accuracy;
 
-    @DatabaseField(columnName = "latitude", canBeNull = false)
+    @DatabaseField(columnName = "latitude", canBeNull = false, index = true)
     private double latitude;
 
-    @DatabaseField(columnName = "longitude", canBeNull = false)
+    @DatabaseField(columnName = "longitude", canBeNull = false, index = true)
     private double longitude;
 
     @DatabaseField(columnName = "provider", canBeNull = true)
@@ -58,5 +58,17 @@ public class StoredLocation {
                 "StoredLocation[latitude=%s, longitude=%s]",
                 latitude,
                 longitude);
+    }
+
+    public void setAccuracy(float accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

@@ -6,7 +6,7 @@ import android.net.wifi.ScanResult;
 import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.stmt.Where;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
@@ -20,11 +20,6 @@ import java.util.List;
  */
 public class ScanResultTracker {
     private static final String LOG_TAG = ScanResultTracker.class.getCanonicalName();
-
-    /**
-     * Maximum allowed accuracy for the location.
-     */
-    private static final int MAX_ACCURACY = 250;
 
     /**
      * Adds the scan results to the database.
@@ -118,32 +113,21 @@ public class ScanResultTracker {
             Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
             Dao<StoredLocation, Long> locationDao = getLocationDao(databaseHelper);
 
-            final String query = "select sr1.*\n" +
+            final String query = "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude \n" +
                     "from scan_results sr1\n" +
-                    "join scan_results sr2\n" +
-                    "on sr1.bssid = sr2.bssid and sr1.location_timestamp >= sr2.location_timestamp\n" +
                     "join locations loc\n" +
                     "on loc.timestamp = sr1.location_timestamp\n" +
                     "where loc.latitude >= ? and loc.latitude <= ?\n" +
                     "and loc.longitude >= ? and loc.longitude <= ?\n" +
-                    "and loc.accuracy <= ?" +
-                    "group by sr1.bssid, sr1.location_timestamp\n" +
-                    "having count(*) <= 3\n" +
                     "order by sr1.bssid, sr1.location_timestamp desc;";
             List<StoredScanResult> scanResults = scanResultDao.queryRaw(
                     query,
-                    scanResultDao.getRawRowMapper(),
+                    GetScanResultsRawRowMapper.getInstance(),
                     Double.toString(minLatitude),
                     Double.toString(maxLatitude),
                     Double.toString(minLongitude),
-                    Double.toString(maxLongitude),
-                    Integer.toString(MAX_ACCURACY))
+                    Double.toString(maxLongitude))
                     .getResults();
-            // Preload locations.
-            // TODO: this may take a lot of time. Optimize.
-            for (StoredScanResult scanResult : scanResults) {
-                locationDao.refresh(scanResult.getLocation());
-            }
             return scanResults;
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while querying scan results.", e);
@@ -240,6 +224,31 @@ public class ScanResultTracker {
                 //noinspection UnusedAssignment
                 databaseHelper = null;
             }
+        }
+    }
+
+    private static class GetScanResultsRawRowMapper implements RawRowMapper<StoredScanResult> {
+        private static final GetScanResultsRawRowMapper instance = new GetScanResultsRawRowMapper();
+
+        public static GetScanResultsRawRowMapper getInstance() {
+            return instance;
+        }
+
+        @Override
+        public StoredScanResult mapRow(String[] columnNames, String[] resultColumns)
+                throws SQLException {
+            StoredLocation storedLocation = new StoredLocation();
+            StoredScanResult storedScanResult = new StoredScanResult();
+
+            storedScanResult.setLocation(storedLocation);
+
+            storedScanResult.setBssid(resultColumns[0]);
+            storedScanResult.setSsid(resultColumns[1]);
+            storedLocation.setAccuracy(Float.parseFloat(resultColumns[2]));
+            storedLocation.setLatitude(Double.parseDouble(resultColumns[3]));
+            storedLocation.setLongitude(Double.parseDouble(resultColumns[4]));
+
+            return storedScanResult;
         }
     }
 }

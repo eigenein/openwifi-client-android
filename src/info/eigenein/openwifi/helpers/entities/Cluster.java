@@ -25,8 +25,8 @@ public class Cluster implements Iterable<Network> {
         return area;
     }
 
-    public void add(Network accessPoint) {
-        networks.add(accessPoint);
+    public void add(Network network) {
+        networks.add(network);
     }
 
     public int size() {

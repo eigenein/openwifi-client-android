@@ -184,11 +184,7 @@ public class MainActivity extends MapActivity {
         Log.v(LOG_TAG, "startRefreshingScanResultsOnMap");
 
         // Check if the task is already running.
-        if (refreshScanResultsAsyncTask != null) {
-            // Cancel old task.
-            refreshScanResultsAsyncTask.cancel(true);
-            refreshScanResultsAsyncTask = null;
-        }
+       cancelRefreshScanResultsAsyncTask();
 
         // Check map bounds.
         if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
@@ -199,20 +195,23 @@ public class MainActivity extends MapActivity {
         final Projection mapViewProjection = mapView.getProjection();
         GeoPoint nwGeoPoint = mapViewProjection.fromPixels(0, 0);
         GeoPoint seGeoPoint = mapViewProjection.fromPixels(mapView.getWidth(), mapView.getHeight());
-        // Count of cells that should fit the screen dimension.
-        final double gridCells = 8.0;
         // Run task to retrieve the scan results and process them into a cluster list.
         refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(
                 L.toDegrees(seGeoPoint.getLatitudeE6()),
                 L.toDegrees(nwGeoPoint.getLongitudeE6()),
                 L.toDegrees(nwGeoPoint.getLatitudeE6()),
                 L.toDegrees(seGeoPoint.getLongitudeE6()),
-                Math.min(
-                        L.toDegrees(nwGeoPoint.getLatitudeE6() - seGeoPoint.getLatitudeE6()) / gridCells,
-                        L.toDegrees(seGeoPoint.getLongitudeE6() - nwGeoPoint.getLongitudeE6()) / gridCells
-                )
+                400.0 * Math.pow(0.5, mapView.getZoomLevel())
         );
         refreshScanResultsAsyncTask.execute();
+    }
+
+    private synchronized void cancelRefreshScanResultsAsyncTask() {
+        if (refreshScanResultsAsyncTask != null) {
+            // Cancel old task.
+            refreshScanResultsAsyncTask.cancel(true);
+            refreshScanResultsAsyncTask = null;
+        }
     }
 
     /**
@@ -259,6 +258,7 @@ public class MainActivity extends MapActivity {
 
         @Override
         protected ClusterList doInBackground(Void... params) {
+            Log.v(LOG_TAG, "doInBackground");
             // Retrieve scan results.
             List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
                     MainActivity.this,
@@ -267,7 +267,7 @@ public class MainActivity extends MapActivity {
                     maxLatitude,
                     maxLongitude
             );
-            Log.v(LOG_TAG, "scanResults.size " + scanResults.size());
+            Log.v(LOG_TAG, "scanResults.size() " + scanResults.size());
             // Process them.
             for (StoredScanResult scanResult : scanResults) {
                 // Check if we're cancelled.
@@ -281,16 +281,17 @@ public class MainActivity extends MapActivity {
         }
 
         @Override
-        protected void onPostExecute(ClusterList clusterList) {
+        protected synchronized void onPostExecute(ClusterList clusterList) {
             Log.d(LOG_TAG, "onPostExecute " + clusterList);
 
-            mapView.getOverlays().removeAll(clusterOverlays);
+            final List<Overlay> mapViewOverlays = mapView.getOverlays();
+            mapViewOverlays.removeAll(clusterOverlays);
             for (Cluster cluster : clusterList) {
                 Overlay clusterOverlay = new ClusterOverlay(
                         MainActivity.this,
                         cluster
                 );
-                mapView.getOverlays().add(clusterOverlay);
+                mapViewOverlays.add(clusterOverlay);
                 // Track the overlays that we have added.
                 clusterOverlays.add(clusterOverlay);
             }
