@@ -33,6 +33,8 @@ public class MainActivity extends MapActivity {
 
     private final static double TO_E6_FIX = 1.0e6;
 
+    private MyLocationOverlay myLocationOverlay = null;
+
     private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
 
     @Override
@@ -52,19 +54,17 @@ public class MainActivity extends MapActivity {
         // Setup map controller.
         final MapController mapController = mapView.getController();
         // Setup current location.
-        final MyLocationOverlay locationOverlay = new MyLocationOverlay(this, mapView);
-        locationOverlay.enableMyLocation();
-        locationOverlay.enableCompass();
-        locationOverlay.runOnFirstFix(new Runnable() {
+        myLocationOverlay = new MyLocationOverlay(this, mapView);
+        myLocationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
                 // Zoom in to current location
                 mapController.setZoom(DEFAULT_ZOOM);
-                mapController.animateTo(locationOverlay.getMyLocation());
+                mapController.animateTo(myLocationOverlay.getMyLocation());
             }
         });
         // Setup overlays.
         final List<Overlay> overlays = mapView.getOverlays();
-        overlays.add(locationOverlay);
+        overlays.add(myLocationOverlay);
     }
 
     @Override
@@ -90,8 +90,25 @@ public class MainActivity extends MapActivity {
     public void onStart() {
         super.onStart();
 
-        // Setup overlays.
+        // Update overlays.
         startRefreshingScanResultsOnMap();
+
+        if (myLocationOverlay != null) {
+            // Enable my location.
+            myLocationOverlay.enableMyLocation();
+            myLocationOverlay.enableCompass();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (myLocationOverlay != null) {
+            // Disable my location to avoid using of location services.
+            myLocationOverlay.disableCompass();
+            myLocationOverlay.disableMyLocation();
+        }
     }
 
     @Override
