@@ -58,7 +58,7 @@ public class ScanIntentService extends IntentService {
         String wifi_is_disabled_title = getString(R.string.wifi_is_disabled_title);
         String wifi_is_disabled_text = getString(R.string.wifi_is_disabled_text);
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_notification)
                 .setAutoCancel(true)
                 .setTicker(wifi_is_disabled_title +
                                 System.getProperty("line.separator") +

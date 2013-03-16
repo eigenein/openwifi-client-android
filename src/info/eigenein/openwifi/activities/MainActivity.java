@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import ru.yandex.yandexmapkit.map.MapEvent;
 import ru.yandex.yandexmapkit.map.MapLayer;
 import ru.yandex.yandexmapkit.map.OnMapListener;
 import ru.yandex.yandexmapkit.overlay.Overlay;
+import ru.yandex.yandexmapkit.overlay.OverlayItem;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 import ru.yandex.yandexmapkit.utils.ScreenPoint;
 
@@ -211,7 +213,6 @@ public class MainActivity extends Activity implements OnMapListener {
         final double gridCells = 8.0;
         // Run task to retrieve the scan results and process them into a cluster list.
         refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(
-                this,
                 bottomRightGeoPoint.getLat(),
                 leftTopGeoPoint.getLon(),
                 leftTopGeoPoint.getLat(),
@@ -230,8 +231,6 @@ public class MainActivity extends Activity implements OnMapListener {
     public class RefreshScanResultsAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         private final String LOG_TAG = RefreshScanResultsAsyncTask.class.getCanonicalName();
 
-        private final Context context;
-
         private final double minLatitude;
 
         private final double minLongitude;
@@ -249,7 +248,6 @@ public class MainActivity extends Activity implements OnMapListener {
         private final MultiKeyMap cellToScanResultCache = new MultiKeyMap();
 
         public RefreshScanResultsAsyncTask(
-                Context context,
                 double minLatitude,
                 double minLongitude,
                 double maxLatitude,
@@ -262,7 +260,6 @@ public class MainActivity extends Activity implements OnMapListener {
                     maxLatitude,
                     maxLongitude,
                     gridSize));
-            this.context = context;
             this.minLatitude = minLatitude;
             this.minLongitude = minLongitude;
             this.maxLatitude = maxLatitude;
@@ -274,7 +271,7 @@ public class MainActivity extends Activity implements OnMapListener {
         protected ClusterList doInBackground(Void... params) {
             // Retrieve scan results.
             List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
-                    context,
+                    MainActivity.this,
                     minLatitude,
                     minLongitude,
                     maxLatitude,
@@ -295,10 +292,23 @@ public class MainActivity extends Activity implements OnMapListener {
 
         @Override
         protected void onPostExecute(ClusterList clusterList) {
-            // scanResultsOverlay.clearOverlayItems();
-
             Log.d(LOG_TAG, "onPostExecute " + clusterList);
-            // TODO: add new items.
+
+            scanResultsOverlay.setVisible(false);
+            scanResultsOverlay.clearOverlayItems();
+            Drawable clusterDrawable =  MainActivity.this.getResources().getDrawable(R.drawable.ic_cluster);
+            for (Cluster cluster : clusterList) {
+                Area clusterArea = cluster.getArea();
+                OverlayItem clusterOverlayItem = new OverlayItem(
+                        new GeoPoint(
+                                clusterArea.getLatitude(),
+                                clusterArea.getLongitude()),
+                        clusterDrawable
+                );
+                scanResultsOverlay.addOverlayItem(clusterOverlayItem);
+            }
+
+            scanResultsOverlay.setVisible(true);
         }
 
         @Override
