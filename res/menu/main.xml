@@ -10,9 +10,6 @@
           android:icon="@drawable/ic_pause"
           android:showAsAction="ifRoom"
           android:visible="false"/>
-    <item android:id="@+id/map_layer_menuitem"
-          android:title="@string/map_layer"
-          android:showAsAction="never"/>
     <item android:id="@+id/settings_menuitem"
           android:title="@string/settings"
           android:showAsAction="never"/>

@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/map_category"
-        android:key="map_settings">
-        <CheckBoxPreference
-            android:key="is_hd_mode_enabled"
-            android:title="@string/hd_mode"
-            android:summary="@string/hd_mode_summary"
-            android:defaultValue="false"/>
-    </PreferenceCategory>
-    <PreferenceCategory
         android:title="@string/scan_category"
         android:key="scan_settings">
         <ListPreference

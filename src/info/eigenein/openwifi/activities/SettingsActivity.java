@@ -1,6 +1,5 @@
 package info.eigenein.openwifi.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +11,6 @@ import info.eigenein.openwifi.helpers.ScanServiceManager;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final String IS_HD_MODE_ENABLED_KEY = "is_hd_mode_enabled";
-
     public static final String SCAN_PERIOD_KEY = "scan_period";
 
     public static final String IS_NETWORK_PROVIDER_ENABLED_KEY = "is_network_provider_enabled";

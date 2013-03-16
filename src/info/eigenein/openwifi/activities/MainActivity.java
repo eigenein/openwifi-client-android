@@ -1,43 +1,24 @@
 package info.eigenein.openwifi.activities;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.*;
 import android.widget.Toast;
+import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.LocationProcessor;
+import info.eigenein.openwifi.helpers.ScanResultTracker;
+import info.eigenein.openwifi.helpers.ScanServiceManager;
 import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
-import info.eigenein.openwifi.helpers.ui.MapLayerHelper;
-import info.eigenein.openwifi.helpers.ScanResultTracker;
-import info.eigenein.openwifi.helpers.ScanServiceManager;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 import org.apache.commons.collections.map.MultiKeyMap;
-import ru.yandex.yandexmapkit.MapController;
-import ru.yandex.yandexmapkit.MapView;
-import ru.yandex.yandexmapkit.OverlayManager;
-import ru.yandex.yandexmapkit.map.MapEvent;
-import ru.yandex.yandexmapkit.map.MapLayer;
-import ru.yandex.yandexmapkit.map.OnMapListener;
-import ru.yandex.yandexmapkit.overlay.Overlay;
-import ru.yandex.yandexmapkit.overlay.OverlayItem;
-import ru.yandex.yandexmapkit.utils.GeoPoint;
-import ru.yandex.yandexmapkit.utils.ScreenPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,14 +28,10 @@ import java.util.Map;
 /**
  * Main application activity with the map.
  */
-public class MainActivity extends Activity implements OnMapListener {
-    private final static String LOG_TAG = MainActivity.class.getCanonicalName();
+public class MainActivity extends MapActivity {
+    private final static int DEFAULT_ZOOM = 17;
 
-    private final static float DEFAULT_ZOOM = 17.0f;
-
-    private final static String MAP_LAYER_REQUEST_NAME_KEY = "map_layer_request_name";
-
-    private Overlay scanResultsOverlay = null;
+    private final static double TO_E6_FIX = 1.0e6;
 
     private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
 
@@ -69,23 +46,25 @@ public class MainActivity extends Activity implements OnMapListener {
             getActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        // Setup map view.
-        final MapView mapView = (MapView)findViewById(R.id.mapView);
-        mapView.showFindMeButton(true);
-        mapView.showJamsButton(false);
-        mapView.showScaleView(true);
-        mapView.showZoomButtons(true);
-
         // Setup map.
-        final MapController mapController = mapView.getMapController();
-        mapController.setZoomCurrent(DEFAULT_ZOOM);
-        mapController.addMapListener(this);
-
-        // Initialize overlays.
-        final OverlayManager overlayManager = mapController.getOverlayManager();
-        // Create scan results overlay.
-        scanResultsOverlay = new Overlay(mapController);
-        overlayManager.addOverlay(scanResultsOverlay);
+        final MapView mapView = (MapView)findViewById(R.id.mapView);
+        mapView.setBuiltInZoomControls(true);
+        // Setup map controller.
+        final MapController mapController = mapView.getController();
+        // Setup current location.
+        final MyLocationOverlay locationOverlay = new MyLocationOverlay(this, mapView);
+        locationOverlay.enableMyLocation();
+        locationOverlay.enableCompass();
+        locationOverlay.runOnFirstFix(new Runnable() {
+            public void run() {
+                // Zoom in to current location
+                mapController.setZoom(DEFAULT_ZOOM);
+                mapController.animateTo(locationOverlay.getMyLocation());
+            }
+        });
+        // Setup overlays.
+        final List<Overlay> overlays = mapView.getOverlays();
+        overlays.add(locationOverlay);
     }
 
     @Override
@@ -111,21 +90,8 @@ public class MainActivity extends Activity implements OnMapListener {
     public void onStart() {
         super.onStart();
 
-        final MapView mapView = (MapView)findViewById(R.id.mapView);
-        final MapController mapController = mapView.getMapController();
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // Setup map.
-        mapController.setHDMode(preferences.getBoolean(SettingsActivity.IS_HD_MODE_ENABLED_KEY, false));
-
-        // Setup map layer.
-        String layerRequestName = preferences.getString(MAP_LAYER_REQUEST_NAME_KEY, null);
-        if (layerRequestName != null) {
-            mapController.setCurrentMapLayer(mapController.getMapLayerByLayerRequestName(layerRequestName));
-        }
-
         // Setup overlays.
-        startRefreshScanResultsOverlay();
+        startRefreshingScanResultsOnMap();
     }
 
     @Override
@@ -138,9 +104,6 @@ public class MainActivity extends Activity implements OnMapListener {
                 ScanServiceManager.restart(this);
                 Toast.makeText(this, R.string.scan_started, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
-                return true;
-            case R.id.map_layer_menuitem:
-                showChooseMapLayerDialog();
                 return true;
             case R.id.pause_scan_menuitem:
                 ScanServiceManager.stop(this);
@@ -156,46 +119,15 @@ public class MainActivity extends Activity implements OnMapListener {
     }
 
     @Override
-    public void onMapActionEvent(MapEvent mapEvent) {
-        switch (mapEvent.getMsg()) {
-            case MapEvent.MSG_SCALE_END:
-            case MapEvent.MSG_ZOOM_END:
-            case MapEvent.MSG_SCROLL_END:
-                startRefreshScanResultsOverlay();
-                break;
-        }
-    }
-
-    private void showChooseMapLayerDialog() {
-        // Obtain map layers.
-        final MapView mapView = (MapView)findViewById(R.id.mapView);
-        final MapController mapController = mapView.getMapController();
-        final List mapLayers = mapController.getListMapLayer();
-        // Show dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.map_layer).setItems(
-                MapLayerHelper.getMapLayerNames(this, mapLayers),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        MapLayer mapLayer = (MapLayer)mapLayers.get(which);
-                        // Choose the layer.
-                        mapController.setCurrentMapLayer(mapLayer);
-                        // Remember the choice.
-                        final SharedPreferences.Editor editor =
-                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
-                                .edit();
-                        editor.putString(MAP_LAYER_REQUEST_NAME_KEY, mapLayer.requestName);
-                        editor.commit();
-                    }
-        }).create().show();
+    protected boolean isRouteDisplayed() {
+        return false;
     }
 
     /**
      * Refreshes the scan results on the map.
      */
-    private void startRefreshScanResultsOverlay() {
+    private void startRefreshingScanResultsOnMap() {
         final MapView mapView = (MapView)findViewById(R.id.mapView);
-        final MapController mapController = mapView.getMapController();
 
         // Check if the task is already running.
         if (refreshScanResultsAsyncTask != null) {
@@ -204,22 +136,25 @@ public class MainActivity extends Activity implements OnMapListener {
             refreshScanResultsAsyncTask = null;
         }
 
+        // Check map bounds.
+        if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
+            return;
+        }
         // Get map bounds.
-        ScreenPoint leftTop = new ScreenPoint(0.0f, 0.0f);
-        GeoPoint leftTopGeoPoint = mapController.getGeoPoint(leftTop);
-        ScreenPoint bottomRight = new ScreenPoint(mapView.getWidth(), mapView.getHeight());
-        GeoPoint bottomRightGeoPoint = mapController.getGeoPoint(bottomRight);
+        final Projection mapViewProjection = mapView.getProjection();
+        GeoPoint nwGeoPoint = mapViewProjection.fromPixels(0, 0);
+        GeoPoint seGeoPoint = mapViewProjection.fromPixels(mapView.getWidth(), mapView.getHeight());
         // Count of cells that should fit the screen dimension.
         final double gridCells = 8.0;
         // Run task to retrieve the scan results and process them into a cluster list.
         refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(
-                bottomRightGeoPoint.getLat(),
-                leftTopGeoPoint.getLon(),
-                leftTopGeoPoint.getLat(),
-                bottomRightGeoPoint.getLon(),
+                seGeoPoint.getLatitudeE6() / TO_E6_FIX,
+                nwGeoPoint.getLongitudeE6() / TO_E6_FIX,
+                nwGeoPoint.getLatitudeE6() / TO_E6_FIX,
+                seGeoPoint.getLongitudeE6() / TO_E6_FIX,
                 Math.min(
-                        (leftTopGeoPoint.getLat() - bottomRightGeoPoint.getLat()) / gridCells,
-                        (bottomRightGeoPoint.getLon() - leftTopGeoPoint.getLon()) / gridCells
+                        (nwGeoPoint.getLatitudeE6() - seGeoPoint.getLatitudeE6()) / TO_E6_FIX / gridCells,
+                        (seGeoPoint.getLongitudeE6() - nwGeoPoint.getLongitudeE6()) / TO_E6_FIX / gridCells
                 )
         );
         refreshScanResultsAsyncTask.execute();
@@ -294,7 +229,7 @@ public class MainActivity extends Activity implements OnMapListener {
         protected void onPostExecute(ClusterList clusterList) {
             Log.d(LOG_TAG, "onPostExecute " + clusterList);
 
-            scanResultsOverlay.setVisible(false);
+            /*
             scanResultsOverlay.clearOverlayItems();
             Drawable clusterDrawable =  MainActivity.this.getResources().getDrawable(R.drawable.ic_cluster);
             for (Cluster cluster : clusterList) {
@@ -307,8 +242,7 @@ public class MainActivity extends Activity implements OnMapListener {
                 );
                 scanResultsOverlay.addOverlayItem(clusterOverlayItem);
             }
-
-            scanResultsOverlay.setVisible(true);
+            */
         }
 
         @Override
