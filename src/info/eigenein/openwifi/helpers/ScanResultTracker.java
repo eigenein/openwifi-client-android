@@ -257,6 +257,7 @@ public class ScanResultTracker {
         Log.d(LOG_TAG + ".purgeOldScanResults", "lastLocationTimestamp " + lastLocationTimestamp);
         // Delete all results that are even older.
         DeleteBuilder<StoredScanResult, Integer> deleteBuilder = dao.deleteBuilder();
+        deleteBuilder.where().eq(StoredScanResult.BSSID, bssid);
         deleteBuilder.where().lt(StoredScanResult.LOCATION_TIMESTAMP, lastLocationTimestamp);
         deleteBuilder.delete();
 
