@@ -56,7 +56,7 @@ public class SettingsActivity extends PreferenceActivity
         // Copy the database into the internal cache.
         File sourceFile = new File("/data/data/" + getPackageName() + "/databases/" + DatabaseHelper.DATABASE_NAME);
         if (!sourceFile.exists()) {
-            Toast.makeText(this, "No database file.", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "No database file.", Toast.LENGTH_SHORT).show();
             return true;
         }
         File cacheDir = getCacheDir();
@@ -65,7 +65,7 @@ public class SettingsActivity extends PreferenceActivity
         try {
             FileUtils.copy(sourceFile, outputFile);
         } catch (IOException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT);
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             return true;
         }
         // Share it.
