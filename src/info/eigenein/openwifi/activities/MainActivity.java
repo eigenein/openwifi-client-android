@@ -173,6 +173,14 @@ public class MainActivity extends MapActivity {
     }
 
     @Override
+    public void invalidateOptionsMenu() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // Added in API level 11
+            super.invalidateOptionsMenu();
+        }
+    }
+
+    @Override
     protected boolean isRouteDisplayed() {
         return false;
     }

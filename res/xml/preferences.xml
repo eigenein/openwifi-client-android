@@ -12,7 +12,8 @@
         <CheckBoxPreference
             android:key="is_network_provider_enabled"
             android:title="@string/is_network_provider_enabled"
-            android:summary="@string/is_network_provider_enabled_summary"/>
+            android:summary="@string/is_network_provider_enabled_summary"
+            android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/advanced_settings_category"
