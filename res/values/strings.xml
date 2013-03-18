@@ -19,4 +19,7 @@
     <string name="scan_result_count">Scan Result Count</string>
     <string name="show_my_location">Show My Location</string>
     <string name="map_view">Map View</string>
+    <string name="advanced_settings_category">Advanced</string>
+    <string name="share_database">Share database</string>
+    <string name="share_database_summary">Upload the application database</string>
 </resources>

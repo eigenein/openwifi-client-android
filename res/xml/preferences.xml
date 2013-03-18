@@ -12,7 +12,14 @@
         <CheckBoxPreference
             android:key="is_network_provider_enabled"
             android:title="@string/is_network_provider_enabled"
-            android:summary="@string/is_network_provider_enabled_summary"
-            android:defaultValue="true"/>
+            android:summary="@string/is_network_provider_enabled_summary"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/advanced_settings_category"
+        android:key="advanced_settings">
+        <Preference
+            android:title="@string/share_database"
+            android:key="share_database"
+            android:summary="@string/share_database_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

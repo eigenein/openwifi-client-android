@@ -19,4 +19,7 @@
     <string name="scan_result_count">Результаты сканирования</string>
     <string name="show_my_location">Мое местоположение</string>
     <string name="map_view">Вид</string>
+    <string name="advanced_settings_category">Расширенные</string>
+    <string name="share_database">Экспортировать базу данных</string>
+    <string name="share_database_summary">Выгрузить файл базы данных приложения</string>
 </resources>

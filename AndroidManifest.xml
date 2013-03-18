@@ -26,7 +26,6 @@
                   android:label="@string/settings"/>
         <activity android:name=".activities.StatisticsActivity"
                   android:label="@string/statistics"/>
-
         <receiver
             android:name=".receivers.ScanIntentBroadcastReceiver"
             android:enabled="true">
@@ -45,5 +44,9 @@
             android:name=".services.ScanIntentService"
             android:exported="false"/>
         <uses-library android:name="com.google.android.maps"/>
+        <provider
+            android:name=".helpers.providers.ReadOnlyCacheContentProvider"
+            android:authorities="info.eigenein.openwifi"
+            android:exported="true"/>
     </application>
 </manifest>
