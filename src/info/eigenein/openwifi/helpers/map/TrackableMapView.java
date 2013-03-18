@@ -2,45 +2,46 @@ package info.eigenein.openwifi.helpers.map;
 
 import android.graphics.Canvas;
 import android.util.Log;
-import android.view.MotionEvent;
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 public class TrackableMapView extends MapView {
     private static final String LOG_TAG = TrackableMapView.class.getCanonicalName();
 
     private int oldZoomLevel = -1;
 
+    private GeoPoint oldMapCenter = null;
+
     private List<MapViewListener> listeners = new ArrayList<MapViewListener>();
 
+    @SuppressWarnings("UnusedDeclaration")
     public TrackableMapView(android.content.Context context, android.util.AttributeSet attrs) {
         super(context, attrs);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public TrackableMapView(android.content.Context context, android.util.AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public TrackableMapView(android.content.Context context, java.lang.String apiKey) {
         super(context, apiKey);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_UP) {
-            fireMovedOrZoomed();
-        }
-        return super.onTouchEvent(ev);
     }
 
     @Override
     public void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (getZoomLevel() != oldZoomLevel) {
+            Log.d(LOG_TAG + ".dispatchDraw", "zoomLevel " + oldZoomLevel + " " + getZoomLevel());
             oldZoomLevel = getZoomLevel();
+            fireMovedOrZoomed();
+        } else if (!getMapCenter().equals(oldMapCenter)) {
+            Log.d(LOG_TAG + ".dispatchDraw", "mapCenter " + oldMapCenter + " " + getMapCenter());
+            oldMapCenter = getMapCenter();
             fireMovedOrZoomed();
         }
     }
