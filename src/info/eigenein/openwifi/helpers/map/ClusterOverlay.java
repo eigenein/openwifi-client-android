@@ -33,7 +33,7 @@ public class ClusterOverlay extends Overlay {
 
         strokePaint.setAntiAlias(true);
         strokePaint.setColor(Color.WHITE);
-        strokePaint.setStrokeWidth(2);
+        strokePaint.setStrokeWidth(4.0f);
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setTextSize(16.0f);
         strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
