@@ -63,7 +63,7 @@ public class MainActivity extends MapActivity {
         mapView.addMovedOrZoomedObserver(new MapViewListener() {
             @Override
             public void onMovedOrZoomed() {
-                Log.v(LOG_TAG, "mapView onMovedOrZoomed");
+                Log.d(LOG_TAG, "mapView onMovedOrZoomed");
                 startRefreshingScanResultsOnMap();
             }
         });
@@ -181,7 +181,7 @@ public class MainActivity extends MapActivity {
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap() {
-        Log.v(LOG_TAG, "startRefreshingScanResultsOnMap");
+        Log.d(LOG_TAG, "startRefreshingScanResultsOnMap");
 
         // Check if the task is already running.
        cancelRefreshScanResultsAsyncTask();
@@ -219,9 +219,6 @@ public class MainActivity extends MapActivity {
      */
     public class RefreshScanResultsAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         private final String LOG_TAG = RefreshScanResultsAsyncTask.class.getCanonicalName();
-
-        // TODO: make this configurable.
-        private final int MAX_SCAN_RESULTS_FOR_BSSID = 4;
 
         private final double minLatitude;
 
@@ -261,7 +258,7 @@ public class MainActivity extends MapActivity {
 
         @Override
         protected ClusterList doInBackground(Void... params) {
-            Log.v(LOG_TAG, "doInBackground");
+            Log.d(LOG_TAG, "doInBackground");
             // Retrieve scan results.
             List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
                     MainActivity.this,
@@ -270,25 +267,14 @@ public class MainActivity extends MapActivity {
                     maxLatitude,
                     maxLongitude
             );
-            Log.v(LOG_TAG, "scanResults.size() " + scanResults.size());
+            Log.d(LOG_TAG, "scanResults.size() " + scanResults.size());
             // Process them.
-            HashMap<String, Integer> bssidToCountCache = new HashMap<String, Integer>();
             for (StoredScanResult scanResult : scanResults) {
                 // Check if we're cancelled.
                 if (isCancelled()) {
                     return null;
                 }
-                // Increment scan result count for this BSSID.
-                Integer count = bssidToCountCache.get(scanResult.getBssid());
-                if (count == null) {
-                    count = 0;
-                }
-                count += 1;
-                bssidToCountCache.put(scanResult.getBssid(), count);
-                // Check if there are too much results for the BSSID.
-                if (count <= MAX_SCAN_RESULTS_FOR_BSSID) {
-                    addScanResult(scanResult);
-                }
+                addScanResult(scanResult);
             }
             return buildClusterList();
         }
@@ -370,7 +356,7 @@ public class MainActivity extends MapActivity {
                 }
                 // Finally, ass the cluster to the cluster list.
                 clusterList.add(cluster);
-                Log.v(LOG_TAG, "clusterList.add " + cluster);
+                Log.d(LOG_TAG, "clusterList.add " + cluster);
             }
 
             return clusterList;

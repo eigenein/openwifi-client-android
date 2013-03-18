@@ -58,7 +58,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
                     scanResult.capabilities);
             if (!capabilities.isSecured()) {
                 openScanResults.add(scanResult);
-                Log.v(LOG_TAG, scanResult.toString());
+                Log.d(LOG_TAG, scanResult.toString());
             }
         }
 

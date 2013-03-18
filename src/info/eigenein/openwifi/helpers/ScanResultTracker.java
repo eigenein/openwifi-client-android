@@ -7,6 +7,7 @@ import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RawRowMapper;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.Where;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
@@ -20,6 +21,9 @@ import java.util.List;
  */
 public class ScanResultTracker {
     private static final String LOG_TAG = ScanResultTracker.class.getCanonicalName();
+
+    // TODO: make this configurable.
+    private static final int MAX_SCAN_RESULTS_FOR_BSSID = 4;
 
     /**
      * Adds the scan results to the database.
@@ -37,15 +41,16 @@ public class ScanResultTracker {
             StoredLocation storedLocation = createLocation(locationDao, location);
             for (ScanResult scanResult : scanResults) {
                 createScanResult(scanResultDao, scanResult, storedLocation);
+                purgeOldScanResults(scanResultDao, scanResult.BSSID);
             }
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while storing scan results.", e);
             throw new RuntimeException(e);
         } finally {
             if (databaseHelper != null) {
-                Log.v(LOG_TAG, "Done storing scan results.");
+                Log.d(LOG_TAG, "Done storing scan results.");
                 // Release the helper.
-                Log.v(LOG_TAG, "Release helper.");
+                Log.d(LOG_TAG, "Release helper.");
                 OpenHelperManager.releaseHelper();
                 //noinspection UnusedAssignment
                 databaseHelper = null;
@@ -100,7 +105,7 @@ public class ScanResultTracker {
             double minLongitude,
             double maxLatitude,
             double maxLongitude) {
-        Log.v(LOG_TAG, String.format("getScanResults %s %s %s %s",
+        Log.d(LOG_TAG, String.format("getScanResults %s %s %s %s",
                 minLatitude,
                 minLongitude,
                 maxLatitude,
@@ -184,7 +189,7 @@ public class ScanResultTracker {
                     storedLocation);
             scanResultDao.create(storedScanResult);
         } else {
-            Log.v(LOG_TAG, "Not creating the scan result - already exists.");
+            Log.d(LOG_TAG, "Not creating the scan result - already exists.");
         }
     }
 
@@ -199,7 +204,7 @@ public class ScanResultTracker {
             storedLocation = new StoredLocation(location);
             locationDao.create(storedLocation);
         } else {
-            Log.v(LOG_TAG, "Not creating the location - already exists.");
+            Log.d(LOG_TAG, "Not creating the location - already exists.");
         }
         return storedLocation;
     }
@@ -225,6 +230,37 @@ public class ScanResultTracker {
                 databaseHelper = null;
             }
         }
+    }
+
+    /**
+     * Deletes old scan results for the specified BSSID.
+     */
+    private static void purgeOldScanResults(Dao<StoredScanResult, Integer> dao, String bssid)
+            throws SQLException {
+        Log.d(LOG_TAG + ".purgeOldScanResults", bssid);
+        @SuppressWarnings("deprecation")
+        List<StoredScanResult> scanResults = dao.queryBuilder()
+                .orderBy(StoredScanResult.LOCATION_TIMESTAMP, false)
+                .limit(MAX_SCAN_RESULTS_FOR_BSSID)
+                .where().eq(StoredScanResult.BSSID, bssid)
+                .query();
+
+        if (scanResults.size() != MAX_SCAN_RESULTS_FOR_BSSID) {
+            Log.d(LOG_TAG + ".purgeOldScanResults", scanResults.size() + " scan results for " + bssid);
+            return;
+        }
+
+        // Obtain the timestamp of the oldest result.
+        long lastLocationTimestamp = scanResults.get(MAX_SCAN_RESULTS_FOR_BSSID - 1)
+                .getLocation()
+                .getTimestamp();
+        Log.d(LOG_TAG + ".purgeOldScanResults", "lastLocationTimestamp " + lastLocationTimestamp);
+        // Delete all results that are even older.
+        DeleteBuilder<StoredScanResult, Integer> deleteBuilder = dao.deleteBuilder();
+        deleteBuilder.where().lt(StoredScanResult.LOCATION_TIMESTAMP, lastLocationTimestamp);
+        deleteBuilder.delete();
+
+        Log.d(LOG_TAG + ".purgeOldScanResults", "deleted");
     }
 
     private static class GetScanResultsRawRowMapper implements RawRowMapper<StoredScanResult> {

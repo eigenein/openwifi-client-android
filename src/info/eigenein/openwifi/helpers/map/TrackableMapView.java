@@ -50,7 +50,7 @@ public class TrackableMapView extends MapView {
     }
 
     private void fireMovedOrZoomed() {
-        Log.v(LOG_TAG, "fireMovedOrZoomed " + listeners.size());
+        Log.d(LOG_TAG, "fireMovedOrZoomed " + listeners.size());
 
         for (MapViewListener listener : listeners) {
             synchronized (listener) {

@@ -46,13 +46,13 @@ public class LocationTracker {
         );
 
         // Check if the best location is not outdated.
-        Log.v(LOG_TAG, "bestLocation " + formatLocation(bestLocation));
+        Log.d(LOG_TAG, "bestLocation " + formatLocation(bestLocation));
         if (System.currentTimeMillis() - bestLocation.getTime() < OUTDATED_TIME_DELTA) {
-            Log.v(LOG_TAG, "getLocation not null");
+            Log.d(LOG_TAG, "getLocation not null");
             return bestLocation;
         }
 
-        Log.v(LOG_TAG, "getLocation null");
+        Log.d(LOG_TAG, "getLocation null");
         return null;
     }
 
@@ -60,13 +60,13 @@ public class LocationTracker {
      * Notifies the tracker that there is location update.
      */
     public void notifyLocationChanged(Location location) {
-        Log.v(LOG_TAG, "notifyLocationChanged " + formatLocation(location));
+        Log.d(LOG_TAG, "notifyLocationChanged " + formatLocation(location));
 
         // Choose the best location.
         LocationTracker.location = getBestLocation(
                 LocationTracker.location, location);
 
-        Log.v(LOG_TAG, "LocationTracker.location " + formatLocation(LocationTracker.location));
+        Log.d(LOG_TAG, "LocationTracker.location " + formatLocation(LocationTracker.location));
     }
 
     private static LocationManager getLocationManager(Context context) {
