@@ -201,7 +201,7 @@ public class MainActivity extends MapActivity {
                 L.toDegrees(nwGeoPoint.getLongitudeE6()),
                 L.toDegrees(nwGeoPoint.getLatitudeE6()),
                 L.toDegrees(seGeoPoint.getLongitudeE6()),
-                400.0 * Math.pow(0.5, mapView.getZoomLevel())
+                800.0 * Math.pow(0.5, mapView.getZoomLevel())
         );
         refreshScanResultsAsyncTask.execute();
     }
