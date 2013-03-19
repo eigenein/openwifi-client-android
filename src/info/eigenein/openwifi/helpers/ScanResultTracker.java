@@ -26,6 +26,13 @@ public class ScanResultTracker {
     private static final int MAX_SCAN_RESULTS_FOR_BSSID = 4;
 
     /**
+     * Defines a "border" for selecting scan results within the specified area.
+     * Without this border a cluster "jumps" when one of its scan results
+     * goes off the visible area.
+     */
+    private static final double BORDER_WIDTH = 0.001;
+
+    /**
      * Adds the scan results to the database.
      */
     public static void add(Context context, Location location, List<ScanResult> scanResults) {
@@ -128,10 +135,10 @@ public class ScanResultTracker {
             List<StoredScanResult> scanResults = scanResultDao.queryRaw(
                     query,
                     GetScanResultsRawRowMapper.getInstance(),
-                    Double.toString(minLatitude),
-                    Double.toString(maxLatitude),
-                    Double.toString(minLongitude),
-                    Double.toString(maxLongitude))
+                    Double.toString(minLatitude - BORDER_WIDTH),
+                    Double.toString(maxLatitude + BORDER_WIDTH),
+                    Double.toString(minLongitude - BORDER_WIDTH),
+                    Double.toString(maxLongitude + BORDER_WIDTH))
                     .getResults();
             return scanResults;
         } catch (SQLException e) {
