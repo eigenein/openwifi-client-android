@@ -2,6 +2,7 @@ package info.eigenein.openwifi.helpers.map;
 
 import android.content.Context;
 import android.graphics.*;
+import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -12,6 +13,8 @@ import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.location.L;
 
 public class ClusterOverlay extends Overlay {
+    private static final String LOG_TAG = ClusterOverlay.class.getCanonicalName();
+
     private static final float TEXT_OFFSET = 12.0f;
 
     private static final Paint circlePaint = new Paint();
@@ -87,5 +90,11 @@ public class ClusterOverlay extends Overlay {
 
         canvas.drawText(clusterSizeString, x + TEXT_OFFSET, y - TEXT_OFFSET, strokePaint);
         canvas.drawText(clusterSizeString, x + TEXT_OFFSET, y - TEXT_OFFSET, defaultPaint);
+    }
+
+    @Override
+    public boolean onTap(GeoPoint geoPoint, MapView mapView) {
+        Log.d(LOG_TAG + ".onTap", "super " + super.onTap(geoPoint, mapView));
+        return true;
     }
 }
