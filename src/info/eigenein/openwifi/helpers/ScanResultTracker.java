@@ -123,7 +123,6 @@ public class ScanResultTracker {
             databaseHelper = getDatabaseHelper(context);
 
             Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
-            Dao<StoredLocation, Long> locationDao = getLocationDao(databaseHelper);
 
             final String query = "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude \n" +
                     "from scan_results sr1\n" +
@@ -132,7 +131,7 @@ public class ScanResultTracker {
                     "where loc.latitude >= ? and loc.latitude <= ?\n" +
                     "and loc.longitude >= ? and loc.longitude <= ?\n" +
                     "order by sr1.bssid, sr1.location_timestamp desc;";
-            List<StoredScanResult> scanResults = scanResultDao.queryRaw(
+            return scanResultDao.queryRaw(
                     query,
                     GetScanResultsRawRowMapper.getInstance(),
                     Double.toString(minLatitude - BORDER_WIDTH),
@@ -140,7 +139,6 @@ public class ScanResultTracker {
                     Double.toString(minLongitude - BORDER_WIDTH),
                     Double.toString(maxLongitude + BORDER_WIDTH))
                     .getResults();
-            return scanResults;
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while querying scan results.", e);
             throw new RuntimeException(e);
