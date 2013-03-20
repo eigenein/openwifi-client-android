@@ -17,8 +17,17 @@ public class ClusterOverlay extends Overlay {
 
     private static final float TEXT_SIZE = 16.0f;
 
+    /**
+     * Used to draw the cluster area.
+     */
     private static final Paint circlePaint = new Paint();
+    /**
+     * Used to draw the bitmap and the text.
+     */
     private static final Paint defaultPaint = new Paint();
+    /**
+     * Used to paint the text outline.
+     */
     private static final Paint strokePaint = new Paint();
 
     private final GeoPoint clusterCenter;
