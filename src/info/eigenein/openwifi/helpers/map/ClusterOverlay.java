@@ -15,7 +15,7 @@ import info.eigenein.openwifi.helpers.location.L;
 public class ClusterOverlay extends Overlay {
     private static final String LOG_TAG = ClusterOverlay.class.getCanonicalName();
 
-    private static final float TEXT_OFFSET = 12.0f;
+    private static final float TEXT_SIZE = 16.0f;
 
     private static final Paint circlePaint = new Paint();
     private static final Paint defaultPaint = new Paint();
@@ -31,14 +31,14 @@ public class ClusterOverlay extends Overlay {
     {
         defaultPaint.setAntiAlias(true);
         defaultPaint.setColor(Color.BLACK);
-        defaultPaint.setTextSize(16.0f);
+        defaultPaint.setTextSize(TEXT_SIZE);
         defaultPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         strokePaint.setAntiAlias(true);
         strokePaint.setColor(Color.WHITE);
         strokePaint.setStrokeWidth(4.0f);
         strokePaint.setStyle(Paint.Style.STROKE);
-        strokePaint.setTextSize(16.0f);
+        strokePaint.setTextSize(TEXT_SIZE);
         strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         circlePaint.setAntiAlias(true);
@@ -69,27 +69,31 @@ public class ClusterOverlay extends Overlay {
             return;
         }
 
+        // Obtain screen coordinates and radius.
         final Projection projection = mapView.getProjection();
-
         Point point = new Point();
         projection.toPixels(clusterCenter, point);
-
         final float radius = (float)(
                 projection.metersToEquatorPixels(clusterArea.getAccuracy()) *
                         (1.0 / Math.cos(Math.toRadians(clusterArea.getLatitude()))));
-
         final float x = (float)point.x;
         final float y = (float)point.y;
 
+        // Draw the area.
         canvas.drawCircle(x, y, radius, circlePaint);
-        canvas.drawBitmap(
-                clusterBitmap,
-                x - clusterBitmap.getWidth() / 2.0f,
-                y - clusterBitmap.getHeight() / 2.0f,
-                defaultPaint);
 
-        canvas.drawText(clusterSizeString, x + TEXT_OFFSET, y - TEXT_OFFSET, strokePaint);
-        canvas.drawText(clusterSizeString, x + TEXT_OFFSET, y - TEXT_OFFSET, defaultPaint);
+        // Draw the bitmap.
+        final float bitmapLeft = x - clusterBitmap.getWidth() / 2.0f;
+        final float bitmapTop = y - clusterBitmap.getHeight() / 2.0f;
+        canvas.drawBitmap(clusterBitmap, bitmapLeft, bitmapTop, defaultPaint);
+
+        // Draw the text.
+        final Rect textBounds = new Rect();
+        defaultPaint.getTextBounds(clusterSizeString, 0, clusterSizeString.length(), textBounds);
+        final float textLeft = bitmapLeft + clusterBitmap.getWidth();
+        final float textTop = y + textBounds.height() / 2.0f;
+        canvas.drawText(clusterSizeString, textLeft, textTop, strokePaint);
+        canvas.drawText(clusterSizeString, textLeft, textTop, defaultPaint);
     }
 
     @Override
