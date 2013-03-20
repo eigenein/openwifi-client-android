@@ -22,4 +22,5 @@
     <string name="advanced_settings_category">Расширенные</string>
     <string name="share_database">Экспортировать базу данных</string>
     <string name="share_database_summary">Выгрузить файл базы данных приложения</string>
+    <string name="max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
 </resources>

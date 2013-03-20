@@ -16,4 +16,16 @@
         <item>Normal</item>
         <item>Satellite</item>
     </string-array>
+    <string-array name="max_scan_results_for_bssid_entries">
+        <item>3 scan results</item>
+        <item>4 scan results</item>
+        <item>7 scan results</item>
+        <item>10 scan results</item>
+    </string-array>
+    <string-array name="max_scan_results_for_bssid_values">
+        <item>3</item>
+        <item>4</item>
+        <item>7</item>
+        <item>10</item>
+    </string-array>
 </resources>

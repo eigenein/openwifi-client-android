@@ -18,6 +18,12 @@
     <PreferenceCategory
         android:title="@string/advanced_settings_category"
         android:key="advanced_settings">
+        <ListPreference
+            android:title="@string/max_scan_results_for_bssid"
+            android:key="max_scan_results_for_bssid"
+            android:entries="@array/max_scan_results_for_bssid_entries"
+            android:entryValues="@array/max_scan_results_for_bssid_values"
+            android:defaultValue="4"/>
         <Preference
             android:title="@string/share_database"
             android:key="share_database"

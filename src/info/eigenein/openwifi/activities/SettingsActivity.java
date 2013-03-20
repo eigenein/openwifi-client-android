@@ -29,6 +29,8 @@ public class SettingsActivity extends PreferenceActivity
 
     public static final String SHARE_DATABASE_KEY = "share_database";
 
+    public static final String MAX_SCAN_RESULTS_FOR_BSSID_KEY = "max_scan_results_for_bssid";
+
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,7 +94,11 @@ public class SettingsActivity extends PreferenceActivity
     protected void onResume() {
         super.onResume();
 
+        // Update UI.
         updatePeriodPreference();
+        updateMaxScanResultsForBssidPreference();
+
+        // Listen to changes.
         getPreferenceManager().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
     }
@@ -107,6 +113,9 @@ public class SettingsActivity extends PreferenceActivity
         } else if (key.equals(IS_NETWORK_PROVIDER_ENABLED_KEY)) {
             // Restart the service so that the new provider set is used.
             ScanServiceManager.restartIfStarted(this);
+        } else if (key.equals(MAX_SCAN_RESULTS_FOR_BSSID_KEY)) {
+            // Update UI.
+            updateMaxScanResultsForBssidPreference();
         }
     }
 
@@ -126,5 +135,12 @@ public class SettingsActivity extends PreferenceActivity
         ListPreference periodPreference =
                 (ListPreference)getPreferenceScreen().findPreference(SCAN_PERIOD_KEY);
         periodPreference.setSummary(periodPreference.getEntry());
+    }
+
+    @SuppressWarnings("deprecation")
+    private void updateMaxScanResultsForBssidPreference() {
+        ListPreference maxScanResultsForBssidPreference =
+                (ListPreference)getPreferenceScreen().findPreference(MAX_SCAN_RESULTS_FOR_BSSID_KEY);
+        maxScanResultsForBssidPreference.setSummary(maxScanResultsForBssidPreference.getEntry());
     }
 }
