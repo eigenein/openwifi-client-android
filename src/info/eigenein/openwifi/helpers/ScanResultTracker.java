@@ -264,11 +264,13 @@ public class ScanResultTracker {
         Log.d(LOG_TAG + ".purgeOldScanResults", "lastLocationTimestamp " + lastLocationTimestamp);
         // Delete all results that are even older.
         DeleteBuilder<StoredScanResult, Integer> deleteBuilder = dao.deleteBuilder();
-        deleteBuilder.where().eq(StoredScanResult.BSSID, bssid);
-        deleteBuilder.where().lt(StoredScanResult.LOCATION_TIMESTAMP, lastLocationTimestamp);
-        deleteBuilder.delete();
+        deleteBuilder.where()
+                .eq(StoredScanResult.BSSID, bssid)
+                .and()
+                .lt(StoredScanResult.LOCATION_TIMESTAMP, lastLocationTimestamp);
+        int deletedRowsCount = dao.delete(deleteBuilder.prepare());
 
-        Log.d(LOG_TAG + ".purgeOldScanResults", "deleted");
+        Log.d(LOG_TAG + ".purgeOldScanResults", "deleted " + deletedRowsCount + " row(s)");
     }
 
     private static class GetScanResultsRawRowMapper implements RawRowMapper<StoredScanResult> {
