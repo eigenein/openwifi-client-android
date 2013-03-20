@@ -14,7 +14,7 @@ public class LocationTracker {
     /**
      * Time delta to treat a location outdated.
      */
-    private static final long OUTDATED_TIME_DELTA = 1000 * 60 * 2;
+    private static final long OUTDATED_TIME_DELTA = 1000 * 15 * 2;
 
     private static final LocationTracker instance = new LocationTracker();
 
