@@ -209,7 +209,7 @@ public class MainActivity extends MapActivity {
                 L.toDegrees(nwGeoPoint.getLongitudeE6()),
                 L.toDegrees(nwGeoPoint.getLatitudeE6()),
                 L.toDegrees(seGeoPoint.getLongitudeE6()),
-                800.0 * Math.pow(0.5, mapView.getZoomLevel())
+                0.0005 * Math.pow(2.0, 20.0 - mapView.getZoomLevel())
         );
         refreshScanResultsAsyncTask.execute();
     }
