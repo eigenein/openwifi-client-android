@@ -30,8 +30,9 @@ public class ClusterOverlay extends Overlay {
      */
     private static final Paint strokePaint = new Paint();
 
+    private final Cluster cluster;
+
     private final GeoPoint clusterCenter;
-    private final Area clusterArea;
 
     private final Bitmap clusterBitmap;
     private final String clusterSizeString;
@@ -63,10 +64,10 @@ public class ClusterOverlay extends Overlay {
         this.clusterSizeString = cluster.size() == 1 ?
                 cluster.iterator().next().getSsid() :
                 Integer.toString(cluster.size());
-        this.clusterArea = cluster.getArea();
+        this.cluster = cluster;
         this.clusterCenter = new GeoPoint(
-                L.toE6(clusterArea.getLatitude()),
-                L.toE6(clusterArea.getLongitude()));
+                L.toE6(cluster.getArea().getLatitude()),
+                L.toE6(cluster.getArea().getLongitude()));
     }
 
     @Override
@@ -83,8 +84,8 @@ public class ClusterOverlay extends Overlay {
         Point point = new Point();
         projection.toPixels(clusterCenter, point);
         final float radius = (float)(
-                projection.metersToEquatorPixels(clusterArea.getAccuracy()) *
-                        (1.0 / Math.cos(Math.toRadians(clusterArea.getLatitude()))));
+                projection.metersToEquatorPixels(cluster.getArea().getAccuracy()) *
+                        (1.0 / Math.cos(Math.toRadians(cluster.getArea().getLatitude()))));
         final float x = (float)point.x;
         final float y = (float)point.y;
 
