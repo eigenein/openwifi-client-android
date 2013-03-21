@@ -3,12 +3,14 @@ package info.eigenein.openwifi.helpers;
 import android.content.Context;
 import android.location.Location;
 import android.net.wifi.ScanResult;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.Where;
+import info.eigenein.openwifi.activities.SettingsActivity;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
@@ -21,9 +23,6 @@ import java.util.List;
  */
 public class ScanResultTracker {
     private static final String LOG_TAG = ScanResultTracker.class.getCanonicalName();
-
-    // TODO: make this configurable.
-    private static final int MAX_SCAN_RESULTS_FOR_BSSID = 4;
 
     /**
      * Defines a "border" for selecting scan results within the specified area.
@@ -46,24 +45,23 @@ public class ScanResultTracker {
             Dao<StoredLocation, Long> locationDao = getLocationDao(databaseHelper);
 
             StoredLocation storedLocation = createLocation(locationDao, location);
+            int maxScanResultsForBssidCount = Integer.parseInt(
+                    PreferenceManager.getDefaultSharedPreferences(context)
+                    .getString(SettingsActivity.MAX_SCAN_RESULTS_FOR_BSSID_KEY, null));
+            Log.d(LOG_TAG, "maxScanResultsForBssidCount " + maxScanResultsForBssidCount);
             for (ScanResult scanResult : scanResults) {
                 createScanResult(scanResultDao, scanResult, storedLocation);
-                purgeOldScanResults(scanResultDao, scanResult.BSSID);
+                purgeOldScanResults(scanResultDao, scanResult.BSSID, maxScanResultsForBssidCount);
             }
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while storing scan results.", e);
             throw new RuntimeException(e);
         } finally {
             if (databaseHelper != null) {
-                Log.d(LOG_TAG, "Done storing scan results.");
-                // Release the helper.
-                Log.d(LOG_TAG, "Release helper.");
                 OpenHelperManager.releaseHelper();
                 //noinspection UnusedAssignment
                 databaseHelper = null;
                 Log.d(LOG_TAG, "Done.");
-            } else {
-                Log.w(LOG_TAG, "databaseHelper null");
             }
         }
     }
@@ -240,23 +238,26 @@ public class ScanResultTracker {
     /**
      * Deletes old scan results for the specified BSSID.
      */
-    private static void purgeOldScanResults(Dao<StoredScanResult, Integer> dao, String bssid)
+    private static void purgeOldScanResults(
+            Dao<StoredScanResult, Integer> dao,
+            String bssid,
+            int maxScanResultsForBssidCount)
             throws SQLException {
         Log.d(LOG_TAG + ".purgeOldScanResults", bssid);
         @SuppressWarnings("deprecation")
         List<StoredScanResult> scanResults = dao.queryBuilder()
                 .orderBy(StoredScanResult.LOCATION_TIMESTAMP, false)
-                .limit(MAX_SCAN_RESULTS_FOR_BSSID)
+                .limit(maxScanResultsForBssidCount)
                 .where().eq(StoredScanResult.BSSID, bssid)
                 .query();
 
-        if (scanResults.size() != MAX_SCAN_RESULTS_FOR_BSSID) {
+        if (scanResults.size() != maxScanResultsForBssidCount) {
             Log.d(LOG_TAG + ".purgeOldScanResults", scanResults.size() + " scan results for " + bssid);
             return;
         }
 
         // Obtain the timestamp of the oldest result.
-        long lastLocationTimestamp = scanResults.get(MAX_SCAN_RESULTS_FOR_BSSID - 1)
+        long lastLocationTimestamp = scanResults.get(maxScanResultsForBssidCount - 1)
                 .getLocation()
                 .getTimestamp();
         Log.d(LOG_TAG + ".purgeOldScanResults", "lastLocationTimestamp " + lastLocationTimestamp);
