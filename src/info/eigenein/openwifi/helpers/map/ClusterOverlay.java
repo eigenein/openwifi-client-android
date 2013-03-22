@@ -2,17 +2,14 @@ package info.eigenein.openwifi.helpers.map;
 
 import android.content.Context;
 import android.graphics.*;
-import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.location.L;
 
-public class ClusterOverlay extends Overlay {
-    private static final String LOG_TAG = ClusterOverlay.class.getCanonicalName();
+public class ClusterOverlay {
 
     private static final float TEXT_SIZE = 16.0f;
 
@@ -69,10 +66,11 @@ public class ClusterOverlay extends Overlay {
                 L.toE6(cluster.getArea().getLongitude()));
     }
 
-    @Override
-    public void draw(Canvas canvas, MapView mapView, boolean shadow) {
-        super.draw(canvas, mapView, shadow);
+    public Cluster getCluster() {
+        return this.cluster;
+    }
 
+    public void draw(Canvas canvas, MapView mapView, boolean shadow) {
         if(shadow) {
             // Ignore the shadow layer.
             return;
@@ -103,11 +101,5 @@ public class ClusterOverlay extends Overlay {
         final float textTop = y + textBounds.height() / 2.0f;
         canvas.drawText(clusterSizeString, textLeft, textTop, strokePaint);
         canvas.drawText(clusterSizeString, textLeft, textTop, defaultPaint);
-    }
-
-    @Override
-    public boolean onTap(GeoPoint geoPoint, MapView mapView) {
-        Log.d(LOG_TAG + ".onTap", "super " + super.onTap(geoPoint, mapView));
-        return true;
     }
 }

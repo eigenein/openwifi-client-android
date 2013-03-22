@@ -21,6 +21,7 @@ import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
+import info.eigenein.openwifi.helpers.map.ClusterListOverlay;
 import info.eigenein.openwifi.helpers.map.ClusterOverlay;
 import info.eigenein.openwifi.helpers.map.MapViewListener;
 import info.eigenein.openwifi.helpers.map.TrackableMapView;
@@ -39,12 +40,10 @@ public class MainActivity extends MapActivity {
     private final static int DEFAULT_ZOOM = 17;
 
     private TrackableMapView mapView = null;
-
     private MyLocationOverlay myLocationOverlay = null;
+    private ClusterListOverlay clusterListOverlay = null;
 
     private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
-
-    private List<Overlay> clusterOverlays = new ArrayList<Overlay>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +80,8 @@ public class MainActivity extends MapActivity {
         // Setup overlays.
         final List<Overlay> overlays = mapView.getOverlays();
         overlays.add(myLocationOverlay);
+        clusterListOverlay = new ClusterListOverlay();
+        overlays.add(clusterListOverlay);
     }
 
     @Override
@@ -298,16 +299,13 @@ public class MainActivity extends MapActivity {
         protected synchronized void onPostExecute(ClusterList clusterList) {
             Log.d(LOG_TAG, "onPostExecute " + clusterList);
 
-            final List<Overlay> mapViewOverlays = mapView.getOverlays();
-            mapViewOverlays.removeAll(clusterOverlays);
+            clusterListOverlay.clearClusterOverlays();
             for (Cluster cluster : clusterList) {
-                Overlay clusterOverlay = new ClusterOverlay(
+                ClusterOverlay clusterOverlay = new ClusterOverlay(
                         MainActivity.this,
                         cluster
                 );
-                mapViewOverlays.add(clusterOverlay);
-                // Track the overlays that we have added.
-                clusterOverlays.add(clusterOverlay);
+                clusterListOverlay.addClusterOverlay(clusterOverlay);
             }
             mapView.invalidate();
         }
