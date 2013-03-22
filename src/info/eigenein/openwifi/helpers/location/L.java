@@ -6,7 +6,7 @@ package info.eigenein.openwifi.helpers.location;
 public class L {
     private final static double TO_E6_FIX = 1.0e6;
 
-    public static double toDegrees(int value) {
+    public static double fromE6(int value) {
         return value / TO_E6_FIX;
     }
 

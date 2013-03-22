@@ -206,10 +206,10 @@ public class MainActivity extends MapActivity {
         GeoPoint seGeoPoint = mapViewProjection.fromPixels(mapView.getWidth(), mapView.getHeight());
         // Run task to retrieve the scan results and process them into a cluster list.
         refreshScanResultsAsyncTask = new RefreshScanResultsAsyncTask(
-                L.toDegrees(seGeoPoint.getLatitudeE6()),
-                L.toDegrees(nwGeoPoint.getLongitudeE6()),
-                L.toDegrees(nwGeoPoint.getLatitudeE6()),
-                L.toDegrees(seGeoPoint.getLongitudeE6()),
+                L.fromE6(seGeoPoint.getLatitudeE6()),
+                L.fromE6(nwGeoPoint.getLongitudeE6()),
+                L.fromE6(nwGeoPoint.getLatitudeE6()),
+                L.fromE6(seGeoPoint.getLongitudeE6()),
                 0.0005 * Math.pow(2.0, 20.0 - mapView.getZoomLevel())
         );
         refreshScanResultsAsyncTask.execute();
@@ -341,7 +341,7 @@ public class MainActivity extends MapActivity {
                 }
 
                 List<StoredScanResult> subCache = (List<StoredScanResult>)o;
-                HashMap<String, List<String>> ssidToBssidCache = new HashMap<String, List<String>>();
+                HashMap<String, HashSet<String>> ssidToBssidCache = new HashMap<String, HashSet<String>>();
 
                 LocationProcessor locationProcessor = new LocationProcessor();
                 for (StoredScanResult scanResult : subCache) {
@@ -350,11 +350,12 @@ public class MainActivity extends MapActivity {
                         return null;
                     }
                     // Combine BSSIDs from the same SSIDs.
-                    List<String> bssids = ssidToBssidCache.get(scanResult.getSsid());
+                    HashSet<String> bssids = ssidToBssidCache.get(scanResult.getSsid());
                     if (bssids == null) {
-                        bssids = new ArrayList<String>();
+                        bssids = new HashSet<String>();
                         ssidToBssidCache.put(scanResult.getSsid(), bssids);
                     }
+                    bssids.add(scanResult.getBssid());
                     // Track the location.
                     locationProcessor.add(scanResult.getLocation());
                 }
@@ -363,9 +364,8 @@ public class MainActivity extends MapActivity {
                 Area area = locationProcessor.getArea();
                 Cluster cluster = new Cluster(area);
                 // And fill it with networks.
-                for (Map.Entry<String, List<String>> entry : ssidToBssidCache.entrySet()) {
-                    String[] bssids = new String[entry.getValue().size()];
-                    cluster.add(new Network(entry.getKey(), entry.getValue().toArray(bssids)));
+                for (Map.Entry<String, HashSet<String>> entry : ssidToBssidCache.entrySet()) {
+                    cluster.add(new Network(entry.getKey(), entry.getValue()));
                 }
                 // Finally, ass the cluster to the cluster list.
                 clusterList.add(cluster);
