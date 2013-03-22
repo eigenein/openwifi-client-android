@@ -44,7 +44,7 @@ public class ClusterListOverlay extends Overlay {
         Log.d(LOG_TAG, "onTap " + latitude + " " + longitude);
 
         // List of the networks under tap.
-        HashSet<String> ssids = new HashSet<String>();
+        HashSet<Network> ssids = new HashSet<Network>();
         float[] distanceArray = new float[1];
         for (Object overlayObject : overlays) {
             final Cluster cluster = ((ClusterOverlay)overlayObject).getCluster();
@@ -53,7 +53,7 @@ public class ClusterListOverlay extends Overlay {
             if (distanceArray[0] < area.getAccuracy()) {
                 for (Network network : cluster) {
                     Log.d(LOG_TAG, network.getSsid() + " (" + network.size() + " BSSIDs)");
-                    ssids.add(network.getSsid());
+                    ssids.add(network);
                 }
             }
         }

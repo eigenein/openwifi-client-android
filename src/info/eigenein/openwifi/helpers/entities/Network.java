@@ -22,4 +22,14 @@ public class Network {
     public int size() {
         return bssids.size();
     }
+
+    @Override
+    public int hashCode() {
+        return ssid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return ssid.equals(((Network)o).getSsid());
+    }
 }
