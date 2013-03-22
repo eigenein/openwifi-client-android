@@ -25,13 +25,6 @@ public class ScanResultTracker {
     private static final String LOG_TAG = ScanResultTracker.class.getCanonicalName();
 
     /**
-     * Defines a "border" for selecting scan results within the specified area.
-     * Without this border a cluster "jumps" when one of its scan results
-     * goes off the visible area.
-     */
-    private static final double BORDER_WIDTH = 0.001;
-
-    /**
      * Adds the scan results to the database.
      */
     public static void add(Context context, Location location, List<ScanResult> scanResults) {
@@ -132,10 +125,10 @@ public class ScanResultTracker {
             return scanResultDao.queryRaw(
                     query,
                     GetScanResultsRawRowMapper.getInstance(),
-                    Double.toString(minLatitude - BORDER_WIDTH),
-                    Double.toString(maxLatitude + BORDER_WIDTH),
-                    Double.toString(minLongitude - BORDER_WIDTH),
-                    Double.toString(maxLongitude + BORDER_WIDTH))
+                    Double.toString(minLatitude),
+                    Double.toString(maxLatitude),
+                    Double.toString(minLongitude),
+                    Double.toString(maxLongitude))
                     .getResults();
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while querying scan results.", e);

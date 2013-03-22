@@ -228,6 +228,13 @@ public class MainActivity extends MapActivity {
     public class RefreshScanResultsAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         private final String LOG_TAG = RefreshScanResultsAsyncTask.class.getCanonicalName();
 
+        /**
+         * Defines a "border" for selecting scan results within the specified area.
+         * Without this border a cluster "jumps" when one of its scan results
+         * goes off the visible area.
+         */
+        private static final double BORDER_WIDTH = 0.002;
+
         private final double minLatitude;
 
         private final double minLongitude;
@@ -270,10 +277,10 @@ public class MainActivity extends MapActivity {
             // Retrieve scan results.
             List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
                     MainActivity.this,
-                    minLatitude,
-                    minLongitude,
-                    maxLatitude,
-                    maxLongitude
+                    minLatitude - BORDER_WIDTH,
+                    minLongitude - BORDER_WIDTH,
+                    maxLatitude + BORDER_WIDTH,
+                    maxLongitude + BORDER_WIDTH
             );
             Log.d(LOG_TAG, "scanResults.size() " + scanResults.size());
             // Process them.
