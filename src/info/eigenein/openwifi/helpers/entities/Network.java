@@ -15,10 +15,16 @@ public class Network {
         this.bssids = bssids;
     }
 
+    /**
+     * Gets the network name (SSID).
+     */
     public String getSsid() {
         return ssid;
     }
 
+    /**
+     * Gets the networks size (different BSSID count).
+     */
     public int size() {
         return bssids.size();
     }
