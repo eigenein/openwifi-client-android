@@ -23,6 +23,6 @@
     <string name="share_database">Share database</string>
     <string name="share_database_summary">Upload the application database</string>
     <string name="max_scan_results_for_bssid">Remember for a single BSSID</string>
-    <string name="cluster">Networks</string>
+    <string name="cluster">Available Networks</string>
     <string name="more">More</string>
 </resources>
