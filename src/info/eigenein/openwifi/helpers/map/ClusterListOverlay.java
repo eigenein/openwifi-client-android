@@ -17,6 +17,7 @@ import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
+import info.eigenein.openwifi.helpers.ui.VibratorHelper;
 import org.apache.commons.collections.buffer.PriorityBuffer;
 
 import java.util.HashSet;
@@ -48,8 +49,7 @@ public class ClusterListOverlay extends Overlay {
 
         final Context context = mapView.getContext();
         // Vibrate in response.
-        final Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(VIBRATE_MILLISECONDS);
+        VibratorHelper.vibrate(context);
 
         final double latitude = L.fromE6(geoPoint.getLatitudeE6());
         final double longitude = L.fromE6(geoPoint.getLongitudeE6());

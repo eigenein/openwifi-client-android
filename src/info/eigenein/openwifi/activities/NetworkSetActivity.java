@@ -4,9 +4,12 @@ import android.app.ListActivity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.entities.Network;
+import info.eigenein.openwifi.helpers.ui.VibratorHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +48,11 @@ public class NetworkSetActivity extends ListActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        VibratorHelper.vibrate(l.getContext());
     }
 
     private SimpleAdapter createAdapter(HashSet<Network> networkSet) {

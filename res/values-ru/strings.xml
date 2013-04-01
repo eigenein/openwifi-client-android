@@ -24,5 +24,4 @@
     <string name="share_database_summary">Выгрузить файл базы данных приложения</string>
     <string name="max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
     <string name="cluster">Доступные сети</string>
-    <string name="more">Больше</string>
 </resources>
