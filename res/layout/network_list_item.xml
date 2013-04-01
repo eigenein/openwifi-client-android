@@ -7,16 +7,16 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingLeft="6dip"
-                  android:paddingTop="6dip"
-                  android:paddingBottom="6dip">
+                  android:paddingTop="3dip"
+                  android:paddingBottom="3dip">
         <TextView android:id="@+id/network_list_item_name"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:textAppearance="?android:attr/textAppearanceMedium"/>
+                  android:textStyle="bold"
+                  android:textAppearance="?android:attr/textAppearanceSmall"/>
         <LinearLayout android:orientation="horizontal"
                       android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_marginTop="3dip">
+                      android:layout_height="wrap_content">
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:src="@drawable/ic_rating_1"/>
@@ -37,7 +37,8 @@
     <ImageButton android:layout_width="wrap_content"
                  android:layout_height="fill_parent"
                  android:layout_alignParentRight="true"
-                 android:src="@drawable/ic_menu_more"
-                 android:contentDescription="@string/more"
-                 style="?android:attr/borderlessButtonStyle"/>
+                 android:scaleType="center"
+                 android:src="@drawable/ic_dropdown"
+                 style="?android:attr/borderlessButtonStyle"
+                 android:contentDescription="@string/more"/>
 </RelativeLayout>
