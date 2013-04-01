@@ -136,7 +136,7 @@ public class MainActivity extends MapActivity {
                 return true;
             case R.id.start_scan_menuitem:
                 ScanServiceManager.restart(this);
-                Toast.makeText(this, R.string.scan_started, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.scan_started, Toast.LENGTH_LONG).show();
                 invalidateOptionsMenu();
                 return true;
             case R.id.pause_scan_menuitem:
