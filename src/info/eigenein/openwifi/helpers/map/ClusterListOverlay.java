@@ -1,12 +1,17 @@
 package info.eigenein.openwifi.helpers.map;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.location.Location;
+import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import info.eigenein.openwifi.activities.NetworkSetActivity;
 import info.eigenein.openwifi.helpers.comparators.ClusterComparator;
 import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
@@ -21,6 +26,8 @@ import java.util.HashSet;
  */
 public class ClusterListOverlay extends Overlay {
     private static final String LOG_TAG = ClusterListOverlay.class.getCanonicalName();
+
+    private static long VIBRATE_MILLISECONDS = 25L;
 
     /**
      * Used to track pinch-zoom.
@@ -39,13 +46,18 @@ public class ClusterListOverlay extends Overlay {
             return false;
         }
 
-        double latitude = L.fromE6(geoPoint.getLatitudeE6());
-        double longitude = L.fromE6(geoPoint.getLongitudeE6());
+        final Context context = mapView.getContext();
+        // Vibrate in response.
+        final Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(VIBRATE_MILLISECONDS);
+
+        final double latitude = L.fromE6(geoPoint.getLatitudeE6());
+        final double longitude = L.fromE6(geoPoint.getLongitudeE6());
         Log.d(LOG_TAG, "onTap " + latitude + " " + longitude);
 
         // List of the networks under tap.
-        HashSet<Network> ssids = new HashSet<Network>();
-        float[] distanceArray = new float[1];
+        final HashSet<Network> networkSet = new HashSet<Network>();
+        final float[] distanceArray = new float[1];
         for (Object overlayObject : overlays) {
             final Cluster cluster = ((ClusterOverlay)overlayObject).getCluster();
             final Area area = cluster.getArea();
@@ -53,11 +65,22 @@ public class ClusterListOverlay extends Overlay {
             if (distanceArray[0] < area.getAccuracy()) {
                 for (Network network : cluster) {
                     Log.d(LOG_TAG, network.getSsid() + " (" + network.size() + " BSSIDs)");
-                    ssids.add(network);
+                    networkSet.add(network);
                 }
             }
         }
-        Log.i(LOG_TAG, ssids.size() + " network(s) tapped.");
+        Log.i(LOG_TAG, networkSet.size() + " network(s) tapped.");
+
+        if (networkSet.size() == 0) {
+            return true;
+        }
+
+        // Start network set activity with the selected networks.
+        final Intent networkSetActivityIntent = new Intent(context, NetworkSetActivity.class);
+        final Bundle networkSetActivityBundle = new Bundle();
+        networkSetActivityBundle.putSerializable(NetworkSetActivity.NETWORK_SET_KEY, networkSet);
+        networkSetActivityIntent.putExtras(networkSetActivityBundle);
+        context.startActivity(networkSetActivityIntent);
 
         return true;
     }
