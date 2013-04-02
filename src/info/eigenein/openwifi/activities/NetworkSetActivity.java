@@ -3,8 +3,12 @@ package info.eigenein.openwifi.activities;
 import android.app.ListActivity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import info.eigenein.openwifi.R;
@@ -16,11 +20,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class NetworkSetActivity extends ListActivity {
+    private static final String LOG_TAG = NetworkSetActivity.class.getCanonicalName();
+
     public static final String NETWORK_SET_KEY = "networkSet";
 
     private static final String[] adapterFrom = { "network_name" };
 
-    private static final int[] adapterTo = { R.id.network_list_item_name};
+    private static final int[] adapterTo = { R.id.network_list_item_name };
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +43,33 @@ public class NetworkSetActivity extends ListActivity {
         } else {
             setListAdapter(createAdapter(null));
         }
+
+        registerForContextMenu(getListView());
+    }
+
+    @Override
+    public void onCreateContextMenu(
+            ContextMenu menu,
+            View v,
+            ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        Log.d(LOG_TAG, "onCreateContextMenu");
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.network_context_menu, menu);
+
+        // Obtain selected SSID.
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        HashMap<String, String> listItem =
+                (HashMap<String, String>)getListAdapter().getItem(info.position);
+
+        // Update the menu.
+        MenuItem ignoreNetworkMenuItem = menu.findItem(R.id.ignore_network_menu_item);
+        ignoreNetworkMenuItem.setTitle(String.format(
+                ignoreNetworkMenuItem.getTitle().toString(),
+                listItem.get("network_name")
+        ));
     }
 
     @Override
@@ -51,10 +84,13 @@ public class NetworkSetActivity extends ListActivity {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(ListView l, View v, int position, long id) {
         VibratorHelper.vibrate(l.getContext());
     }
 
+    /**
+     * Creates the adapter for the list.
+     */
     private SimpleAdapter createAdapter(HashSet<Network> networkSet) {
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
@@ -70,6 +106,9 @@ public class NetworkSetActivity extends ListActivity {
                 adapterTo);
     }
 
+    /**
+     * Creates the list item.
+     */
     private HashMap<String, String> createItem(Network network) {
         HashMap<String, String> item = new HashMap<String, String>();
         item.put("network_name", network.getSsid());
