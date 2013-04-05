@@ -148,7 +148,12 @@ public class MainActivity extends MapActivity {
                 startActivity(new Intent(this, StatisticsActivity.class));
                 return true;
             case R.id.show_my_location_menuitem:
-                mapView.getController().animateTo(myLocationOverlay.getMyLocation());
+                GeoPoint myLocation = myLocationOverlay.getMyLocation();
+                if (myLocation != null) {
+                    mapView.getController().animateTo(myLocation);
+                } else {
+                    Toast.makeText(this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             case R.id.map_view_menuitem:
                 final CharSequence[] items = getResources().getTextArray(R.array.map_views);
