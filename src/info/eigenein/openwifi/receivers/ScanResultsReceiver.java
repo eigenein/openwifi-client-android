@@ -24,7 +24,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
     /**
      * Maximum allowed accuracy for the location.
      */
-    private static final int MAX_ACCURACY = 250;
+    private static final int MAX_ACCURACY = 50;
 
     @Override
     public void onReceive(Context context, Intent intent) {
