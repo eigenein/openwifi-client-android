@@ -30,4 +30,5 @@
     <string name="my_location_is_unavailable">Попробуйте позже. Текущее местоположение недоступно.</string>
     <string name="statistics_summary">Просмотреть сведения о количестве собранных данных</string>
     <string name="about">О приложении</string>
+    <string name="version">Версия %s</string>
 </resources>

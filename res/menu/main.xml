@@ -28,6 +28,6 @@
           android:showAsAction="never"/>
     <item android:id="@+id/about_menuitem"
           android:title="@string/about"
-          android:icon="@drawable/ic_about"
+          android:icon="@drawable/ic_action_about"
           android:showAsAction="never"/>
 </menu>
