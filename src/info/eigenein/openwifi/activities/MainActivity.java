@@ -170,6 +170,9 @@ public class MainActivity extends MapActivity {
                         })
                         .show();
                 return true;
+            case R.id.about_menuitem:
+                startActivity(new Intent(this, AboutActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

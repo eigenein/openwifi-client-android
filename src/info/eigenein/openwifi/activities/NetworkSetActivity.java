@@ -35,7 +35,6 @@ public class NetworkSetActivity extends ListActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-
         Bundle networkSetActivityBundle = getIntent().getExtras();
         if (networkSetActivityBundle != null) {
             HashSet<Network> networkSet = (HashSet<Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);

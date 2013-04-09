@@ -22,12 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SettingsActivity"
-                  android:label="@string/settings"/>
-        <activity android:name=".activities.StatisticsActivity"
-                  android:label="@string/statistics"/>
-        <activity android:name=".activities.NetworkSetActivity"
-                  android:label="@string/cluster"/>
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/settings"/>
+        <activity
+            android:name=".activities.StatisticsActivity"
+            android:label="@string/statistics"/>
+        <activity
+            android:name=".activities.NetworkSetActivity"
+            android:label="@string/cluster"/>
+        <activity
+            android:name=".activities.AboutActivity"
+            android:label="@string/about"/>
         <receiver
             android:name=".receivers.ScanIntentBroadcastReceiver"
             android:enabled="true">
