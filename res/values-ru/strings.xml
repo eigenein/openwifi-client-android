@@ -28,4 +28,5 @@
     <string name="ignore_network_name">Скрыть %s</string>
     <string name="ignore_similar_networks">Скрыть похожие сети</string>
     <string name="my_location_is_unavailable">Попробуйте позже. Текущее местоположение недоступно.</string>
+    <string name="statistics_summary">Просмотреть сведения о количестве собранных данных</string>
 </resources>

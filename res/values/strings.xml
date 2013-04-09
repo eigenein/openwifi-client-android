@@ -28,4 +28,5 @@
     <string name="ignore_network_name">Ignore %s</string>
     <string name="ignore_similar_networks">Ignore similar networks</string>
     <string name="my_location_is_unavailable">Try again later. Your location is not available now.</string>
+    <string name="statistics_summary">View collected data summary</string>
 </resources>

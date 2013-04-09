@@ -28,5 +28,9 @@
             android:title="@string/share_database"
             android:key="share_database"
             android:summary="@string/share_database_summary"/>
+        <Preference
+            android:title="@string/statistics"
+            android:key="show_statistics"
+            android:summary="@string/statistics_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

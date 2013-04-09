@@ -29,6 +29,8 @@ public class SettingsActivity extends PreferenceActivity
 
     public static final String SHARE_DATABASE_KEY = "share_database";
 
+    public static final String STATISTICS_KEY = "show_statistics";
+
     public static final String MAX_SCAN_RESULTS_FOR_BSSID_KEY = "max_scan_results_for_bssid";
 
     @SuppressWarnings("deprecation")
@@ -43,6 +45,16 @@ public class SettingsActivity extends PreferenceActivity
         shareDatabasePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 return ShareDatabase();
+            }
+        });
+
+        // Statistics option.
+        Preference statisticsPreference = findPreference(STATISTICS_KEY);
+        statisticsPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startActivity(new Intent(SettingsActivity.this, StatisticsActivity.class));
+                return true;
             }
         });
 

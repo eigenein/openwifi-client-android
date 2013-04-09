@@ -22,10 +22,6 @@
           android:title="@string/settings"
           android:icon="@drawable/ic_action_settings"
           android:showAsAction="never"/>
-    <item android:id="@+id/statistics_menuitem"
-          android:title="@string/statistics"
-          android:icon="@drawable/ic_action_statistics"
-          android:showAsAction="never"/>
     <item android:id="@+id/help_menuitem"
           android:title="@string/help"
           android:icon="@drawable/ic_action_help"

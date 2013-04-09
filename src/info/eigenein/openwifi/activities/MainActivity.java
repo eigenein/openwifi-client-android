@@ -144,9 +144,6 @@ public class MainActivity extends MapActivity {
                 Toast.makeText(this, R.string.scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
                 return true;
-            case R.id.statistics_menuitem:
-                startActivity(new Intent(this, StatisticsActivity.class));
-                return true;
             case R.id.show_my_location_menuitem:
                 GeoPoint myLocation = myLocationOverlay.getMyLocation();
                 if (myLocation != null) {
