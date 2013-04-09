@@ -31,4 +31,6 @@
     <string name="statistics_summary">Просмотреть сведения о количестве собранных данных</string>
     <string name="about">О приложении</string>
     <string name="version">Версия %s</string>
+    <string name="about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
+    <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
 </resources>

@@ -3,6 +3,8 @@ package info.eigenein.openwifi.activities;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -23,6 +25,16 @@ public class AboutActivity extends Activity {
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(LOG_TAG, e.toString());
         }
+
+        // Linkify copyright.
+        TextView copyrightTextView = (TextView)findViewById(R.id.about_copyright_text_view);
+        copyrightTextView.setText(Html.fromHtml(getString(R.string.about_copyright)));
+        copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        // Linkify project link.
+        TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
+        projectLinkTextView.setText(Html.fromHtml(getString(R.string.about_project_link)));
+        copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
