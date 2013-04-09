@@ -38,6 +38,10 @@ public class SettingsActivity extends PreferenceActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         addPreferencesFromResource(R.xml.preferences);
 
         // Share database option.
@@ -57,10 +61,6 @@ public class SettingsActivity extends PreferenceActivity
                 return true;
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     /**
