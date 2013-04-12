@@ -29,8 +29,11 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
         if (state == NetworkInfo.State.CONNECTED) {
             // Check if the Internet is actually available.
             new CheckConnectivityAsyncTask(context).execute();
-        } else if (state == NetworkInfo.State.CONNECTING) {
-            onConnecting(getInfo(context));
+        } else {
+            final WifiInfo info = getInfo(context);
+            if (info != null) {
+                onConnecting(info);
+            }
         }
     }
 

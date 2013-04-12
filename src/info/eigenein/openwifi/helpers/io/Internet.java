@@ -9,9 +9,11 @@ import java.net.UnknownHostException;
 public class Internet {
     private static final String LOG_TAG = Internet.class.getCanonicalName();
 
+    private static final int IS_REACHABLE_TIMEOUT = 1000;
+
     public static boolean check() {
         try {
-            InetAddress.getByName("google.com").isReachable(1000);
+            InetAddress.getByName("google.com").isReachable(IS_REACHABLE_TIMEOUT);
             Log.i(LOG_TAG, "Success.");
             return true;
         } catch (UnknownHostException e) {
