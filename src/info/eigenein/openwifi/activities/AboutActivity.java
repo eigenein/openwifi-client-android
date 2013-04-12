@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.Settings;
 
 public class AboutActivity extends Activity {
     private static String LOG_TAG = AboutActivity.class.getCanonicalName();
@@ -40,6 +41,12 @@ public class AboutActivity extends Activity {
         TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
         projectLinkTextView.setText(Html.fromHtml(getString(R.string.about_project_link)));
         copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        // Client ID.
+        TextView clientIdTextView = (TextView)findViewById(R.id.client_id_text_view);
+        clientIdTextView.setText(String.format(
+                getString(R.string.client_id),
+                Settings.with(this).clientId()));
     }
 
     @Override

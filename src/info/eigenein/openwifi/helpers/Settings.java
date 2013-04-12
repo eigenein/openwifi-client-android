@@ -3,12 +3,16 @@ package info.eigenein.openwifi.helpers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import info.eigenein.openwifi.activities.SettingsActivity;
+import android.util.Log;
+
+import java.util.UUID;
 
 /**
  * Wraps preference manager for convenience.
  */
 public class Settings {
+    private static final String LOG_TAG = Settings.class.getCanonicalName();
+
     public static final String SCAN_PERIOD_KEY = "scan_period";
 
     public static final String IS_NETWORK_PROVIDER_ENABLED_KEY = "is_network_provider_enabled";
@@ -19,14 +23,16 @@ public class Settings {
 
     public static final String MAX_SCAN_RESULTS_FOR_BSSID_KEY = "max_scan_results_for_bssid";
 
+    public static final String CLIENT_ID_KEY = "client_id";
+
     private final SharedPreferences preferences;
 
     public static Settings with(Context context) {
-        return new Settings(PreferenceManager.getDefaultSharedPreferences(context));
+        return new Settings(context);
     }
 
-    private Settings(SharedPreferences preferences) {
-        this.preferences = preferences;
+    private Settings(Context context) {
+        this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public boolean isNetworkProviderEnabled() {
@@ -40,5 +46,15 @@ public class Settings {
     public long scanPeriod() {
         String periodString = preferences.getString(SCAN_PERIOD_KEY, "60");
         return 1000L * Long.parseLong(periodString);
+    }
+
+    public String clientId() {
+        String clientId = preferences.getString(CLIENT_ID_KEY, null);
+        if (clientId == null) {
+            clientId = UUID.randomUUID().toString();
+            Log.i(LOG_TAG, "clientId: " + clientId);
+            preferences.edit().putString(CLIENT_ID_KEY, clientId).commit();
+        }
+        return clientId;
     }
 }
