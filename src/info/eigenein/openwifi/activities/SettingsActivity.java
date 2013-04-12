@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.ScanServiceManager;
+import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.io.FileUtils;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 

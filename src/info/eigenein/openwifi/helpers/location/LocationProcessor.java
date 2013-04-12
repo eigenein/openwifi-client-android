@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers;
+package info.eigenein.openwifi.helpers.location;
 
 import android.location.Location;
 import info.eigenein.openwifi.helpers.entities.Area;

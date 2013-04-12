@@ -3,7 +3,6 @@ package info.eigenein.openwifi.persistency.entities;
 import android.net.wifi.ScanResult;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import info.eigenein.openwifi.helpers.ScanResultTracker;
 
 /**
  * Represents a scan result that is stored in the application database.

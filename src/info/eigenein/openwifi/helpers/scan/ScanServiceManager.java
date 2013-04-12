@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers;
+package info.eigenein.openwifi.helpers.scan;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

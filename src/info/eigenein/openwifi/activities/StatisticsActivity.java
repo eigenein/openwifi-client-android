@@ -1,13 +1,12 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.ListActivity;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.ScanResultTracker;
+import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
