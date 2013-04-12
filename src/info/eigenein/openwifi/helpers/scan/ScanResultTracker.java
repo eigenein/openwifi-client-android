@@ -11,6 +11,7 @@ import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.Where;
 import info.eigenein.openwifi.activities.SettingsActivity;
+import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
@@ -38,13 +39,12 @@ public class ScanResultTracker {
             Dao<StoredLocation, Long> locationDao = getLocationDao(databaseHelper);
 
             StoredLocation storedLocation = createLocation(locationDao, location);
-            int maxScanResultsForBssidCount = Integer.parseInt(
-                    PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString(SettingsActivity.MAX_SCAN_RESULTS_FOR_BSSID_KEY, null));
-            Log.d(LOG_TAG, "maxScanResultsForBssidCount " + maxScanResultsForBssidCount);
             for (ScanResult scanResult : scanResults) {
                 createScanResult(scanResultDao, scanResult, storedLocation);
-                purgeOldScanResults(scanResultDao, scanResult.BSSID, maxScanResultsForBssidCount);
+                purgeOldScanResults(
+                        scanResultDao,
+                        scanResult.BSSID,
+                        Settings.with(context).maxScanResultsForBssidCount());
             }
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while storing scan results.", e);

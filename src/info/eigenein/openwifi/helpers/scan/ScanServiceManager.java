@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import info.eigenein.openwifi.activities.SettingsActivity;
+import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.location.DefaultLocationListener;
 import info.eigenein.openwifi.helpers.location.LocationUpdatesManager;
 
@@ -27,12 +28,8 @@ public class ScanServiceManager {
     public static void restart(Context context) {
         // Stop the scan service.
         stop(context);
-        // Obtain the scan period.
-        SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(context);
-        String periodString = preferences.getString(SettingsActivity.SCAN_PERIOD_KEY, "60");
-        long period = 1000L * Long.parseLong(periodString);
         // Schedule the scan.
+        long period = Settings.with(context).scanPeriod();
         PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
@@ -41,7 +38,7 @@ public class ScanServiceManager {
         getAlarmManager(context).setInexactRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + period,
-                period,
+                Settings.with(context).scanPeriod(),
                 scanPendingIntent);
         // Start location tracking.
         LocationUpdatesManager.requestUpdates(context, DefaultLocationListener.getInstance());

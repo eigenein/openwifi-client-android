@@ -6,6 +6,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import info.eigenein.openwifi.activities.SettingsActivity;
+import info.eigenein.openwifi.helpers.Settings;
 
 /**
  * Manages location update requests.
@@ -20,8 +21,7 @@ public class LocationUpdatesManager {
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER, 0, 0, listener);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if (preferences.getBoolean(SettingsActivity.IS_NETWORK_PROVIDER_ENABLED_KEY, false)) {
+        if (Settings.with(context).isNetworkProviderEnabled()) {
             locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, 0, 0, listener);
         }

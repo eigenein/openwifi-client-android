@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.io.FileUtils;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
@@ -22,16 +23,6 @@ import java.io.IOException;
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = SettingsActivity.class.getCanonicalName();
-
-    public static final String SCAN_PERIOD_KEY = "scan_period";
-
-    public static final String IS_NETWORK_PROVIDER_ENABLED_KEY = "is_network_provider_enabled";
-
-    public static final String SHARE_DATABASE_KEY = "share_database";
-
-    public static final String STATISTICS_KEY = "show_statistics";
-
-    public static final String MAX_SCAN_RESULTS_FOR_BSSID_KEY = "max_scan_results_for_bssid";
 
     @SuppressWarnings("deprecation")
     @Override
@@ -45,7 +36,7 @@ public class SettingsActivity extends PreferenceActivity
         addPreferencesFromResource(R.xml.preferences);
 
         // Share database option.
-        Preference shareDatabasePreference = findPreference(SHARE_DATABASE_KEY);
+        Preference shareDatabasePreference = findPreference(Settings.SHARE_DATABASE_KEY);
         shareDatabasePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 return ShareDatabase();
@@ -53,7 +44,7 @@ public class SettingsActivity extends PreferenceActivity
         });
 
         // Statistics option.
-        Preference statisticsPreference = findPreference(STATISTICS_KEY);
+        Preference statisticsPreference = findPreference(Settings.STATISTICS_KEY);
         statisticsPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -117,15 +108,15 @@ public class SettingsActivity extends PreferenceActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SCAN_PERIOD_KEY)) {
+        if (key.equals(Settings.SCAN_PERIOD_KEY)) {
             // Update UI.
             updatePeriodPreference();
             // Restart the service so that the new period is used.
             ScanServiceManager.restartIfStarted(this);
-        } else if (key.equals(IS_NETWORK_PROVIDER_ENABLED_KEY)) {
+        } else if (key.equals(Settings.IS_NETWORK_PROVIDER_ENABLED_KEY)) {
             // Restart the service so that the new provider set is used.
             ScanServiceManager.restartIfStarted(this);
-        } else if (key.equals(MAX_SCAN_RESULTS_FOR_BSSID_KEY)) {
+        } else if (key.equals(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY)) {
             // Update UI.
             updateMaxScanResultsForBssidPreference();
         }
@@ -145,14 +136,14 @@ public class SettingsActivity extends PreferenceActivity
     @SuppressWarnings("deprecation")
     private void updatePeriodPreference() {
         ListPreference periodPreference =
-                (ListPreference)getPreferenceScreen().findPreference(SCAN_PERIOD_KEY);
+                (ListPreference)getPreferenceScreen().findPreference(Settings.SCAN_PERIOD_KEY);
         periodPreference.setSummary(periodPreference.getEntry());
     }
 
     @SuppressWarnings("deprecation")
     private void updateMaxScanResultsForBssidPreference() {
         ListPreference maxScanResultsForBssidPreference =
-                (ListPreference)getPreferenceScreen().findPreference(MAX_SCAN_RESULTS_FOR_BSSID_KEY);
+                (ListPreference)getPreferenceScreen().findPreference(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY);
         maxScanResultsForBssidPreference.setSummary(maxScanResultsForBssidPreference.getEntry());
     }
 }
