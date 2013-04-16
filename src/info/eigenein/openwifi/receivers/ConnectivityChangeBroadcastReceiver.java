@@ -11,8 +11,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import info.eigenein.openwifi.helpers.io.Internet;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Monitors network connectivity.
  */
@@ -26,14 +24,12 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
                 ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE))
                 .getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
 
+        final WifiInfo info = getInfo(context);
         if (state == NetworkInfo.State.CONNECTED) {
             // Check if the Internet is actually available.
             new CheckConnectivityAsyncTask(context).execute();
-        } else {
-            final WifiInfo info = getInfo(context);
-            if (info != null) {
-                onConnecting(info);
-            }
+        } else if (info != null) {
+            onConnecting(info);
         }
     }
 

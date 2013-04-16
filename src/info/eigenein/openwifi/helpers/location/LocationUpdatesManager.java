@@ -1,11 +1,8 @@
 package info.eigenein.openwifi.helpers.location;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.preference.PreferenceManager;
-import info.eigenein.openwifi.activities.SettingsActivity;
 import info.eigenein.openwifi.helpers.Settings;
 
 /**
