@@ -160,7 +160,7 @@ public class ScanResultTracker {
                     "from scan_results sr1\n" +
                     "join locations loc\n" +
                     "on loc.timestamp = sr1.location_timestamp\n" +
-                    "where not sr1.synced\n" +
+                    // "where not sr1.synced\n" +
                     "order by sr1.location_timestamp\n" +
                     "limit ?, ?;";
             return scanResultDao.queryRaw(

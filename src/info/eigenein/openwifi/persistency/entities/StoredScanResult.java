@@ -112,8 +112,7 @@ public class StoredScanResult {
         try {
             object.put("bssid", bssid);
             object.put("ssid", ssid);
-            // Server tracks timestamp in seconds (not in milliseconds).
-            object.put("ts", location.getTimestamp() / 1000);
+            object.put("ts", location.getTimestamp());
             object.put("acc", location.getAccuracy());
             locationObject.put("lat", location.getLatitude());
             locationObject.put("lon", location.getLongitude());

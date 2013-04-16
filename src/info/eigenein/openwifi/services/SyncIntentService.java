@@ -37,7 +37,7 @@ public class SyncIntentService extends IntentService {
     /**
      * Maximum allowed number of scan results to be processed at once.
      */
-    private static final int PAGE_SIZE = 64;
+    private static final int PAGE_SIZE = 128;
 
     public SyncIntentService() {
         super(SERVICE_NAME);
@@ -76,8 +76,10 @@ public class SyncIntentService extends IntentService {
         // Synchronize.
         int syncedResultCount = 0;
         int skip = 0;
+        final long syncStartTime = System.currentTimeMillis();
         while (true) {
-            // Prepare the chunk.
+            // Prepare the page.
+            Log.d(SERVICE_NAME, "Querying for the page: " + skip + ", " + PAGE_SIZE);
             List<StoredScanResult> scanResults =
                     ScanResultTracker.getUnsyncedScanResults(this, skip, PAGE_SIZE);
             Log.d(SERVICE_NAME, "scanResults: " + scanResults.size());
@@ -97,7 +99,6 @@ public class SyncIntentService extends IntentService {
                     array.put(scanResult.toJsonObject());
                 }
                 final String jsonString = array.toString();
-                Log.d(SERVICE_NAME, "jsonString: " + jsonString);
                 request.setEntity(new StringEntity(jsonString, HTTP.UTF_8));
             } catch (UnsupportedEncodingException e) {
                 Log.e(SERVICE_NAME, "Could not create the entity.", e);
@@ -119,12 +120,17 @@ public class SyncIntentService extends IntentService {
                     statusLine,
                     requestEndTime - requestStartTime));
             if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                Log.d(SERVICE_NAME, "markAsSynced");
                 ScanResultTracker.markAsSynced(this, scanResults);
                 syncedResultCount += scanResults.size();
             }
             // Move forward.
             skip += PAGE_SIZE;
         }
-        Log.i(SERVICE_NAME, "Finished. syncedResultCount: " + syncedResultCount);
+        final long syncTime = System.currentTimeMillis() - syncStartTime;
+        Log.i(SERVICE_NAME, String.format("Uploaded %s results in %sms (%ms per result)",
+                syncedResultCount,
+                syncTime,
+                syncTime / syncedResultCount));
     }
 }
