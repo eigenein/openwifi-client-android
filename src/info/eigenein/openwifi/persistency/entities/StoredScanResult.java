@@ -63,6 +63,10 @@ public class StoredScanResult {
         this.location = location;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getBssid() {
         return bssid;
     }
@@ -95,7 +99,14 @@ public class StoredScanResult {
         this.synced = synced;
     }
 
-    public String toJson() {
+    public String toString() {
+        return String.format("StoredScanResult[bssid=%s, ssid=%s, location=%s]",
+                bssid,
+                ssid,
+                location);
+    }
+
+    public JSONObject toJsonObject() {
         final JSONObject object = new JSONObject();
         final JSONObject locationObject = new JSONObject();
         try {
@@ -110,6 +121,6 @@ public class StoredScanResult {
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not serialize the scan result: " + this.toString(), e);
         }
-        return object.toString();
+        return object;
     }
 }

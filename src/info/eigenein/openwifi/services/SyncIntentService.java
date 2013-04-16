@@ -6,18 +6,19 @@ import android.util.Log;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,9 +35,9 @@ public class SyncIntentService extends IntentService {
     private static final String postUrl = "http://openwifi.info/api/scan-results/";
 
     /**
-     * Maximum allowed number of scan results to be requested at once.
+     * Maximum allowed number of scan results to be processed at once.
      */
-    private static final int CHUNK_SIZE = 64;
+    private static final int PAGE_SIZE = 64;
 
     public SyncIntentService() {
         super(SERVICE_NAME);
@@ -67,11 +68,23 @@ public class SyncIntentService extends IntentService {
 
     private void uploadScanResults(String clientId) {
         Log.i(SERVICE_NAME, "Starting to upload scan results ...");
-        List<StoredScanResult> scanResults = ScanResultTracker.getUnsyncedScanResults(this);
-        Log.d(SERVICE_NAME, "Unsynced scan results found: " + scanResults.size());
-        final HttpClient client = new DefaultHttpClient(new BasicHttpParams());
+        // Prepare the HTTP client.
+        final HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        final DefaultHttpClient client = new DefaultHttpClient(params);
+        client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy());
+        // Synchronize.
         int syncedResultCount = 0;
-        for (StoredScanResult scanResult : scanResults) {
+        int skip = 0;
+        while (true) {
+            // Prepare the chunk.
+            List<StoredScanResult> scanResults =
+                    ScanResultTracker.getUnsyncedScanResults(this, skip, PAGE_SIZE);
+            Log.d(SERVICE_NAME, "scanResults: " + scanResults.size());
+            if (scanResults.isEmpty()) {
+                // Finished.
+                break;
+            }
             // Prepare the request.
             HttpPost request = new HttpPost(postUrl);
             request.setHeader("X-Client-ID", clientId);
@@ -79,26 +92,38 @@ public class SyncIntentService extends IntentService {
             request.setHeader("Content-Type", "application/json");
             request.setHeader("Connection", "Keep-Alive");
             try {
-                request.setEntity(new StringEntity(scanResult.toJson()));
+                final JSONArray array = new JSONArray();
+                for (StoredScanResult scanResult : scanResults) {
+                    array.put(scanResult.toJsonObject());
+                }
+                final String jsonString = array.toString();
+                Log.d(SERVICE_NAME, "jsonString: " + jsonString);
+                request.setEntity(new StringEntity(jsonString, HTTP.UTF_8));
             } catch (UnsupportedEncodingException e) {
                 Log.e(SERVICE_NAME, "Could not create the entity.", e);
                 continue;
             }
             // Execute the request.
             HttpResponse response = null;
+            final long requestStartTime = System.currentTimeMillis();
             try {
                 response = client.execute(request);
             } catch (IOException e) {
                 Log.w(SERVICE_NAME, e.getMessage());
                 break;
             }
+            final long requestEndTime = System.currentTimeMillis();
             // Check the status code.
             final StatusLine statusLine = response.getStatusLine();
-            Log.d(SERVICE_NAME, "Status line: " + statusLine);
+            Log.d(SERVICE_NAME, String.format("statusLine: %s (%sms)",
+                    statusLine,
+                    requestEndTime - requestStartTime));
             if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                ScanResultTracker.markAsSynced(this, scanResult);
-                syncedResultCount += 1;
+                ScanResultTracker.markAsSynced(this, scanResults);
+                syncedResultCount += scanResults.size();
             }
+            // Move forward.
+            skip += PAGE_SIZE;
         }
         Log.i(SERVICE_NAME, "Finished. syncedResultCount: " + syncedResultCount);
     }

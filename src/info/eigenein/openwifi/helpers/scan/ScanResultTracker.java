@@ -144,7 +144,10 @@ public class ScanResultTracker {
     /**
      * Gets the unsynchronized scan result list.
      */
-    public static List<StoredScanResult> getUnsyncedScanResults(Context context) {
+    public static List<StoredScanResult> getUnsyncedScanResults(
+            Context context,
+            int skip,
+            int limit) {
         Log.d(LOG_TAG, "Getting unsynced scan results ...");
 
         DatabaseHelper databaseHelper = null;
@@ -158,11 +161,14 @@ public class ScanResultTracker {
                     "join locations loc\n" +
                     "on loc.timestamp = sr1.location_timestamp\n" +
                     "where not sr1.synced\n" +
-                    "order by sr1.location_timestamp;";
+                    "order by sr1.location_timestamp\n" +
+                    "limit ?, ?;";
             return scanResultDao.queryRaw(
                     query,
                     // Because we add timestamp and id here.
-                    GetScanResultsRawRowMapper.getInstanceWithId())
+                    GetScanResultsRawRowMapper.getInstanceWithId(),
+                    Integer.toString(skip),
+                    Integer.toString(limit))
                     .getResults();
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error while querying scan results.", e);
@@ -177,15 +183,17 @@ public class ScanResultTracker {
         }
     }
 
-    public static void markAsSynced(Context context, StoredScanResult scanResult) {
+    public static void markAsSynced(Context context, Iterable<StoredScanResult> scanResults) {
         DatabaseHelper databaseHelper = null;
         try {
             databaseHelper = getDatabaseHelper(context);
             Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
-            scanResult.setSynced(true);
-            scanResultDao.update(scanResult);
+            final String query = "update scan_results set synced = 1 where id = ?;";
+            for (StoredScanResult scanResult: scanResults) {
+                scanResultDao.queryRaw(query, Integer.toString(scanResult.getId()));
+            }
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Error while updating the scan result: " + scanResult, e);
+            Log.e(LOG_TAG, "Error while updating the scan results.", e);
             throw new RuntimeException(e);
         } finally {
             if (databaseHelper != null) {
