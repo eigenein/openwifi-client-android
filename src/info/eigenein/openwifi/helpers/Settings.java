@@ -27,6 +27,8 @@ public class Settings {
 
     public static final String LAST_SYNC_ID_KEY = "last_sync_id";
 
+    public static final String SYNC_NOW_KEY = "sync_now";
+
     private final SharedPreferences preferences;
 
     public static Settings with(Context context) {

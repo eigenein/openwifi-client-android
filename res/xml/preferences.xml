@@ -18,6 +18,14 @@
     <PreferenceCategory
         android:title="@string/advanced_settings_category"
         android:key="advanced_settings">
+        <Preference
+            android:title="@string/sync_now"
+            android:key="sync_now"
+            android:summary="@string/sync_now_summary"/>
+        <Preference
+            android:title="@string/statistics"
+            android:key="show_statistics"
+            android:summary="@string/statistics_summary"/>
         <ListPreference
             android:title="@string/max_scan_results_for_bssid"
             android:key="max_scan_results_for_bssid"
@@ -28,9 +36,5 @@
             android:title="@string/share_database"
             android:key="share_database"
             android:summary="@string/share_database_summary"/>
-        <Preference
-            android:title="@string/statistics"
-            android:key="show_statistics"
-            android:summary="@string/statistics_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

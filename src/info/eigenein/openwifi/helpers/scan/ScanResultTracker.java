@@ -146,7 +146,6 @@ public class ScanResultTracker {
      */
     public static List<StoredScanResult> getUnsyncedScanResults(
             Context context,
-            int skip,
             int limit) {
         Log.d(LOG_TAG, "Getting unsynced scan results ...");
 
@@ -160,14 +159,13 @@ public class ScanResultTracker {
                     "from scan_results sr1\n" +
                     "join locations loc\n" +
                     "on loc.timestamp = sr1.location_timestamp\n" +
-                    // "where not sr1.synced\n" +
+                    "where not sr1.synced\n" +
                     "order by sr1.location_timestamp\n" +
-                    "limit ?, ?;";
+                    "limit ?;";
             return scanResultDao.queryRaw(
                     query,
                     // Because we add timestamp and id here.
                     GetScanResultsRawRowMapper.getInstanceWithId(),
-                    Integer.toString(skip),
                     Integer.toString(limit))
                     .getResults();
         } catch (SQLException e) {

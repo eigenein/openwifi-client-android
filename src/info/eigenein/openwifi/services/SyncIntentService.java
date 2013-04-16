@@ -75,13 +75,11 @@ public class SyncIntentService extends IntentService {
         client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy());
         // Synchronize.
         int syncedResultCount = 0;
-        int skip = 0;
         final long syncStartTime = System.currentTimeMillis();
         while (true) {
             // Prepare the page.
-            Log.d(SERVICE_NAME, "Querying for the page: " + skip + ", " + PAGE_SIZE);
-            List<StoredScanResult> scanResults =
-                    ScanResultTracker.getUnsyncedScanResults(this, skip, PAGE_SIZE);
+            Log.d(SERVICE_NAME, "Querying for the page ...");
+            List<StoredScanResult> scanResults = ScanResultTracker.getUnsyncedScanResults(this, PAGE_SIZE);
             Log.d(SERVICE_NAME, "scanResults: " + scanResults.size());
             if (scanResults.isEmpty()) {
                 // Finished.
@@ -124,11 +122,9 @@ public class SyncIntentService extends IntentService {
                 ScanResultTracker.markAsSynced(this, scanResults);
                 syncedResultCount += scanResults.size();
             }
-            // Move forward.
-            skip += PAGE_SIZE;
         }
         final long syncTime = System.currentTimeMillis() - syncStartTime;
-        Log.i(SERVICE_NAME, String.format("Uploaded %s results in %sms (%ms per result)",
+        Log.i(SERVICE_NAME, String.format("Uploaded %s results in %sms (%sms per result)",
                 syncedResultCount,
                 syncTime,
                 syncTime / syncedResultCount));

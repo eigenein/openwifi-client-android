@@ -16,6 +16,7 @@ import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.io.FileUtils;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
+import info.eigenein.openwifi.services.SyncIntentService;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +50,17 @@ public class SettingsActivity extends PreferenceActivity
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 startActivity(new Intent(SettingsActivity.this, StatisticsActivity.class));
+                return true;
+            }
+        });
+
+        // Sync now option.
+        Preference syncNowPreference = findPreference(Settings.SYNC_NOW_KEY);
+        syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG);
+                startService(new Intent(SettingsActivity.this, SyncIntentService.class));
                 return true;
             }
         });

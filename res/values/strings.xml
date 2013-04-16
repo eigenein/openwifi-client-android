@@ -34,4 +34,7 @@
     <string name="about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
     <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
     <string name="client_id">Support ID: %s</string>
+    <string name="sync_now">Synchronize Now</string>
+    <string name="sync_now_summary">Forces the application to synchronize the database using the existing connection.</string>
+    <string name="sync_now_started">Started to synchronize.</string>
 </resources>

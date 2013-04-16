@@ -34,4 +34,7 @@
     <string name="about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
     <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
     <string name="client_id">Support ID: %s</string>
+    <string name="sync_now">Синхронизировать сейчас</string>
+    <string name="sync_now_summary">Начинает синхронизацию базы данных, не дожидаясь подключения к Wi-Fi.</string>
+    <string name="sync_now_started">Начинается синхронизация.</string>
 </resources>
