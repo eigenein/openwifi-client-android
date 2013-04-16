@@ -15,6 +15,8 @@ public class Internet {
             "http://173.194.40.83",
             // vk.com
             "http://87.240.143.244",
+            // tut.by
+            "http://178.124.133.66",
             // openwifi.info
             "http://198.199.70.180/api/check/"
     };
@@ -30,10 +32,10 @@ public class Internet {
                 return true;
             } catch (MalformedURLException e) {
                 Log.w(LOG_TAG, "Malformed URL error.");
-                return false;
+                continue;
             } catch (IOException e) {
                 Log.w(LOG_TAG, "I/O error.");
-                return false;
+                continue;
             }
         }
         Log.w(LOG_TAG, "Failed to connect.");
