@@ -71,4 +71,8 @@ public class StoredLocation {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 }

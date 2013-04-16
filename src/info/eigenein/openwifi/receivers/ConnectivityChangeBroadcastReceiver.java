@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import info.eigenein.openwifi.helpers.io.Internet;
+import info.eigenein.openwifi.services.SyncIntentService;
 
 /**
  * Monitors network connectivity.
@@ -43,8 +44,12 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
     /**
      * Called when the device is successfully connected to the Internet.
      */
-    private void onSucceeded(WifiInfo info) {
+    private void onSucceeded(Context context, WifiInfo info) {
         Log.i(LOG_TAG, "onSucceeded: " + info.getSSID());
+        // Starting the synchronization service.
+        Log.d(LOG_TAG, "Starting " + SyncIntentService.class.getSimpleName());
+        Intent syncServiceIntent = new Intent(context, SyncIntentService.class);
+        context.startService(syncServiceIntent);
     }
 
     /**
@@ -69,7 +74,7 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
         @Override
         protected Void doInBackground(Void... voids) {
             if (Internet.check()) {
-                onSucceeded(getInfo(context));
+                onSucceeded(context, getInfo(context));
             } else {
                 onFailed(getInfo(context));
             }

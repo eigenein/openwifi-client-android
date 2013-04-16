@@ -58,6 +58,9 @@
         <service
             android:name=".services.ScanIntentService"
             android:exported="false"/>
+        <service
+            android:name=".services.SyncIntentService"
+            android:exported="false"/>
         <uses-library android:name="com.google.android.maps"/>
         <provider
             android:name=".helpers.providers.ReadOnlyCacheContentProvider"

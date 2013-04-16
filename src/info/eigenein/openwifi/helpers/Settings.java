@@ -25,6 +25,8 @@ public class Settings {
 
     public static final String CLIENT_ID_KEY = "client_id";
 
+    public static final String LAST_SYNC_ID_KEY = "last_sync_id";
+
     private final SharedPreferences preferences;
 
     public static Settings with(Context context) {
@@ -56,5 +58,42 @@ public class Settings {
             preferences.edit().putString(CLIENT_ID_KEY, clientId).commit();
         }
         return clientId;
+    }
+
+    /**
+     * Gets the ID of the last synchronized scan result.
+     */
+    public String lastSyncId() {
+        String syncId = preferences.getString(LAST_SYNC_ID_KEY, null);
+        if (syncId != null) {
+            return syncId;
+        } else {
+            // Return the minimal object ID.
+            return "000000000000000000000000";
+        }
+    }
+
+    public SettingsEditor edit() {
+        return new SettingsEditor(preferences.edit());
+    }
+
+    public class SettingsEditor {
+        private final SharedPreferences.Editor editor;
+
+        private SettingsEditor(SharedPreferences.Editor editor) {
+            this.editor = editor;
+        }
+
+        public void commit() {
+            editor.commit();
+        }
+
+        /**
+         * Sets the ID of the last synchronized scan result.
+         */
+        public SettingsEditor lastSyncId(String syncId) {
+            editor.putString(LAST_SYNC_ID_KEY, syncId);
+            return this;
+        }
     }
 }

@@ -18,8 +18,6 @@ import info.eigenein.openwifi.R;
 public class ScanIntentService extends IntentService {
     public static final String SERVICE_NAME = ScanIntentService.class.getCanonicalName();
 
-    private static final String LOG_TAG = ScanIntentService.class.getCanonicalName();
-
     public ScanIntentService() {
         super(SERVICE_NAME);
     }
@@ -29,15 +27,15 @@ public class ScanIntentService extends IntentService {
         final WifiManager wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
         if (!wifiManager.isWifiEnabled()) {
-            Log.i(LOG_TAG, "WiFi is not enabled.");
+            Log.i(SERVICE_NAME, "WiFi is not enabled.");
             notifyWiFiIsNotEnabled();
             return;
         }
 
         if (!wifiManager.startScan()) {
-            Log.w(LOG_TAG, "wifiManager.startScan() returned false.");
+            Log.w(SERVICE_NAME, "wifiManager.startScan() returned false.");
         } else {
-            Log.i(LOG_TAG, "The scan was initiated.");
+            Log.i(SERVICE_NAME, "The scan was initiated.");
         }
     }
 

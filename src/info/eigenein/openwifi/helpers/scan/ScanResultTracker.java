@@ -3,14 +3,12 @@ package info.eigenein.openwifi.helpers.scan;
 import android.content.Context;
 import android.location.Location;
 import android.net.wifi.ScanResult;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.Where;
-import info.eigenein.openwifi.activities.SettingsActivity;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
@@ -115,7 +113,8 @@ public class ScanResultTracker {
 
             Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
 
-            final String query = "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude \n" +
+            final String query =
+                    "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude \n" +
                     "from scan_results sr1\n" +
                     "join locations loc\n" +
                     "on loc.timestamp = sr1.location_timestamp\n" +
@@ -124,7 +123,7 @@ public class ScanResultTracker {
                     "order by sr1.bssid, sr1.location_timestamp desc;";
             return scanResultDao.queryRaw(
                     query,
-                    GetScanResultsRawRowMapper.getInstance(),
+                    GetScanResultsRawRowMapper.getInstanceWithoutId(),
                     Double.toString(minLatitude),
                     Double.toString(maxLatitude),
                     Double.toString(minLongitude),
@@ -139,6 +138,62 @@ public class ScanResultTracker {
                 //noinspection UnusedAssignment
                 databaseHelper = null;
             }
+        }
+    }
+
+    /**
+     * Gets the unsynchronized scan result list.
+     */
+    public static List<StoredScanResult> getUnsyncedScanResults(Context context) {
+        Log.d(LOG_TAG, "Getting unsynced scan results ...");
+
+        DatabaseHelper databaseHelper = null;
+        try {
+            databaseHelper = getDatabaseHelper(context);
+            Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
+
+            final String query =
+                    "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude, loc.timestamp, sr1.id\n" +
+                    "from scan_results sr1\n" +
+                    "join locations loc\n" +
+                    "on loc.timestamp = sr1.location_timestamp\n" +
+                    "where not sr1.synced\n" +
+                    "order by sr1.location_timestamp;";
+            return scanResultDao.queryRaw(
+                    query,
+                    // Because we add timestamp and id here.
+                    GetScanResultsRawRowMapper.getInstanceWithId())
+                    .getResults();
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Error while querying scan results.", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (databaseHelper != null) {
+                OpenHelperManager.releaseHelper();
+                //noinspection UnusedAssignment
+                databaseHelper = null;
+            }
+            Log.d(LOG_TAG, "Done.");
+        }
+    }
+
+    public static void markAsSynced(Context context, StoredScanResult scanResult) {
+        DatabaseHelper databaseHelper = null;
+        try {
+            databaseHelper = getDatabaseHelper(context);
+            Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
+            scanResult.setSynced(true);
+            scanResultDao.update(scanResult);
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Error while updating the scan result: " + scanResult, e);
+            throw new RuntimeException(e);
+        } finally {
+            if (databaseHelper != null) {
+                OpenHelperManager.releaseHelper();
+                //noinspection UnusedAssignment
+                databaseHelper = null;
+            }
+            Log.d(LOG_TAG, "Done.");
         }
     }
 
@@ -266,10 +321,22 @@ public class ScanResultTracker {
     }
 
     private static class GetScanResultsRawRowMapper implements RawRowMapper<StoredScanResult> {
-        private static final GetScanResultsRawRowMapper instance = new GetScanResultsRawRowMapper();
+        private static final GetScanResultsRawRowMapper instanceWithoutId =
+                new GetScanResultsRawRowMapper(false);
+        private static final GetScanResultsRawRowMapper instanceWithId =
+                new GetScanResultsRawRowMapper(true);
 
-        public static GetScanResultsRawRowMapper getInstance() {
-            return instance;
+        public static GetScanResultsRawRowMapper getInstanceWithoutId() {
+            return instanceWithoutId;
+        }
+        public static GetScanResultsRawRowMapper getInstanceWithId() {
+            return instanceWithId;
+        }
+
+        private final boolean withId;
+
+        public GetScanResultsRawRowMapper(boolean withId) {
+            this.withId = withId;
         }
 
         @Override
@@ -285,6 +352,10 @@ public class ScanResultTracker {
             storedLocation.setAccuracy(Float.parseFloat(resultColumns[2]));
             storedLocation.setLatitude(Double.parseDouble(resultColumns[3]));
             storedLocation.setLongitude(Double.parseDouble(resultColumns[4]));
+            if (withId) {
+                storedLocation.setTimestamp(Long.parseLong(resultColumns[5]));
+                storedScanResult.setId(Integer.parseInt(resultColumns[6]));
+            }
 
             return storedScanResult;
         }
