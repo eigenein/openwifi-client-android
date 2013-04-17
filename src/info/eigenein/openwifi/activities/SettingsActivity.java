@@ -59,7 +59,7 @@ public class SettingsActivity extends PreferenceActivity
         syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG);
+                Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG).show();
                 startService(new Intent(SettingsActivity.this, SyncIntentService.class));
                 return true;
             }

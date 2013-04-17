@@ -127,6 +127,6 @@ public class SyncIntentService extends IntentService {
         Log.i(SERVICE_NAME, String.format("Uploaded %s results in %sms (%sms per result)",
                 syncedResultCount,
                 syncTime,
-                syncTime / syncedResultCount));
+                syncedResultCount != 0 ? syncTime / syncedResultCount : 0));
     }
 }
