@@ -11,6 +11,8 @@ import java.util.List;
  * Processes locations into an area.
  */
 public class LocationProcessor {
+    private static final float MIN_AREA_ACCURACY = 10.0f;
+
     private final List<StoredLocation> locations = new ArrayList<StoredLocation>();
 
     public void add(StoredLocation location) {
@@ -18,6 +20,15 @@ public class LocationProcessor {
     }
 
     public Area getArea() {
+        if (locations.size() == 1) {
+            // Return the location as the area.
+            final StoredLocation location = locations.get(0);
+            return new Area(
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    Math.max(location.getAccuracy(), MIN_AREA_ACCURACY));
+        }
+
         // Find weighted mean of locations.
         double latitudeSum = 0.0, longitudeSum = 0.0;
         for (StoredLocation location : locations) {
@@ -38,13 +49,15 @@ public class LocationProcessor {
                     location.getLongitude(),
                     distance
             );
-            float distanceWithAccuracy = distance[0] + location.getAccuracy();
-            if (distanceWithAccuracy > accuracy) {
-                accuracy = distanceWithAccuracy;
+            if (distance[0] > accuracy) {
+                accuracy = distance[0];
             }
         }
 
         // Return the area object with computed values.
-        return new Area(latitude, longitude, accuracy);
+        return new Area(
+                latitude,
+                longitude,
+                Math.max(accuracy, MIN_AREA_ACCURACY));
     }
 }
