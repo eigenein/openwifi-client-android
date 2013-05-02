@@ -21,22 +21,17 @@ public class Internet {
 
     public static boolean check() {
         for (String url : urls) {
-            Log.d(LOG_TAG, "Trying " + url);
             try {
                 HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.connect();
-                Log.i(LOG_TAG, "Successfully connected.");
                 return true;
             } catch (MalformedURLException e) {
-                Log.w(LOG_TAG, "Malformed URL error.");
                 continue;
             } catch (IOException e) {
-                Log.w(LOG_TAG, "I/O error.");
                 continue;
             }
         }
-        Log.w(LOG_TAG, "Failed to connect.");
         return false;
     }
 }
