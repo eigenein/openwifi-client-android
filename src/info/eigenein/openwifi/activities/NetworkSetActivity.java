@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.ui.VibratorHelper;
@@ -47,6 +48,13 @@ public class NetworkSetActivity extends ListActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        EasyTracker.getInstance().activityStart(this);
+    }
+
+    @Override
     public void onCreateContextMenu(
             ContextMenu menu,
             View v,
@@ -80,6 +88,13 @@ public class NetworkSetActivity extends ListActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        EasyTracker.getInstance().activityStop(this);
     }
 
     @Override

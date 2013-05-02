@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.location.LocationProcessor;
@@ -115,6 +116,8 @@ public class MainActivity extends MapActivity {
         }
         // Update overlays.
         startRefreshingScanResultsOnMap();
+
+        EasyTracker.getInstance().activityStart(this);
     }
 
     @Override
@@ -126,6 +129,8 @@ public class MainActivity extends MapActivity {
             myLocationOverlay.disableCompass();
             myLocationOverlay.disableMyLocation();
         }
+
+        EasyTracker.getInstance().activityStop(this);
     }
 
     @Override

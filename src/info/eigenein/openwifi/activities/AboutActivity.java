@@ -9,6 +9,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.Settings;
 
@@ -55,6 +56,13 @@ public class AboutActivity extends Activity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        EasyTracker.getInstance().activityStart(this);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -63,5 +71,12 @@ public class AboutActivity extends Activity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        EasyTracker.getInstance().activityStop(this);
     }
 }
