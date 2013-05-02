@@ -3,4 +3,7 @@
     <style name="MainTheme" parent="@android:style/Theme">
         <!-- Any customizations for your app running on pre-3.0 devices here -->
     </style>
+    <style name="DialogTheme" parent="@android:style/Theme.Dialog">
+        <!-- Any customizations for your app running on pre-3.0 devices here -->
+    </style>
 </resources>

@@ -38,4 +38,9 @@
     <string name="sync_now_summary">Начинает синхронизацию базы данных, не дожидаясь подключения к Wi-Fi.</string>
     <string name="sync_now_started">Начинается синхронизация.</string>
     <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Отправить отзыв&lt;/a&gt;</string>
+    <string name="crash_dialog_text">
+        В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке,
+        чтобы помочь исправить ее?
+    </string>
+    <string name="crash_dialog_comment_prompt">Вы можете добавить свои комментарии об ошибке здесь:</string>
 </resources>
