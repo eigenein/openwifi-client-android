@@ -40,7 +40,12 @@ public class AboutActivity extends Activity {
         // Linkify project link.
         TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
         projectLinkTextView.setText(Html.fromHtml(getString(R.string.about_project_link)));
-        copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        projectLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        // Linkify UserEcho link.
+        TextView userEchoLinkTextView = (TextView)findViewById(R.id.user_echo_link_text_view);
+        userEchoLinkTextView.setText(Html.fromHtml(getString(R.string.user_echo_link)));
+        userEchoLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Client ID.
         TextView clientIdTextView = (TextView)findViewById(R.id.client_id_text_view);

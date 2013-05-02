@@ -37,4 +37,5 @@
     <string name="sync_now">Synchronize Now</string>
     <string name="sync_now_summary">Forces the application to synchronize the database using the existing connection.</string>
     <string name="sync_now_started">Started to synchronize.</string>
+    <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Send Feedback&lt;/a&gt;</string>
 </resources>

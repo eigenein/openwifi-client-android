@@ -37,4 +37,5 @@
     <string name="sync_now">Синхронизировать сейчас</string>
     <string name="sync_now_summary">Начинает синхронизацию базы данных, не дожидаясь подключения к Wi-Fi.</string>
     <string name="sync_now_started">Начинается синхронизация.</string>
+    <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Отправить отзыв&lt;/a&gt;</string>
 </resources>
