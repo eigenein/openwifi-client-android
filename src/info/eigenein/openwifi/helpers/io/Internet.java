@@ -17,8 +17,6 @@ public class Internet {
             "http://87.240.143.244",
             // tut.by
             "http://178.124.133.66",
-            // openwifi.info
-            "http://198.199.70.180/api/check/"
     };
 
     public static boolean check() {
