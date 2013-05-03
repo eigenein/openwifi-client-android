@@ -1,3 +1,5 @@
+proguard_logs/
+
 # built application files
 *.apk
 *.ap_
