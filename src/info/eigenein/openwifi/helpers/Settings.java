@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import org.acra.ACRA;
 
 import java.util.UUID;
 
@@ -59,6 +60,7 @@ public class Settings {
             Log.i(LOG_TAG, "clientId: " + clientId);
             preferences.edit().putString(CLIENT_ID_KEY, clientId).commit();
         }
+        ACRA.getErrorReporter().putCustomData("clientId", clientId);
         return clientId;
     }
 
@@ -68,6 +70,7 @@ public class Settings {
     public String lastSyncId() {
         String syncId = preferences.getString(LAST_SYNC_ID_KEY, null);
         if (syncId != null) {
+            ACRA.getErrorReporter().putCustomData("lastSyncId", syncId);
             return syncId;
         } else {
             // Return the minimal object ID.
@@ -95,6 +98,7 @@ public class Settings {
          */
         public SettingsEditor lastSyncId(String syncId) {
             editor.putString(LAST_SYNC_ID_KEY, syncId);
+            ACRA.getErrorReporter().putCustomData("lastSyncId", syncId);
             return this;
         }
     }

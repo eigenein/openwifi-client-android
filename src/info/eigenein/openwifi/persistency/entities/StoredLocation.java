@@ -9,7 +9,13 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "locations")
 public class StoredLocation {
-    @DatabaseField(columnName = "accuracy", canBeNull = false, index = true)
+    /**
+     * Fake ID - required by ORMLite.
+     */
+    @DatabaseField(columnName = "id", canBeNull = false, generatedId = true, index = true)
+    private int id;
+
+    @DatabaseField(columnName = "accuracy", canBeNull = false)
     private float accuracy;
 
     @DatabaseField(columnName = "latitude", canBeNull = false, index = true)
@@ -21,8 +27,11 @@ public class StoredLocation {
     @DatabaseField(columnName = "provider", canBeNull = true)
     private String provider;
 
-    @DatabaseField(columnName = "timestamp", uniqueIndex = true, id = true)
+    @DatabaseField(columnName = "timestamp", canBeNull = false, index = true)
     private long timestamp;
+
+    @DatabaseField(columnName = "own", canBeNull = false)
+    private boolean own = true;
 
     public StoredLocation() {
         // ORMLite needs a no-arg constructor.
@@ -52,6 +61,10 @@ public class StoredLocation {
         return timestamp;
     }
 
+    public boolean isOwn() {
+        return own;
+    }
+
     @Override
     public String toString() {
         return String.format(
@@ -74,5 +87,9 @@ public class StoredLocation {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setOwn(boolean own) {
+        this.own = own;
     }
 }

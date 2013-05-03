@@ -117,7 +117,7 @@ public class ScanResultTracker {
                     "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude \n" +
                     "from scan_results sr1\n" +
                     "join locations loc\n" +
-                    "on loc.timestamp = sr1.location_timestamp\n" +
+                    "on loc.id = sr1.location_id\n" +
                     "where loc.latitude >= ? and loc.latitude <= ?\n" +
                     "and loc.longitude >= ? and loc.longitude <= ?\n" +
                     "order by sr1.bssid, sr1.location_timestamp desc;";
@@ -158,7 +158,7 @@ public class ScanResultTracker {
                     "select sr1.bssid, sr1.ssid, loc.accuracy, loc.latitude, loc.longitude, loc.timestamp, sr1.id\n" +
                     "from scan_results sr1\n" +
                     "join locations loc\n" +
-                    "on loc.timestamp = sr1.location_timestamp\n" +
+                    "on loc.id = sr1.location_id\n" +
                     "where not sr1.synced\n" +
                     "order by sr1.location_timestamp\n" +
                     "limit ?;";
@@ -181,6 +181,9 @@ public class ScanResultTracker {
         }
     }
 
+    /**
+     * Marks the results as synced.
+     */
     public static void markAsSynced(Context context, Iterable<StoredScanResult> scanResults) {
         DatabaseHelper databaseHelper = null;
         try {
@@ -200,6 +203,37 @@ public class ScanResultTracker {
                 databaseHelper = null;
             }
             Log.d(LOG_TAG, "Done.");
+        }
+    }
+
+    public static void add(Context context, StoredScanResult scanResult) {
+        Log.d(LOG_TAG, "Adding the result: " + scanResult);
+        final long startTime = System.currentTimeMillis();
+
+        DatabaseHelper databaseHelper = null;
+        try {
+            // Initialize DAOs.
+            databaseHelper = getDatabaseHelper(context);
+            final Dao<StoredLocation, Long> locationDao = getLocationDao(databaseHelper);
+            createLocation(locationDao, scanResult.getLocation());
+            final Dao<StoredScanResult, Integer> scanResultDao = getScanResultDao(databaseHelper);
+            // Store the scan result.
+            createScanResult(scanResultDao, scanResult);
+            // Remove old scan results.
+            purgeOldScanResults(
+                    scanResultDao,
+                    scanResult.getBssid(),
+                    Settings.with(context).maxScanResultsForBssidCount());
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Error while adding the result.", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (databaseHelper != null) {
+                OpenHelperManager.releaseHelper();
+                //noinspection UnusedAssignment
+                databaseHelper = null;
+            }
+            Log.d(LOG_TAG, String.format("Done in %sms.", System.currentTimeMillis() - startTime));
         }
     }
 
@@ -230,23 +264,58 @@ public class ScanResultTracker {
      * Creates the scan result if it does not exist.
      */
     private static void createScanResult(
-            Dao<StoredScanResult, Integer> scanResultDao,
-            ScanResult scanResult,
-            StoredLocation storedLocation)
+            final Dao<StoredScanResult, Integer> scanResultDao,
+            final StoredScanResult scanResult)
             throws SQLException {
-        Where<StoredScanResult, Integer> where = scanResultDao.queryBuilder().where();
-        @SuppressWarnings("unchecked")
-        StoredScanResult storedScanResult = where.and(
-                where.eq("bssid", scanResult.BSSID),
-                where.eq("location_timestamp", storedLocation.getTimestamp()))
-                .queryForFirst();
-        if (storedScanResult == null) {
-            storedScanResult = new StoredScanResult(
-                    scanResult,
-                    storedLocation);
-            scanResultDao.create(storedScanResult);
+        final StoredLocation storedLocation = scanResult.getLocation();
+        StoredScanResult cachedScanResult = null;
+        // Avoid own results duplication.
+        if (storedLocation.isOwn()) {
+            Where<StoredScanResult, Integer> where = scanResultDao.queryBuilder().where();
+            cachedScanResult = where.and(
+                    where.eq(StoredScanResult.BSSID, scanResult.BSSID),
+                    where.eq(StoredScanResult.LOCATION_TIMESTAMP, storedLocation.getTimestamp()))
+                    .queryForFirst();
+        }
+        if (cachedScanResult == null) {
+            scanResultDao.create(scanResult);
+            Log.d(LOG_TAG, "Created the scan result: " + scanResult);
         } else {
-            Log.d(LOG_TAG, "Not creating the scan result - already exists.");
+            Log.d(LOG_TAG, "Not creating the scan result - already exists: " + cachedScanResult);
+        }
+    }
+
+    /**
+     * Creates the scan result if it does not exist.
+     */
+    private static void createScanResult(
+            final Dao<StoredScanResult, Integer> scanResultDao,
+            final ScanResult scanResult,
+            final StoredLocation storedLocation)
+            throws SQLException {
+        createScanResult(scanResultDao, new StoredScanResult(scanResult, storedLocation));
+    }
+
+    /**
+     * Creates the location if it does not exist.
+     */
+    private static StoredLocation createLocation(
+            final Dao<StoredLocation, Long> locationDao,
+            final StoredLocation location) throws SQLException {
+        StoredLocation cachedLocation = null;
+        // Avoid own location duplication.
+        if (location.isOwn()) {
+            Where<StoredLocation, Long> where = locationDao.queryBuilder().where();
+            where.eq("timestamp", location.getTimestamp());
+            cachedLocation = where.queryForFirst();
+        }
+        if (cachedLocation == null) {
+            locationDao.create(location);
+            Log.d(LOG_TAG, "Created the location: " + location);
+            return location;
+        } else {
+            Log.d(LOG_TAG, "Not creating the location - already exists: " + cachedLocation);
+            return cachedLocation;
         }
     }
 
@@ -256,14 +325,7 @@ public class ScanResultTracker {
     private static StoredLocation createLocation(
             Dao<StoredLocation, Long> locationDao,
             Location location) throws SQLException {
-        StoredLocation storedLocation = locationDao.queryForId(location.getTime());
-        if (storedLocation == null) {
-            storedLocation = new StoredLocation(location);
-            locationDao.create(storedLocation);
-        } else {
-            Log.d(LOG_TAG, "Not creating the location - already exists.");
-        }
-        return storedLocation;
+        return createLocation(locationDao, new StoredLocation(location));
     }
 
     /**
@@ -297,6 +359,11 @@ public class ScanResultTracker {
             String bssid,
             int maxScanResultsForBssidCount)
             throws SQLException {
+        // Check parameters.
+        if (bssid == null) {
+            throw new RuntimeException("The bssid parameter is null.");
+        }
+
         Log.d(LOG_TAG + ".purgeOldScanResults", bssid);
         @SuppressWarnings("deprecation")
         List<StoredScanResult> scanResults = dao.queryBuilder()

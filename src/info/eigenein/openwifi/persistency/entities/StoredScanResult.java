@@ -20,15 +20,15 @@ public class StoredScanResult {
 
     public static final String LOCATION_TIMESTAMP = "location_timestamp";
 
-    @DatabaseField(columnName = "id", generatedId = true)
+    @DatabaseField(columnName = "id", generatedId = true, index = true)
     private int id;
 
     @DatabaseField(
             columnName = BSSID,
             canBeNull = false,
             width = 17,
-            uniqueIndex = true,
-            uniqueIndexName = "scan_results_bssid_location_timestamp_idx")
+            index = true,
+            indexName = "scan_results_bssid_location_timestamp_idx")
     private String bssid;
 
     @DatabaseField(columnName = SSID, canBeNull = false, index = true)
@@ -42,10 +42,15 @@ public class StoredScanResult {
 
     @DatabaseField(
             columnName = LOCATION_TIMESTAMP,
-            uniqueIndex = true,
-            uniqueIndexName = "scan_results_bssid_location_timestamp_idx",
+            index = true,
+            indexName = "scan_results_bssid_location_timestamp_idx")
+    private Long locationTimestamp;
+
+    @DatabaseField(
+            columnName = "location_id",
             foreign = true,
-            foreignColumnName = "timestamp")
+            foreignColumnName = "id"
+    )
     private StoredLocation location;
 
     @DatabaseField(columnName = "synced", canBeNull = false, index = true)

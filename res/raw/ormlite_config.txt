@@ -1,5 +1,5 @@
 #
-# generated on 2013/05/03 12:20:19
+# generated on 2013/05/03 11:06:53
 #
 # --table-start--
 dataClass=info.eigenein.openwifi.persistency.entities.StoredScanResult
@@ -9,13 +9,14 @@ tableName=scan_results
 fieldName=id
 columnName=id
 generatedId=true
+indexName=scan_results_id_idx
 # --field-end--
 # --field-start--
 fieldName=bssid
 columnName=bssid
 width=17
 canBeNull=false
-uniqueIndexName=scan_results_bssid_location_timestamp_idx
+indexName=scan_results_bssid_location_timestamp_idx
 # --field-end--
 # --field-start--
 fieldName=ssid
@@ -32,11 +33,15 @@ fieldName=level
 columnName=level
 # --field-end--
 # --field-start--
-fieldName=location
+fieldName=locationTimestamp
 columnName=location_timestamp
+indexName=scan_results_bssid_location_timestamp_idx
+# --field-end--
+# --field-start--
+fieldName=location
+columnName=location_id
 foreign=true
-uniqueIndexName=scan_results_bssid_location_timestamp_idx
-foreignColumnName=timestamp
+foreignColumnName=id
 # --field-end--
 # --field-start--
 fieldName=synced
@@ -52,10 +57,16 @@ dataClass=info.eigenein.openwifi.persistency.entities.StoredLocation
 tableName=locations
 # --table-fields-start--
 # --field-start--
+fieldName=id
+columnName=id
+canBeNull=false
+generatedId=true
+indexName=locations_id_idx
+# --field-end--
+# --field-start--
 fieldName=accuracy
 columnName=accuracy
 canBeNull=false
-indexName=locations_accuracy_idx
 # --field-end--
 # --field-start--
 fieldName=latitude
@@ -76,8 +87,13 @@ columnName=provider
 # --field-start--
 fieldName=timestamp
 columnName=timestamp
-id=true
-uniqueIndexName=locations_timestamp_idx
+canBeNull=false
+indexName=locations_timestamp_idx
+# --field-end--
+# --field-start--
+fieldName=own
+columnName=own
+canBeNull=false
 # --field-end--
 # --table-fields-end--
 # --table-end--
