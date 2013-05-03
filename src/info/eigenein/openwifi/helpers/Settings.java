@@ -56,7 +56,7 @@ public class Settings {
     public String clientId() {
         String clientId = preferences.getString(CLIENT_ID_KEY, null);
         if (clientId == null) {
-            clientId = UUID.randomUUID().toString();
+            clientId = UUID.randomUUID().toString().substring(24, 12);
             Log.i(LOG_TAG, "clientId: " + clientId);
             preferences.edit().putString(CLIENT_ID_KEY, clientId).commit();
         }

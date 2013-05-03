@@ -14,17 +14,16 @@ import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.location.LocationProcessor;
-import info.eigenein.openwifi.helpers.map.*;
-import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
-import info.eigenein.openwifi.persistency.entities.StoredLocation;
-import info.eigenein.openwifi.persistency.entities.StoredScanResult;
+import info.eigenein.openwifi.helpers.location.LocationProcessor;
+import info.eigenein.openwifi.helpers.map.*;
+import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
+import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
+import info.eigenein.openwifi.persistency.MyScanResult;
 import org.apache.commons.collections.map.MultiKeyMap;
 
 import java.util.*;
@@ -283,7 +282,7 @@ public class MainActivity extends MapActivity {
         protected ClusterList doInBackground(Void... params) {
             Log.d(LOG_TAG, "doInBackground");
             // Retrieve scan results.
-            List<StoredScanResult> scanResults = ScanResultTracker.getScanResults(
+            List<MyScanResult> scanResults = ScanResultTracker.getScanResults(
                     MainActivity.this,
                     minLatitude - BORDER_WIDTH,
                     minLongitude - BORDER_WIDTH,
@@ -292,7 +291,7 @@ public class MainActivity extends MapActivity {
             );
             Log.d(LOG_TAG, "scanResults.size() " + scanResults.size());
             // Process them.
-            for (StoredScanResult scanResult : scanResults) {
+            for (MyScanResult scanResult : scanResults) {
                 // Check if we're cancelled.
                 if (isCancelled()) {
                     return null;
@@ -322,15 +321,13 @@ public class MainActivity extends MapActivity {
             Log.d(LOG_TAG, "onCancelled");
         }
 
-        private void addScanResult(StoredScanResult scanResult) {
-            final StoredLocation location = scanResult.getLocation();
+        private void addScanResult(MyScanResult scanResult) {
+            int key1 = (int)Math.floor(scanResult.getLatitude() / gridSize);
+            int key2 = (int)Math.floor(scanResult.getLongitude() / gridSize);
 
-            int key1 = (int)Math.floor(location.getLatitude() / gridSize);
-            int key2 = (int)Math.floor(location.getLongitude() / gridSize);
-
-            List<StoredScanResult> subCache = (List<StoredScanResult>)cellToScanResultCache.get(key1, key2);
+            List<MyScanResult> subCache = (List<MyScanResult>)cellToScanResultCache.get(key1, key2);
             if (subCache == null) {
-                subCache = new ArrayList<StoredScanResult>();
+                subCache = new ArrayList<MyScanResult>();
                 cellToScanResultCache.put(key1, key2, subCache);
             }
 
@@ -347,11 +344,11 @@ public class MainActivity extends MapActivity {
                     return null;
                 }
 
-                List<StoredScanResult> subCache = (List<StoredScanResult>)o;
+                List<MyScanResult> subCache = (List<MyScanResult>)o;
                 HashMap<String, HashSet<String>> ssidToBssidCache = new HashMap<String, HashSet<String>>();
 
                 LocationProcessor locationProcessor = new LocationProcessor();
-                for (StoredScanResult scanResult : subCache) {
+                for (MyScanResult scanResult : subCache) {
                     // Check if we're cancelled.
                     if (isCancelled()) {
                         return null;
@@ -364,7 +361,7 @@ public class MainActivity extends MapActivity {
                     }
                     bssids.add(scanResult.getBssid());
                     // Track the location.
-                    locationProcessor.add(scanResult.getLocation());
+                    locationProcessor.add(scanResult);
                 }
 
                 // Initialize a cluster.
@@ -374,7 +371,7 @@ public class MainActivity extends MapActivity {
                 for (Map.Entry<String, HashSet<String>> entry : ssidToBssidCache.entrySet()) {
                     cluster.add(new Network(entry.getKey(), entry.getValue()));
                 }
-                // Finally, ass the cluster to the cluster list.
+                // Finally, add the cluster to the cluster list.
                 clusterList.add(cluster);
                 Log.d(LOG_TAG, "clusterList.add " + cluster);
             }

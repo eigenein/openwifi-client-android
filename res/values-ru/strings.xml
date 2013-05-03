@@ -33,7 +33,6 @@
     <string name="version">Версия %s</string>
     <string name="about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
     <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
-    <string name="client_id">Support ID: %s</string>
     <string name="sync_now">Синхронизировать сейчас</string>
     <string name="sync_now_summary">Начинает синхронизацию базы данных, не дожидаясь подключения к Wi-Fi.</string>
     <string name="sync_now_started">Начинается синхронизация.</string>
@@ -42,5 +41,7 @@
         В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке,
         чтобы помочь исправить ее?
     </string>
-    <string name="crash_dialog_comment_prompt">Вы можете добавить свои комментарии об ошибке здесь:</string>
+    <string name="crash_dialog_comment_prompt">
+        Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:
+    </string>
 </resources>

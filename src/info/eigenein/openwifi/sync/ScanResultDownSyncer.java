@@ -1,11 +1,9 @@
 package info.eigenein.openwifi.sync;
 
 import android.content.Context;
-import android.util.Log;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.persistency.entities.StoredLocation;
-import info.eigenein.openwifi.persistency.entities.StoredScanResult;
+import info.eigenein.openwifi.persistency.MyScanResult;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
@@ -39,30 +37,19 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             throw new RuntimeException("Could not parse the response.", e);
         }
         for (int i = 0; i < scanResultList.length(); i++) {
-            final StoredLocation location = new StoredLocation();
-            final StoredScanResult scanResult = new StoredScanResult();
             String syncId = null;
             // Initialize entities.
+            MyScanResult scanResult = null;
             try {
                 final JSONObject scanResultObject = scanResultList.getJSONObject(i);
-                Log.d(LOG_TAG, "scanResultObject: " + scanResultObject);
                 syncId = scanResultObject.getString("_id");
-                location.setTimestamp(scanResultObject.getLong("ts"));
-                location.setAccuracy((float)scanResultObject.getDouble("acc"));
-                final JSONObject locationObject = scanResultObject.getJSONObject("loc");
-                location.setLatitude(locationObject.getDouble("lat"));
-                location.setLongitude(locationObject.getDouble("lon"));
-                location.setOwn(false);
-                scanResult.setLocation(location);
-                scanResult.setBssid(scanResultObject.getString("bssid"));
-                scanResult.setSsid(scanResultObject.getString("ssid"));
-                scanResult.setSynced(true);
-                scanResult.setLocationTimestamp(location.getTimestamp());
-                // Store the entities.
+                scanResult = MyScanResult.fromJsonObject(scanResultObject);
             } catch (JSONException e) {
                 throw new RuntimeException("Could not parse the response item.", e);
             }
-            // Store the entities.
+            scanResult.setOwn(false);
+            scanResult.setSynced(true);
+            // Store the entity.
             ScanResultTracker.add(context, scanResult);
             settings.edit().lastSyncId(syncId).commit();
             syncedEntitiesCount += 1;

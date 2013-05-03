@@ -41,7 +41,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
 
         // Obtain scan results.
         final WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        List<ScanResult> scanResults = wifiManager.getScanResults();
+        final List<ScanResult> scanResults = wifiManager.getScanResults();
         if (scanResults == null) {
             Log.w(LOG_TAG, "No scan results.");
             return;
@@ -64,7 +64,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
 
         if (openScanResults.size() != 0) {
             // Finally, add all these scan results.
-            ScanResultTracker.add(context, location, openScanResults);
+            ScanResultTracker.add(context, location, openScanResults, true);
         } else {
             Log.d(LOG_TAG, "No open access points here.");
         }

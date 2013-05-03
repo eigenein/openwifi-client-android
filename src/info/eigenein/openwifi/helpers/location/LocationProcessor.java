@@ -2,7 +2,7 @@ package info.eigenein.openwifi.helpers.location;
 
 import android.location.Location;
 import info.eigenein.openwifi.helpers.entities.Area;
-import info.eigenein.openwifi.persistency.entities.StoredLocation;
+import info.eigenein.openwifi.persistency.MyScanResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,40 +13,40 @@ import java.util.List;
 public class LocationProcessor {
     private static final float MIN_AREA_ACCURACY = 10.0f;
 
-    private final List<StoredLocation> locations = new ArrayList<StoredLocation>();
+    private final List<MyScanResult> scanResults = new ArrayList<MyScanResult>();
 
-    public void add(StoredLocation location) {
-        locations.add(location);
+    public void add(MyScanResult scanResult) {
+        scanResults.add(scanResult);
     }
 
     public Area getArea() {
-        if (locations.size() == 1) {
+        if (scanResults.size() == 1) {
             // Return the location as the area.
-            final StoredLocation location = locations.get(0);
+            final MyScanResult scanResult = scanResults.get(0);
             return new Area(
-                    location.getLatitude(),
-                    location.getLongitude(),
-                    Math.max(location.getAccuracy(), MIN_AREA_ACCURACY));
+                    scanResult.getLatitude(),
+                    scanResult.getLongitude(),
+                    Math.max(scanResult.getAccuracy(), MIN_AREA_ACCURACY));
         }
 
         // Find weighted mean of locations.
         double latitudeSum = 0.0, longitudeSum = 0.0;
-        for (StoredLocation location : locations) {
-            latitudeSum += location.getLatitude();
-            longitudeSum += location.getLongitude();
+        for (MyScanResult scanResult : scanResults) {
+            latitudeSum += scanResult.getLatitude();
+            longitudeSum += scanResult.getLongitude();
         }
-        double latitude = latitudeSum / locations.size();
-        double longitude = longitudeSum / locations.size();
+        final double latitude = latitudeSum / scanResults.size();
+        final double longitude = longitudeSum / scanResults.size();
 
         // Find accuracy.
         float accuracy = 0.0f;
-        float[] distance = new float[1];
-        for (StoredLocation location : locations) {
+        final float[] distance = new float[1];
+        for (MyScanResult scanResult : scanResults) {
             Location.distanceBetween(
                     latitude,
                     longitude,
-                    location.getLatitude(),
-                    location.getLongitude(),
+                    scanResult.getLatitude(),
+                    scanResult.getLongitude(),
                     distance
             );
             if (distance[0] > accuracy) {

@@ -85,10 +85,10 @@ public class LocationTracker {
         }
 
         // Check whether the new location fix is newer or older.
-        long timeDelta = location2.getTime() - location1.getTime();
-        boolean isSignificantlyNewer = timeDelta > OUTDATED_TIME_DELTA;
-        boolean isSignificantlyOlder = timeDelta < -OUTDATED_TIME_DELTA;
-        boolean isNewer = timeDelta > 0;
+        final long timeDelta = location2.getTime() - location1.getTime();
+        final boolean isSignificantlyNewer = timeDelta > OUTDATED_TIME_DELTA;
+        final boolean isSignificantlyOlder = timeDelta < -OUTDATED_TIME_DELTA;
+        final boolean isNewer = timeDelta > 0;
 
         // If it's been more than two minutes since the current location, use the new location
         // because the user has likely moved.
@@ -101,12 +101,12 @@ public class LocationTracker {
 
         // Check whether the new location fix is more or less accurate.
         float accuracyDelta = location2.getAccuracy() - location1.getAccuracy();
-        boolean isLessAccurate = accuracyDelta > 0.0f;
-        boolean isMoreAccurate = accuracyDelta < 0.0f;
-        boolean isSignificantlyLessAccurate = accuracyDelta > 200.0f;
+        final boolean isLessAccurate = accuracyDelta > 0.0f;
+        final boolean isMoreAccurate = accuracyDelta < 0.0f;
+        final boolean isSignificantlyLessAccurate = accuracyDelta > 200.0f;
 
         // Check if the old and new location are from the same provider.
-        boolean isFromSameProvider = isSameProvider(
+        final boolean isFromSameProvider = isSameProvider(
                 location2.getProvider(),
                 location1.getProvider());
 

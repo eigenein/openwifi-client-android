@@ -3,7 +3,7 @@ package info.eigenein.openwifi.sync;
 import android.content.Context;
 import android.util.Log;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.persistency.entities.StoredScanResult;
+import info.eigenein.openwifi.persistency.MyScanResult;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -20,10 +20,10 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
 
     public TaggedRequest getNextRequest(Context context) {
         // Prepare the page.
-        Log.d(LOG_TAG, "Querying for the page ...");
-        final List<StoredScanResult> scanResults =
+        Log.d(LOG_TAG + ".getNextRequest", "Querying for the page ...");
+        final List<MyScanResult> scanResults =
                 ScanResultTracker.getUnsyncedScanResults(context, PAGE_SIZE);
-        Log.d(LOG_TAG, "scanResults: " + scanResults.size());
+        Log.d(LOG_TAG + ".getNextRequest", "scanResults: " + scanResults.size());
         if (scanResults.isEmpty()) {
             // Finished.
             return null;
@@ -32,7 +32,7 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
         final HttpPost request = new HttpPost(URL);
         try {
             final JSONArray array = new JSONArray();
-            for (StoredScanResult scanResult : scanResults) {
+            for (MyScanResult scanResult : scanResults) {
                 array.put(scanResult.toJsonObject());
             }
             final String jsonString = array.toString();
@@ -45,8 +45,8 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
 
     @Override
     public boolean processResponse(Context context, TaggedRequest request, HttpResponse response) {
-        Log.d(LOG_TAG, "Marking the results as synced ...");
-        final List<StoredScanResult> scanResults = (List<StoredScanResult>)request.getTag();
+        Log.d(LOG_TAG + ".processResponse", "Marking the results as synced ...");
+        final List<MyScanResult> scanResults = (List<MyScanResult>)request.getTag();
         ScanResultTracker.markAsSynced(context, scanResults);
         syncedEntitiesCount += scanResults.size();
         return scanResults.size() != 0;

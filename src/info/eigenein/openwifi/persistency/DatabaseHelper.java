@@ -7,8 +7,6 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.persistency.entities.StoredLocation;
-import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 
 import java.sql.SQLException;
 
@@ -27,11 +25,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase, ConnectionSource connectionSource) {
         Log.i(LOG_TAG, "onCreate");
         try {
-            TableUtils.createTable(connectionSource, StoredLocation.class);
-            TableUtils.createTable(connectionSource, StoredScanResult.class);
+            TableUtils.createTable(connectionSource, MyScanResult.class);
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Failed to create database.", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create database.", e);
         }
     }
 
