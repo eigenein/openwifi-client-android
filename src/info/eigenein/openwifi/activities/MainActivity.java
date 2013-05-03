@@ -15,6 +15,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.location.LocationProcessor;
+import info.eigenein.openwifi.helpers.map.*;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.entities.Area;
@@ -22,10 +23,6 @@ import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
-import info.eigenein.openwifi.helpers.map.ClusterListOverlay;
-import info.eigenein.openwifi.helpers.map.ClusterOverlay;
-import info.eigenein.openwifi.helpers.map.MapViewListener;
-import info.eigenein.openwifi.helpers.map.TrackableMapView;
 import info.eigenein.openwifi.persistency.entities.StoredLocation;
 import info.eigenein.openwifi.persistency.entities.StoredScanResult;
 import org.apache.commons.collections.map.MultiKeyMap;
@@ -70,7 +67,7 @@ public class MainActivity extends MapActivity {
         // Setup map controller.
         final MapController mapController = mapView.getController();
         // Setup current location.
-        myLocationOverlay = new MyLocationOverlay(this, mapView);
+        myLocationOverlay = new TrackableMyLocationOverlay(this, mapView);
         myLocationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
                 // Zoom in to current location
