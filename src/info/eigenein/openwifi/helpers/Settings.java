@@ -44,7 +44,7 @@ public class Settings {
     }
 
     public int maxScanResultsForBssidCount() {
-        return Integer.parseInt(preferences.getString(MAX_SCAN_RESULTS_FOR_BSSID_KEY, null));
+        return Integer.parseInt(preferences.getString(MAX_SCAN_RESULTS_FOR_BSSID_KEY, "4"));
     }
 
     public long scanPeriod() {
