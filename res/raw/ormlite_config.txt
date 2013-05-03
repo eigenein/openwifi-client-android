@@ -1,5 +1,5 @@
 #
-# generated on 2013/05/03 11:06:53
+# generated on 2013/05/04 12:26:42
 #
 # --table-start--
 dataClass=info.eigenein.openwifi.persistency.entities.StoredScanResult
@@ -35,11 +35,13 @@ columnName=level
 # --field-start--
 fieldName=locationTimestamp
 columnName=location_timestamp
+canBeNull=false
 indexName=scan_results_bssid_location_timestamp_idx
 # --field-end--
 # --field-start--
 fieldName=location
 columnName=location_id
+canBeNull=false
 foreign=true
 foreignColumnName=id
 # --field-end--

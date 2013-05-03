@@ -57,6 +57,7 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
                 scanResult.setBssid(scanResultObject.getString("bssid"));
                 scanResult.setSsid(scanResultObject.getString("ssid"));
                 scanResult.setSynced(true);
+                scanResult.setLocationTimestamp(location.getTimestamp());
                 // Store the entities.
             } catch (JSONException e) {
                 throw new RuntimeException("Could not parse the response item.", e);

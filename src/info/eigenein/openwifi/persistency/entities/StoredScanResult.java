@@ -40,14 +40,20 @@ public class StoredScanResult {
     @DatabaseField(columnName = "level", canBeNull = true)
     private Integer level;
 
+    /**
+     * Denormalized because we need the index on it to sort the results
+     * for the given BSSID by location timestamp.
+     */
     @DatabaseField(
             columnName = LOCATION_TIMESTAMP,
+            canBeNull = false,
             index = true,
             indexName = "scan_results_bssid_location_timestamp_idx")
     private Long locationTimestamp;
 
     @DatabaseField(
             columnName = "location_id",
+            canBeNull = false,
             foreign = true,
             foreignColumnName = "id"
     )
@@ -66,6 +72,7 @@ public class StoredScanResult {
         this.capabilities = scanResult.capabilities;
         this.level = scanResult.level;
         this.location = location;
+        this.locationTimestamp = location.getTimestamp();
     }
 
     public int getId() {
@@ -102,6 +109,10 @@ public class StoredScanResult {
 
     public void setSynced(boolean synced) {
         this.synced = synced;
+    }
+
+    public void setLocationTimestamp(long timestamp) {
+        this.locationTimestamp = timestamp;
     }
 
     public String toString() {

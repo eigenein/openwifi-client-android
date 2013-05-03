@@ -9,6 +9,8 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "locations")
 public class StoredLocation {
+    public static final String TIMESTAMP = "timestamp";
+
     /**
      * Fake ID - required by ORMLite.
      */
@@ -27,7 +29,7 @@ public class StoredLocation {
     @DatabaseField(columnName = "provider", canBeNull = true)
     private String provider;
 
-    @DatabaseField(columnName = "timestamp", canBeNull = false, index = true)
+    @DatabaseField(columnName = TIMESTAMP, canBeNull = false, index = true)
     private long timestamp;
 
     @DatabaseField(columnName = "own", canBeNull = false)

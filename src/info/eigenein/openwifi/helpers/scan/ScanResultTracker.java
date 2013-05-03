@@ -306,7 +306,7 @@ public class ScanResultTracker {
         // Avoid own location duplication.
         if (location.isOwn()) {
             Where<StoredLocation, Long> where = locationDao.queryBuilder().where();
-            where.eq("timestamp", location.getTimestamp());
+            where.eq(StoredLocation.TIMESTAMP, location.getTimestamp());
             cachedLocation = where.queryForFirst();
         }
         if (cachedLocation == null) {
