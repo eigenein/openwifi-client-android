@@ -21,3 +21,9 @@
 
 -dontwarn org.apache.commons.collections.BeanMap
 -dontwarn java.beans.**
+
+-keep class javax.** { *; }
+-keep class org.** { *; }
+-keep class android.support.v4.** { *; }
+-keep class com.google.** { *; }
+-keep class com.j256.** { *; }
