@@ -67,6 +67,10 @@ public class SyncIntentService extends IntentService {
                 break;
             }
             final long requestEndTime = System.currentTimeMillis();
+            // Log headers.
+            for (Header header : response.getAllHeaders()) {
+                Log.d(SERVICE_NAME + ".sync", String.format("%s: %s", header.getName(), header.getValue()));
+            }
             // Check the status code.
             final StatusLine statusLine = response.getStatusLine();
             Log.d(SERVICE_NAME + ".sync", String.format("Request is finished in %sms: %s",
@@ -115,6 +119,7 @@ public class SyncIntentService extends IntentService {
     private static void initializeRequest(HttpRequest request, String clientId) {
         request.setHeader("X-Client-ID", clientId);
         request.setHeader("Accept", "application/json");
+        // TODO: request.setHeader("Accept-Encoding", "gzip");
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Connection", "Keep-Alive");
     }
