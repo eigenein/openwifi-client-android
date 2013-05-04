@@ -6,6 +6,7 @@ import android.net.wifi.ScanResult;
 import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
@@ -245,7 +246,8 @@ public class ScanResultTracker {
      */
     private static Dao<MyScanResult, Long> getScanResultDao(DatabaseHelper databaseHelper)
             throws SQLException {
-        return databaseHelper.getDao(MyScanResult.class);
+        final Dao<MyScanResult, Long> scanResultDao = databaseHelper.getDao(MyScanResult.class);
+        return scanResultDao;
     }
 
     /**
