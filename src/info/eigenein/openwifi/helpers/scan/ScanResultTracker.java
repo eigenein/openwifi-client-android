@@ -174,16 +174,23 @@ public class ScanResultTracker {
     /**
      * Marks the results as synced.
      */
-    public static void markAsSynced(Context context, Iterable<MyScanResult> scanResults) {
+    public static void markAsSynced(final Context context, final Iterable<MyScanResult> scanResults) {
         DatabaseHelper databaseHelper = null;
         try {
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
-            for (MyScanResult scanResult : scanResults) {
-                scanResult.setSynced(true);
-                scanResultDao.update(scanResult);
-            }
-        } catch (SQLException e) {
+            // Do in batch mode to speed up.
+            scanResultDao.callBatchTasks(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    for (MyScanResult scanResult : scanResults) {
+                        scanResult.setSynced(true);
+                        scanResultDao.update(scanResult);
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception e) {
             throw new RuntimeException("Error while updating the scan results.", e);
         } finally {
             if (databaseHelper != null) {
