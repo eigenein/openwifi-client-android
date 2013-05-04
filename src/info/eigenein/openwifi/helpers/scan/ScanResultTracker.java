@@ -262,7 +262,7 @@ public class ScanResultTracker {
         if (scanResult.isOwn()) {
             Where<MyScanResult, Long> where = scanResultDao.queryBuilder().where();
             cachedScanResult = where.and(
-                    where.eq(MyScanResult.BSSID, scanResult.BSSID),
+                    where.eq(MyScanResult.BSSID, scanResult.getBssid()),
                     where.eq(MyScanResult.TIMESTAMP, scanResult.getTimestamp()))
                     .queryForFirst();
         }
