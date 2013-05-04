@@ -17,7 +17,6 @@ public class MyScanResult {
     public static final String ACCURACY = "accuracy";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
-    public static final String PROVIDER = "provider";
     public static final String TIMESTAMP = "timestamp";
     public static final String SYNCED = "synced";
     public static final String OWN = "own";
@@ -53,12 +52,6 @@ public class MyScanResult {
             index = true
     )
     private double longitude;
-
-    @DatabaseField(
-            columnName = PROVIDER,
-            canBeNull = true
-    )
-    private String provider;
 
     @DatabaseField(
             columnName = TIMESTAMP,
@@ -124,7 +117,6 @@ public class MyScanResult {
         this.bssid = scanResult.BSSID;
         this.latitude = location.getLatitude();
         this.longitude = location.getLongitude();
-        this.provider = location.getProvider();
         this.ssid = scanResult.SSID;
         this.timestamp = location.getTime();
     }
