@@ -15,6 +15,7 @@ import info.eigenein.openwifi.persistency.MyScanResult;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Tracks an access point scan results in the application database.
@@ -26,10 +27,10 @@ public class ScanResultTracker {
      * Adds the scan results to the database.
      */
     public static void add(
-            Context context,
-            Location location,
-            List<ScanResult> scanResults,
-            boolean own) {
+            final Context context,
+            final Location location,
+            final List<ScanResult> scanResults,
+            final boolean own) {
         Log.d(LOG_TAG + ".add", "Storing scan results in the database.");
 
         DatabaseHelper databaseHelper = null;
@@ -37,14 +38,21 @@ public class ScanResultTracker {
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
 
-            for (ScanResult scanResult : scanResults) {
-                createScanResult(scanResultDao, scanResult, location, own);
-                purgeOldScanResults(
-                        scanResultDao,
-                        scanResult.BSSID,
-                        Settings.with(context).maxScanResultsForBssidCount());
-            }
-        } catch (SQLException e) {
+            // Speed up saving by doing this in batch mode.
+            scanResultDao.callBatchTasks(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    for (ScanResult scanResult : scanResults) {
+                        createScanResult(scanResultDao, scanResult, location, own);
+                        purgeOldScanResults(
+                                scanResultDao,
+                                scanResult.BSSID,
+                                Settings.with(context).maxScanResultsForBssidCount());
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception e) {
             throw new RuntimeException("Error while storing scan results.", e);
         } finally {
             if (databaseHelper != null) {
@@ -149,7 +157,7 @@ public class ScanResultTracker {
             queryBuilder.limit(limit);
 
             return queryBuilder.query();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Log.e(LOG_TAG + ".getUnsyncedScanResults", "Error while querying scan results.", e);
             throw new RuntimeException(e);
         } finally {
@@ -186,7 +194,7 @@ public class ScanResultTracker {
         }
     }
 
-    public static void add(Context context, List<MyScanResult> scanResults) {
+    public static void add(final Context context, final List<MyScanResult> scanResults) {
         final long startTime = System.currentTimeMillis();
 
         DatabaseHelper databaseHelper = null;
@@ -194,18 +202,25 @@ public class ScanResultTracker {
             // Initialize DAOs.
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
-            for (MyScanResult scanResult : scanResults) {
-                Log.d(LOG_TAG + ".add", "Adding the result: " + scanResult);
-                // Store the scan result.
-                createScanResult(scanResultDao, scanResult);
-                // Remove old scan results.
-                purgeOldScanResults(
-                        scanResultDao,
-                        scanResult.getBssid(),
-                        Settings.with(context).maxScanResultsForBssidCount());
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error while adding the result.", e);
+            // Do inserts in batch mode.
+            scanResultDao.callBatchTasks(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    for (MyScanResult scanResult : scanResults) {
+                        Log.d(LOG_TAG + ".add", "Adding the result: " + scanResult);
+                        // Store the scan result.
+                        createScanResult(scanResultDao, scanResult);
+                        // Remove old scan results.
+                        purgeOldScanResults(
+                                scanResultDao,
+                                scanResult.getBssid(),
+                                Settings.with(context).maxScanResultsForBssidCount());
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException("Error while adding the results.", e);
         } finally {
             if (databaseHelper != null) {
                 OpenHelperManager.releaseHelper();
@@ -301,10 +316,7 @@ public class ScanResultTracker {
             String bssid,
             int maxScanResultsForBssidCount)
             throws SQLException {
-        // Check parameters.
-        if (bssid == null) {
-            throw new RuntimeException("The bssid parameter is null.");
-        }
+        final long startTime = System.currentTimeMillis();
 
         Log.d(LOG_TAG + ".purgeOldScanResults", bssid);
         @SuppressWarnings("deprecation")
@@ -316,20 +328,22 @@ public class ScanResultTracker {
 
         if (scanResults.size() != maxScanResultsForBssidCount) {
             Log.d(LOG_TAG + ".purgeOldScanResults", scanResults.size() + " scan results for " + bssid);
-            return;
+        } else {
+            // Obtain the timestamp of the oldest result.
+            final long lastLocationTimestamp = scanResults.get(maxScanResultsForBssidCount - 1).getTimestamp();
+            Log.d(LOG_TAG + ".purgeOldScanResults", "lastLocationTimestamp " + lastLocationTimestamp);
+            // Delete all results that are even older.
+            final DeleteBuilder<MyScanResult, Long> deleteBuilder = dao.deleteBuilder();
+            deleteBuilder.where()
+                    .eq(MyScanResult.BSSID, bssid)
+                    .and()
+                    .lt(MyScanResult.TIMESTAMP, lastLocationTimestamp);
+            final int deletedRowsCount = dao.delete(deleteBuilder.prepare());
+
+            Log.d(LOG_TAG + ".purgeOldScanResults", "deleted " + deletedRowsCount + " row(s)");
         }
 
-        // Obtain the timestamp of the oldest result.
-        final long lastLocationTimestamp = scanResults.get(maxScanResultsForBssidCount - 1).getTimestamp();
-        Log.d(LOG_TAG + ".purgeOldScanResults", "lastLocationTimestamp " + lastLocationTimestamp);
-        // Delete all results that are even older.
-        final DeleteBuilder<MyScanResult, Long> deleteBuilder = dao.deleteBuilder();
-        deleteBuilder.where()
-                .eq(MyScanResult.BSSID, bssid)
-                .and()
-                .lt(MyScanResult.TIMESTAMP, lastLocationTimestamp);
-        final int deletedRowsCount = dao.delete(deleteBuilder.prepare());
-
-        Log.d(LOG_TAG + ".purgeOldScanResults", "deleted " + deletedRowsCount + " row(s)");
+        final long time = System.currentTimeMillis() - startTime;
+        Log.d(LOG_TAG + ".purgeOldScanResults", String.format("Done in %sms.", time));
     }
 }
