@@ -11,6 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ScanResultDownSyncer extends ScanResultSyncer {
     private static final String LOG_TAG = ScanResultDownSyncer.class.getCanonicalName();
 
@@ -30,12 +33,16 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
 
     @Override
     public boolean processResponse(Context context, TaggedRequest request, HttpResponse response) {
+        // Parse JSON.
         JSONArray scanResultList = null;
         try {
             scanResultList = new JSONArray(EntityUtils.toString(response.getEntity()));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the response.", e);
         }
+        final List<MyScanResult> scanResults = new ArrayList<MyScanResult>();
+        // Process the source objects.
+        String lastSyncId = null;
         for (int i = 0; i < scanResultList.length(); i++) {
             String syncId = null;
             // Initialize entities.
@@ -49,11 +56,21 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             }
             scanResult.setOwn(false);
             scanResult.setSynced(true);
-            // Store the entity.
-            ScanResultTracker.add(context, scanResult);
-            settings.edit().lastSyncId(syncId).commit();
-            syncedEntitiesCount += 1;
+            // Add to the list.
+            scanResults.add(scanResult);
+            // Update lastSyncId.
+            if (syncId != null) {
+                lastSyncId = syncId;
+            }
         }
+        // Store the entities.
+        ScanResultTracker.add(context, scanResults);
+        // Update lastSyncId setting.
+        if (lastSyncId != null) {
+            settings.edit().lastSyncId(lastSyncId).commit();
+        }
+        // Update performance counters.
+        syncedEntitiesCount += scanResults.size();
         // Finish sync if there is any result.
         return scanResultList.length() != 0;
     }

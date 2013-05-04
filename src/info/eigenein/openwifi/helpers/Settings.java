@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.acra.ACRA;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.UUID;
 
@@ -56,7 +57,11 @@ public class Settings {
     public String clientId() {
         String clientId = preferences.getString(CLIENT_ID_KEY, null);
         if (clientId == null) {
-            clientId = UUID.randomUUID().toString().substring(24, 12);
+            clientId = String.format(
+                    "%s-%s-%s",
+                    RandomStringUtils.randomNumeric(4),
+                    RandomStringUtils.randomNumeric(4),
+                    RandomStringUtils.randomNumeric(4));
             Log.i(LOG_TAG, "clientId: " + clientId);
             preferences.edit().putString(CLIENT_ID_KEY, clientId).commit();
         }

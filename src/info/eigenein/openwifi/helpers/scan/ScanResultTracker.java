@@ -186,8 +186,7 @@ public class ScanResultTracker {
         }
     }
 
-    public static void add(Context context, MyScanResult scanResult) {
-        Log.d(LOG_TAG + ".add", "Adding the result: " + scanResult);
+    public static void add(Context context, List<MyScanResult> scanResults) {
         final long startTime = System.currentTimeMillis();
 
         DatabaseHelper databaseHelper = null;
@@ -195,13 +194,16 @@ public class ScanResultTracker {
             // Initialize DAOs.
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
-            // Store the scan result.
-            createScanResult(scanResultDao, scanResult);
-            // Remove old scan results.
-            purgeOldScanResults(
-                    scanResultDao,
-                    scanResult.getBssid(),
-                    Settings.with(context).maxScanResultsForBssidCount());
+            for (MyScanResult scanResult : scanResults) {
+                Log.d(LOG_TAG + ".add", "Adding the result: " + scanResult);
+                // Store the scan result.
+                createScanResult(scanResultDao, scanResult);
+                // Remove old scan results.
+                purgeOldScanResults(
+                        scanResultDao,
+                        scanResult.getBssid(),
+                        Settings.with(context).maxScanResultsForBssidCount());
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error while adding the result.", e);
         } finally {
