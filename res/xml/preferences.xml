@@ -37,4 +37,25 @@
             android:key="share_database"
             android:summary="@string/share_database_summary"/>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/support"
+        android:key="support_settings">
+        <CheckBoxPreference
+            android:key="acra.enable"
+            android:title="@string/enable_acra"
+            android:summary="@string/enable_acra_summary"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:key="acra.syslog.enable"
+            android:title="@string/acra_syslog"
+            android:summary="@string/acra_syslog_summary"
+            android:defaultValue="true"
+            android:dependency="acra.enable"/>
+        <CheckBoxPreference
+            android:key="acra.deviceid.enable"
+            android:title="@string/acra_deviceid"
+            android:summary="@string/acra_deviceid_summary"
+            android:defaultValue="false"
+            android:dependency="acra.enable"/>
+    </PreferenceCategory>
 </PreferenceScreen>

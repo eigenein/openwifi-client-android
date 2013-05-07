@@ -44,4 +44,11 @@
     <string name="crash_dialog_comment_prompt">
         Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:
     </string>
+    <string name="support">Поддержка</string>
+    <string name="enable_acra">Отправлять отчеты об ошибках</string>
+    <string name="acra_syslog">Системные отчеты</string>
+    <string name="acra_deviceid">Идентификатор устройства</string>
+    <string name="enable_acra_summary">Отчеты помогают улучшить качество приложения.</string>
+    <string name="acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
+    <string name="acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
 </resources>

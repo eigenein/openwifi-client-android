@@ -46,4 +46,11 @@
     <string name="crash_dialog_comment_prompt">
         Please describe what was you are doing right before the error has occurred:
     </string>
+    <string name="support">Support</string>
+    <string name="enable_acra">Enable error reporting</string>
+    <string name="acra_syslog">Send system logs</string>
+    <string name="acra_deviceid">Send Device ID</string>
+    <string name="enable_acra_summary">Helps to improve the application quality.</string>
+    <string name="acra_syslog_summary">Helps to find a cause of a problem.</string>
+    <string name="acra_deviceid_summary">Whether to include Android device ID.</string>
 </resources>
