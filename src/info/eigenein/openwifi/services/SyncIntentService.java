@@ -37,6 +37,8 @@ public class SyncIntentService extends IntentService {
         sync(new ScanResultDownSyncer(settings), clientId);
         // Upload our scan results.
         sync(new ScanResultUpSyncer(), clientId);
+        // Update last sync time.
+        settings.edit().lastSyncTime(System.currentTimeMillis());
 
         Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
     }

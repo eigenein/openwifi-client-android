@@ -7,8 +7,6 @@ import android.util.Log;
 import org.acra.ACRA;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.UUID;
-
 /**
  * Wraps preference manager for convenience.
  */
@@ -30,6 +28,8 @@ public class Settings {
     public static final String LAST_SYNC_ID_KEY = "last_sync_id";
 
     public static final String SYNC_NOW_KEY = "sync_now";
+
+    public static final String LAST_SYNC_TIME = "last_sync_date";
 
     private final SharedPreferences preferences;
 
@@ -83,6 +83,10 @@ public class Settings {
         }
     }
 
+    public long lastSyncTime() {
+        return preferences.getLong(LAST_SYNC_TIME, 0);
+    }
+
     public SettingsEditor edit() {
         return new SettingsEditor(preferences.edit());
     }
@@ -104,6 +108,11 @@ public class Settings {
         public SettingsEditor lastSyncId(String syncId) {
             editor.putString(LAST_SYNC_ID_KEY, syncId);
             ACRA.getErrorReporter().putCustomData("lastSyncId", syncId);
+            return this;
+        }
+
+        public SettingsEditor lastSyncTime(long syncTime) {
+            editor.putLong(LAST_SYNC_TIME, syncTime);
             return this;
         }
     }
