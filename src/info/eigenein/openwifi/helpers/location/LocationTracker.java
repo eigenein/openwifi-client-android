@@ -46,13 +46,12 @@ public class LocationTracker {
         );
 
         // Check if the best location is not outdated.
-        Log.d(LOG_TAG, "bestLocation " + formatLocation(bestLocation));
-        if (System.currentTimeMillis() - bestLocation.getTime() < OUTDATED_TIME_DELTA) {
-            Log.d(LOG_TAG, "getLocation not null");
+        if (bestLocation != null && System.currentTimeMillis() - bestLocation.getTime() < OUTDATED_TIME_DELTA) {
+            Log.d(LOG_TAG + ".getLocation", formatLocation(bestLocation));
             return bestLocation;
         }
 
-        Log.d(LOG_TAG, "getLocation null");
+        Log.d(LOG_TAG + ".getLocation", "null");
         return null;
     }
 
