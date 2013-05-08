@@ -83,7 +83,7 @@ public class SyncIntentService extends IntentService {
             // Execute the request.
             Log.d(SERVICE_NAME + ".sync", "Executing the request: " + taggedRequest.getRequest().getURI());
             final long requestStartTime = System.currentTimeMillis();
-            HttpResponse response = null;
+            HttpResponse response;
             try {
                 response = client.execute(taggedRequest.getRequest());
             } catch (IOException e) {

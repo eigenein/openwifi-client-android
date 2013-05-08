@@ -284,16 +284,20 @@ public class MainActivity extends MapActivity {
 
         @Override
         protected ClusterList doInBackground(Void... params) {
-            Log.d(LOG_TAG, "doInBackground");
             // Retrieve scan results.
-            List<MyScanResult> scanResults = ScanResultTracker.getScanResults(
+            final long getScanResultsStartTime = System.currentTimeMillis();
+            final List<MyScanResult> scanResults = ScanResultTracker.getScanResults(
                     MainActivity.this,
                     minLatitude - BORDER_WIDTH,
                     minLongitude - BORDER_WIDTH,
                     maxLatitude + BORDER_WIDTH,
                     maxLongitude + BORDER_WIDTH
             );
-            Log.d(LOG_TAG, "scanResults.size() " + scanResults.size());
+            Log.d(LOG_TAG + ".doInBackground", String.format(
+                    "fetched %d results in %sms.",
+                    scanResults.size(),
+                    System.currentTimeMillis() - getScanResultsStartTime
+            ));
             // Process them.
             for (MyScanResult scanResult : scanResults) {
                 // Check if we're cancelled.
@@ -307,7 +311,7 @@ public class MainActivity extends MapActivity {
 
         @Override
         protected synchronized void onPostExecute(ClusterList clusterList) {
-            Log.d(LOG_TAG, "onPostExecute " + clusterList);
+            Log.d(LOG_TAG + ".onPostExecute", clusterList.toString());
 
             clusterListOverlay.clearClusterOverlays();
             for (Cluster cluster : clusterList) {
@@ -322,12 +326,12 @@ public class MainActivity extends MapActivity {
 
         @Override
         protected void onCancelled(ClusterList result) {
-            Log.d(LOG_TAG, "onCancelled");
+            Log.d(LOG_TAG + ".onCancelled", "cancelled");
         }
 
         private void addScanResult(MyScanResult scanResult) {
-            int key1 = (int)Math.floor(scanResult.getLatitude() / gridSize);
-            int key2 = (int)Math.floor(scanResult.getLongitude() / gridSize);
+            final int key1 = (int)Math.floor(scanResult.getLatitude() / gridSize);
+            final int key2 = (int)Math.floor(scanResult.getLongitude() / gridSize);
 
             List<MyScanResult> subCache = (List<MyScanResult>)cellToScanResultCache.get(key1, key2);
             if (subCache == null) {
@@ -339,7 +343,7 @@ public class MainActivity extends MapActivity {
         }
 
         private ClusterList buildClusterList() {
-            ClusterList clusterList = new ClusterList();
+            final ClusterList clusterList = new ClusterList();
 
             // Iterate through grid cells.
             for (Object o : cellToScanResultCache.values()) {
@@ -348,8 +352,8 @@ public class MainActivity extends MapActivity {
                     return null;
                 }
 
-                List<MyScanResult> subCache = (List<MyScanResult>)o;
-                HashMap<String, HashSet<String>> ssidToBssidCache = new HashMap<String, HashSet<String>>();
+                final List<MyScanResult> subCache = (List<MyScanResult>)o;
+                final HashMap<String, HashSet<String>> ssidToBssidCache = new HashMap<String, HashSet<String>>();
 
                 LocationProcessor locationProcessor = new LocationProcessor();
                 for (MyScanResult scanResult : subCache) {
@@ -369,8 +373,8 @@ public class MainActivity extends MapActivity {
                 }
 
                 // Initialize a cluster.
-                Area area = locationProcessor.getArea();
-                Cluster cluster = new Cluster(area);
+                final Area area = locationProcessor.getArea();
+                final Cluster cluster = new Cluster(area);
                 // And fill it with networks.
                 for (Map.Entry<String, HashSet<String>> entry : ssidToBssidCache.entrySet()) {
                     cluster.add(new Network(entry.getKey(), entry.getValue()));

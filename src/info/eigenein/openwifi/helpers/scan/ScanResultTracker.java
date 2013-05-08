@@ -11,6 +11,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.location.L;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
 import info.eigenein.openwifi.persistency.MyScanResult;
 
@@ -104,11 +105,11 @@ public class ScanResultTracker {
      * Gets the stored scan results in the specified area.
      */
     public static List<MyScanResult> getScanResults(
-            Context context,
-            double minLatitude,
-            double minLongitude,
-            double maxLatitude,
-            double maxLongitude) {
+            final Context context,
+            final double minLatitude,
+            final double minLongitude,
+            final double maxLatitude,
+            final double maxLongitude) {
         Log.d(LOG_TAG + ".getScanResults", String.format("getScanResults %s %s %s %s",
                 minLatitude,
                 minLongitude,
@@ -121,10 +122,9 @@ public class ScanResultTracker {
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
 
             final Where<MyScanResult, Long> where = scanResultDao.queryBuilder().where();
-            where.gt(MyScanResult.LATITUDE, minLatitude).and()
-                    .lt(MyScanResult.LATITUDE, maxLatitude).and()
-                    .gt(MyScanResult.LONGITUDE, minLongitude).and()
-                    .lt(MyScanResult.LONGITUDE, maxLongitude);
+            where.between(MyScanResult.LATITUDE, L.toE6(minLatitude), L.toE6(maxLatitude))
+                    .and()
+                    .between(MyScanResult.LONGITUDE, L.toE6(minLongitude), L.toE6(maxLongitude));
 
             return where.query();
         } catch (SQLException e) {

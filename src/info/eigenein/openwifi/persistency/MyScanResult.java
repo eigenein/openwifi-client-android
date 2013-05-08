@@ -4,6 +4,7 @@ import android.location.Location;
 import android.net.wifi.ScanResult;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import info.eigenein.openwifi.helpers.location.L;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,19 +40,27 @@ public class MyScanResult {
     )
     private float accuracy;
 
+    /**
+     * Latitude * 10e6.
+     */
     @DatabaseField(
             columnName = LATITUDE,
             canBeNull = false,
-            index = true
+            index = true,
+            indexName = "my_scan_results_latitude_longitude_idx"
     )
-    private double latitude;
+    private int latitude;
 
+    /**
+     * Longitude * 10e6.
+     */
     @DatabaseField(
             columnName = LONGITUDE,
             canBeNull = false,
-            index = true
+            index = true,
+            indexName = "my_scan_results_latitude_longitude_idx"
     )
-    private double longitude;
+    private int longitude;
 
     @DatabaseField(
             columnName = TIMESTAMP,
@@ -97,8 +106,8 @@ public class MyScanResult {
             scanResult.accuracy = (float)object.getDouble("acc");
             scanResult.bssid = object.getString("bssid");
             final JSONObject locationObject = object.getJSONObject("loc");
-            scanResult.latitude = locationObject.getDouble("lat");
-            scanResult.longitude = locationObject.getDouble("lon");
+            scanResult.setLatitude(locationObject.getDouble("lat"));
+            scanResult.setLongitude(locationObject.getDouble("lon"));
         } catch (JSONException e) {
             throw new RuntimeException("Error while converting from JSON object.", e);
         }
@@ -115,10 +124,11 @@ public class MyScanResult {
     public MyScanResult(ScanResult scanResult, Location location) {
         this.accuracy = location.getAccuracy();
         this.bssid = scanResult.BSSID;
-        this.latitude = location.getLatitude();
-        this.longitude = location.getLongitude();
         this.ssid = scanResult.SSID;
         this.timestamp = location.getTime();
+        // These need 10e6 fix.
+        this.setLatitude(location.getLatitude());
+        this.setLongitude(location.getLongitude());
     }
 
     public String getSsid() {
@@ -134,11 +144,11 @@ public class MyScanResult {
     }
 
     public double getLatitude() {
-        return latitude;
+        return L.fromE6(latitude);
     }
 
     public double getLongitude() {
-        return longitude;
+        return L.fromE6(longitude);
     }
 
     public float getAccuracy() {
@@ -157,6 +167,14 @@ public class MyScanResult {
         this.own = own;
     }
 
+    public void setLatitude(double latitude) {
+        this.latitude = L.toE6(latitude);
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = L.toE6(longitude);
+    }
+
     public JSONObject toJsonObject() {
         try {
             // Build the object.
@@ -167,8 +185,9 @@ public class MyScanResult {
             object.put("ts", timestamp);
             // Build the location object.
             final JSONObject locationObject = new JSONObject();
-            locationObject.put("lat", latitude);
-            locationObject.put("lon", longitude);
+            // These need 10e6 fix.
+            locationObject.put("lat", getLatitude());
+            locationObject.put("lon", getLongitude());
             object.put("loc", locationObject);
             // Done.
             return object;
