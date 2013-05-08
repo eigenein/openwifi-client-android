@@ -27,18 +27,25 @@ public class SyncIntentService extends IntentService {
         super(SERVICE_NAME);
     }
 
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(final Intent intent) {
         Log.i(SERVICE_NAME + ".onHandleIntent", "Service is running.");
 
         final Settings settings = Settings.with(this);
+        // Set the "syncing now" flag.
+        settings.edit().syncingNow(true).commit();
 
         final String clientId = settings.clientId();
-        // Download the scan results.
-        sync(new ScanResultDownSyncer(settings), clientId);
-        // Upload our scan results.
-        sync(new ScanResultUpSyncer(), clientId);
-        // Update last sync time.
-        settings.edit().lastSyncTime(System.currentTimeMillis());
+        try {
+            // Download the scan results.
+            sync(new ScanResultDownSyncer(settings), clientId);
+            // Upload our scan results.
+            sync(new ScanResultUpSyncer(), clientId);
+            // Update last sync time.
+            settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
+        } finally {
+            // Reset the "syncing now" flag.
+            settings.edit().syncingNow(false).commit();
+        }
 
         Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
     }
@@ -49,7 +56,7 @@ public class SyncIntentService extends IntentService {
         final DefaultHttpClient client = prepareHttpClient();
         // Performance counters.
         final long syncStartTime = System.currentTimeMillis();
-        // Syncronization loop.
+        // Synchronization loop.
         while (true) {
             // Get next request.
             final TaggedRequest taggedRequest = syncer.getNextRequest(this);

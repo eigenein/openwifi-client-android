@@ -21,6 +21,8 @@ import info.eigenein.openwifi.services.SyncIntentService;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -38,7 +40,7 @@ public class SettingsActivity extends PreferenceActivity
         addPreferencesFromResource(R.xml.preferences);
 
         // Share database option.
-        Preference shareDatabasePreference = findPreference(Settings.SHARE_DATABASE_KEY);
+        final Preference shareDatabasePreference = findPreference(Settings.SHARE_DATABASE_KEY);
         shareDatabasePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 return ShareDatabase();
@@ -46,7 +48,7 @@ public class SettingsActivity extends PreferenceActivity
         });
 
         // Statistics option.
-        Preference statisticsPreference = findPreference(Settings.STATISTICS_KEY);
+        final Preference statisticsPreference = findPreference(Settings.STATISTICS_KEY);
         statisticsPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -56,15 +58,17 @@ public class SettingsActivity extends PreferenceActivity
         });
 
         // Sync now option.
-        Preference syncNowPreference = findPreference(Settings.SYNC_NOW_KEY);
+        final Preference syncNowPreference = findPreference(Settings.SYNC_NOW_KEY);
         syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG).show();
                 startService(new Intent(SettingsActivity.this, SyncIntentService.class));
+                updateSyncNowPreference(true);
                 return true;
             }
         });
+        updateSyncNowPreference(false);
     }
 
     @Override
@@ -86,13 +90,13 @@ public class SettingsActivity extends PreferenceActivity
      */
     private boolean ShareDatabase() {
         // Copy the database into the internal cache.
-        File sourceFile = new File("/data/data/" + getPackageName() + "/databases/" + DatabaseHelper.DATABASE_NAME);
+        final File sourceFile = new File("/data/data/" + getPackageName() + "/databases/" + DatabaseHelper.DATABASE_NAME);
         if (!sourceFile.exists()) {
             Toast.makeText(this, "No database file.", Toast.LENGTH_SHORT).show();
             return true;
         }
-        File cacheDir = getCacheDir();
-        File outputFile = new File(cacheDir, DatabaseHelper.DATABASE_NAME);
+        final File cacheDir = getCacheDir();
+        final File outputFile = new File(cacheDir, DatabaseHelper.DATABASE_NAME);
         Log.i(LOG_TAG, "copying database");
         try {
             FileUtils.copy(sourceFile, outputFile);
@@ -102,9 +106,9 @@ public class SettingsActivity extends PreferenceActivity
         }
         // Share it.
         Log.i(LOG_TAG, "sharing database");
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("application/x-sqlite3");
-        Uri uri = Uri.parse("content://info.eigenein.openwifi/" + DatabaseHelper.DATABASE_NAME);
+        final Uri uri = Uri.parse("content://info.eigenein.openwifi/" + DatabaseHelper.DATABASE_NAME);
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_database)));
         return true;
@@ -127,6 +131,7 @@ public class SettingsActivity extends PreferenceActivity
         // Update UI.
         updatePeriodPreference();
         updateMaxScanResultsForBssidPreference();
+        updateSyncNowPreference(false);
 
         // Listen to changes.
         getPreferenceManager().getSharedPreferences()
@@ -172,5 +177,27 @@ public class SettingsActivity extends PreferenceActivity
         ListPreference maxScanResultsForBssidPreference =
                 (ListPreference)getPreferenceScreen().findPreference(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY);
         maxScanResultsForBssidPreference.setSummary(maxScanResultsForBssidPreference.getEntry());
+    }
+
+    @SuppressWarnings("deprecation")
+    private void updateSyncNowPreference(boolean forceSyncingNow) {
+        final Preference syncNowPreference = findPreference(Settings.SYNC_NOW_KEY);
+        final Settings settings = Settings.with(this);
+
+        if (forceSyncingNow || settings.isSyncingNow()) {
+            // Syncing right now.
+            syncNowPreference.setSummary(getString(R.string.sync_now_syncing_summary));
+        } else {
+            final long lastSyncTime = settings.lastSyncTime();
+            if (lastSyncTime != 0) {
+                // Synced at the lastSyncTime.
+                syncNowPreference.setSummary(String.format(
+                        getString(R.string.sync_now_synced_at_summary),
+                        DateFormat.getDateTimeInstance().format(new Date(lastSyncTime))));
+            } else {
+                // Never synced.
+                syncNowPreference.setSummary(getString(R.string.sync_now_never_synced_summary));
+            }
+        }
     }
 }

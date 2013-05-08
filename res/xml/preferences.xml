@@ -20,8 +20,7 @@
         android:key="advanced_settings">
         <Preference
             android:title="@string/sync_now"
-            android:key="sync_now"
-            android:summary="@string/sync_now_summary"/>
+            android:key="sync_now"/>
         <Preference
             android:title="@string/statistics"
             android:key="show_statistics"

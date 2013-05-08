@@ -35,7 +35,9 @@
     <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
     <string name="client_id">Support ID: %s</string>
     <string name="sync_now">Synchronize Now</string>
-    <string name="sync_now_summary">Forces the application to synchronize the database using the existing connection.</string>
+    <string name="sync_now_synced_at_summary">Last synced: %1$s</string>
+    <string name="sync_now_never_synced_summary">Never synced</string>
+    <string name="sync_now_syncing_summary">Syncing right now</string>
     <string name="sync_now_started">Started to synchronize.</string>
     <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="crash_dialog_text">

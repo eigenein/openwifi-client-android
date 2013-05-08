@@ -31,6 +31,8 @@ public class Settings {
 
     public static final String LAST_SYNC_TIME = "last_sync_date";
 
+    public static final String SYNCING_NOW_KEY = "syncing_now";
+
     private final SharedPreferences preferences;
 
     public static Settings with(Context context) {
@@ -83,10 +85,23 @@ public class Settings {
         }
     }
 
+    /**
+     * Gets the last synchronization time.
+     */
     public long lastSyncTime() {
         return preferences.getLong(LAST_SYNC_TIME, 0);
     }
 
+    /**
+     * Gets whether syncing is performed right now.
+     */
+    public boolean isSyncingNow() {
+        return preferences.getBoolean(SYNCING_NOW_KEY, false);
+    }
+
+    /**
+     * Starts editing the settings.
+     */
     public SettingsEditor edit() {
         return new SettingsEditor(preferences.edit());
     }
@@ -98,6 +113,9 @@ public class Settings {
             this.editor = editor;
         }
 
+        /**
+         * Commits the settings changes.
+         */
         public void commit() {
             editor.commit();
         }
@@ -111,8 +129,16 @@ public class Settings {
             return this;
         }
 
+        /**
+         * Sets the last synchronization time.
+         */
         public SettingsEditor lastSyncTime(long syncTime) {
             editor.putLong(LAST_SYNC_TIME, syncTime);
+            return this;
+        }
+
+        public SettingsEditor syncingNow(boolean syncingNow) {
+            editor.putBoolean(SYNCING_NOW_KEY, syncingNow);
             return this;
         }
     }
