@@ -19,7 +19,7 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
     private static final String LOG_TAG =
             ConnectivityChangeBroadcastReceiver.class.getCanonicalName();
 
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         // Obtain the current state.
         final NetworkInfo.State state =
                 ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE))
@@ -37,18 +37,18 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
     /**
      * Called when the device is connecting to the Internet.
      */
-    private void onConnecting(WifiInfo info) {
+    private void onConnecting(final WifiInfo info) {
         Log.i(LOG_TAG, "onConnecting: " + info.getSSID());
     }
 
     /**
      * Called when the device is successfully connected to the Internet.
      */
-    private void onSucceeded(Context context, WifiInfo info) {
-        Log.i(LOG_TAG, "onSucceeded: " + info.getSSID());
+    private void onSucceeded(final Context context, final WifiInfo info) {
+        Log.i(LOG_TAG + ".onSucceeded", info.getSSID());
         // Starting the synchronization service.
-        Log.d(LOG_TAG, "Starting " + SyncIntentService.class.getSimpleName());
-        Intent syncServiceIntent = new Intent(context, SyncIntentService.class);
+        Log.d(LOG_TAG + ".onSucceeded", "Starting " + SyncIntentService.class.getSimpleName());
+        final Intent syncServiceIntent = new Intent(context, SyncIntentService.class);
         context.startService(syncServiceIntent);
     }
 
@@ -64,6 +64,9 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
                 .getConnectionInfo();
     }
 
+    /**
+     * Used to asynchronously check for Internet connectivity.
+     */
     private class CheckConnectivityAsyncTask extends AsyncTask<Void, Void, Void> {
         private final Context context;
 
