@@ -59,7 +59,7 @@ public class MainActivity extends MapActivity {
 
         // Setup map.
         mapView = (TrackableMapView)findViewById(R.id.map_view);
-        mapView.setBuiltInZoomControls(true);
+        mapView.setBuiltInZoomControls(false);
         mapView.addMovedOrZoomedObserver(new MapViewListener() {
             @Override
             public void onMovedOrZoomed() {
