@@ -63,19 +63,22 @@ public class MainActivity extends MapActivity {
         mapView.addMovedOrZoomedObserver(new MapViewListener() {
             @Override
             public void onMovedOrZoomed() {
-                Log.d(LOG_TAG, "mapView onMovedOrZoomed");
+                Log.d(LOG_TAG + ".onCreate", "onMovedOrZoomed");
                 startRefreshingScanResultsOnMap();
             }
         });
+        mapView.invalidateMoving();
         // Setup map controller.
         final MapController mapController = mapView.getController();
         // Setup current location.
         myLocationOverlay = new TrackableMyLocationOverlay(this, mapView);
         myLocationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
+                Log.d(LOG_TAG + ".onCreate", "runOnFirstFix");
                 // Zoom in to current location
                 mapController.setZoom(DEFAULT_ZOOM);
                 mapController.animateTo(myLocationOverlay.getMyLocation());
+                mapView.invalidateMoving();
             }
         });
         // Setup overlays.
@@ -153,6 +156,7 @@ public class MainActivity extends MapActivity {
                 GeoPoint myLocation = myLocationOverlay.getMyLocation();
                 if (myLocation != null) {
                     mapView.getController().animateTo(myLocation);
+                    mapView.invalidateMoving();
                 } else {
                     Toast.makeText(this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
                 }
@@ -263,11 +267,11 @@ public class MainActivity extends MapActivity {
         private final MultiKeyMap cellToScanResultCache = new MultiKeyMap();
 
         public RefreshScanResultsAsyncTask(
-                double minLatitude,
-                double minLongitude,
-                double maxLatitude,
-                double maxLongitude,
-                double gridSize) {
+                final double minLatitude,
+                final double minLongitude,
+                final double maxLatitude,
+                final double maxLongitude,
+                final double gridSize) {
             Log.d(LOG_TAG, String.format(
                     "RefreshScanResultsAsyncTask[minLat=%s, minLon=%s, maxLat=%s, maxLon=%s, gridSize=%s]",
                     minLatitude,
@@ -298,8 +302,11 @@ public class MainActivity extends MapActivity {
                     scanResults.size(),
                     System.currentTimeMillis() - getScanResultsStartTime
             ));
-            // Process them.
-            for (MyScanResult scanResult : scanResults) {
+            // Process them if we're still not cancelled.
+            if (isCancelled()) {
+                return null;
+            }
+            for (final MyScanResult scanResult : scanResults) {
                 // Check if we're cancelled.
                 if (isCancelled()) {
                     return null;
@@ -310,11 +317,11 @@ public class MainActivity extends MapActivity {
         }
 
         @Override
-        protected synchronized void onPostExecute(ClusterList clusterList) {
+        protected synchronized void onPostExecute(final ClusterList clusterList) {
             Log.d(LOG_TAG + ".onPostExecute", clusterList.toString());
 
             clusterListOverlay.clearClusterOverlays();
-            for (Cluster cluster : clusterList) {
+            for (final Cluster cluster : clusterList) {
                 ClusterOverlay clusterOverlay = new ClusterOverlay(
                         MainActivity.this,
                         cluster
@@ -325,11 +332,11 @@ public class MainActivity extends MapActivity {
         }
 
         @Override
-        protected void onCancelled(ClusterList result) {
+        protected void onCancelled(final ClusterList result) {
             Log.d(LOG_TAG + ".onCancelled", "cancelled");
         }
 
-        private void addScanResult(MyScanResult scanResult) {
+        private void addScanResult(final MyScanResult scanResult) {
             final int key1 = (int)Math.floor(scanResult.getLatitude() / gridSize);
             final int key2 = (int)Math.floor(scanResult.getLongitude() / gridSize);
 
@@ -346,7 +353,7 @@ public class MainActivity extends MapActivity {
             final ClusterList clusterList = new ClusterList();
 
             // Iterate through grid cells.
-            for (Object o : cellToScanResultCache.values()) {
+            for (final Object o : cellToScanResultCache.values()) {
                 // Check if we're cancelled.
                 if (isCancelled()) {
                     return null;
@@ -356,7 +363,7 @@ public class MainActivity extends MapActivity {
                 final HashMap<String, HashSet<String>> ssidToBssidCache = new HashMap<String, HashSet<String>>();
 
                 LocationProcessor locationProcessor = new LocationProcessor();
-                for (MyScanResult scanResult : subCache) {
+                for (final MyScanResult scanResult : subCache) {
                     // Check if we're cancelled.
                     if (isCancelled()) {
                         return null;
@@ -376,7 +383,11 @@ public class MainActivity extends MapActivity {
                 final Area area = locationProcessor.getArea();
                 final Cluster cluster = new Cluster(area);
                 // And fill it with networks.
-                for (Map.Entry<String, HashSet<String>> entry : ssidToBssidCache.entrySet()) {
+                for (final Map.Entry<String, HashSet<String>> entry : ssidToBssidCache.entrySet()) {
+                    // Check if we're cancelled.
+                    if (isCancelled()) {
+                        return null;
+                    }
                     cluster.add(new Network(entry.getKey(), entry.getValue()));
                 }
                 // Finally, add the cluster to the cluster list.
