@@ -27,7 +27,7 @@ public class SyncIntentService extends IntentService {
     /**
      * Minimal sync period.
      */
-    private static final long SYNC_PERIOD_MILLIS = 60L * 60L * 1000L;
+    public static final long SYNC_PERIOD_MILLIS = 60L * 60L * 1000L;
 
     public SyncIntentService() {
         super(SERVICE_NAME);
@@ -37,14 +37,6 @@ public class SyncIntentService extends IntentService {
         Log.i(SERVICE_NAME + ".onHandleIntent", "Service is running.");
 
         final Settings settings = Settings.with(this);
-
-        // Check the last sync time.
-        final long lastSyncTime = settings.lastSyncTime();
-        Log.d(SERVICE_NAME + ".onHandleIntent", "last synced at " + new Date(lastSyncTime));
-        if (System.currentTimeMillis() - lastSyncTime < SYNC_PERIOD_MILLIS) {
-            Log.i(SERVICE_NAME + ".onHandleIntent", "Will not sync now.");
-            return;
-        }
 
         // Set the "syncing now" flag.
         settings.edit().syncingNow(true).commit();

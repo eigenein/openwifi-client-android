@@ -9,8 +9,11 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
+import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.io.Internet;
 import info.eigenein.openwifi.services.SyncIntentService;
+
+import java.util.Date;
 
 /**
  * Monitors network connectivity.
@@ -46,10 +49,18 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
      */
     private void onSucceeded(final Context context, final WifiInfo info) {
         Log.i(LOG_TAG + ".onSucceeded", info.getSSID());
-        // Starting the synchronization service.
-        Log.d(LOG_TAG + ".onSucceeded", "Starting " + SyncIntentService.class.getSimpleName());
-        final Intent syncServiceIntent = new Intent(context, SyncIntentService.class);
-        context.startService(syncServiceIntent);
+
+        // Check the last sync time.
+        final long lastSyncTime = Settings.with(context).lastSyncTime();
+        Log.d(LOG_TAG + ".onSucceeded", "last synced at " + new Date(lastSyncTime));
+        if (System.currentTimeMillis() - lastSyncTime >= SyncIntentService.SYNC_PERIOD_MILLIS) {
+            // Starting the synchronization service.
+            final Intent syncServiceIntent = new Intent(context, SyncIntentService.class);
+            context.startService(syncServiceIntent);
+        } else {
+            Log.i(LOG_TAG + ".onSucceeded", "Will not sync now.");
+            return;
+        }
     }
 
     /**
