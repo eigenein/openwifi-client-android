@@ -57,4 +57,7 @@
     <string name="acra_deviceid_summary">Whether to include Android device ID.</string>
     <string name="zoom_in">Zoom In</string>
     <string name="zoom_out">Zoom Out</string>
+    <string name="networks_string_1">network</string>
+    <string name="networks_string_2">networks</string>
+    <string name="networks_string_3">networks</string>
 </resources>

@@ -7,11 +7,12 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.entities.Cluster;
+import info.eigenein.openwifi.helpers.formatters.CountFormatter;
 import info.eigenein.openwifi.helpers.location.L;
 
 public class ClusterOverlay {
 
-    private static final float TEXT_SIZE = 16.0f;
+    private static final float TEXT_SIZE = 18.0f;
 
     /**
      * Used to draw the cluster area.
@@ -31,7 +32,7 @@ public class ClusterOverlay {
     private final GeoPoint clusterCenter;
 
     private final Bitmap clusterBitmap;
-    private final String clusterSizeString;
+    private final String clusterString;
 
     static
     {
@@ -53,13 +54,27 @@ public class ClusterOverlay {
         circlePaint.setStyle(Paint.Style.FILL);
     }
 
-    public ClusterOverlay(Context context, Cluster cluster) {
+    public ClusterOverlay(final Context context, final Cluster cluster) {
         this.clusterBitmap = BitmapFactory.decodeResource(
                 context.getResources(),
                 R.drawable.ic_cluster);
-        this.clusterSizeString = cluster.size() == 1 ?
-                cluster.iterator().next().getSsid() :
-                Integer.toString(cluster.size());
+        final int clusterSize = cluster.size();
+        // Overlay string.
+        if (cluster.size() == 1) {
+            // Network name.
+            this.clusterString = cluster.iterator().next().getSsid();
+        } else {
+            // Network count string.
+            this.clusterString = String.format(
+                    "%d %s",
+                    clusterSize,
+                    context.getString(CountFormatter.format(
+                            clusterSize,
+                            R.string.networks_string_1,
+                            R.string.networks_string_2,
+                            R.string.networks_string_3)));
+        }
+        // Used to draw the area.
         this.cluster = cluster;
         this.clusterCenter = new GeoPoint(
                 L.toE6(cluster.getArea().getLatitude()),
@@ -70,7 +85,7 @@ public class ClusterOverlay {
         return this.cluster;
     }
 
-    public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+    public void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
         if(shadow) {
             // Ignore the shadow layer.
             return;
@@ -78,7 +93,7 @@ public class ClusterOverlay {
 
         // Obtain screen coordinates and radius.
         final Projection projection = mapView.getProjection();
-        Point point = new Point();
+        final Point point = new Point();
         projection.toPixels(clusterCenter, point);
         final float radius = (float)(
                 projection.metersToEquatorPixels(cluster.getArea().getAccuracy()) *
@@ -96,10 +111,10 @@ public class ClusterOverlay {
 
         // Draw the text.
         final Rect textBounds = new Rect();
-        defaultPaint.getTextBounds(clusterSizeString, 0, clusterSizeString.length(), textBounds);
+        defaultPaint.getTextBounds(clusterString, 0, clusterString.length(), textBounds);
         final float textLeft = bitmapLeft + clusterBitmap.getWidth();
         final float textTop = y + textBounds.height() / 2.0f;
-        canvas.drawText(clusterSizeString, textLeft, textTop, strokePaint);
-        canvas.drawText(clusterSizeString, textLeft, textTop, defaultPaint);
+        canvas.drawText(clusterString, textLeft, textTop, strokePaint);
+        canvas.drawText(clusterString, textLeft, textTop, defaultPaint);
     }
 }

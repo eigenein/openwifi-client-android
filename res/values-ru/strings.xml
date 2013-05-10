@@ -55,4 +55,7 @@
     <string name="acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
     <string name="zoom_in">Увеличить масштаб</string>
     <string name="zoom_out">Уменьшить масштаб</string>
+    <string name="networks_string_1">сеть</string>
+    <string name="networks_string_2">сети</string>
+    <string name="networks_string_3">сетей</string>
 </resources>
