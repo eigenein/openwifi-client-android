@@ -85,6 +85,19 @@ public class MainActivity extends MapActivity {
                 mapView.invalidateMovedOrZoomed();
             }
         });
+        // Setup my location button.
+        ((ImageButton)findViewById(R.id.button_my_location)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final GeoPoint myLocation = myLocationOverlay.getMyLocation();
+                if (myLocation != null) {
+                    mapView.getController().animateTo(myLocation);
+                    mapView.invalidateMovedOrZoomed();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         // Setup zoom buttons.
         ((ImageButton)findViewById(R.id.button_zoom_out)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,15 +183,6 @@ public class MainActivity extends MapActivity {
                 ScanServiceManager.stop(this);
                 Toast.makeText(this, R.string.scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
-                return true;
-            case R.id.show_my_location_menuitem:
-                GeoPoint myLocation = myLocationOverlay.getMyLocation();
-                if (myLocation != null) {
-                    mapView.getController().animateTo(myLocation);
-                    mapView.invalidateMovedOrZoomed();
-                } else {
-                    Toast.makeText(this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
-                }
                 return true;
             case R.id.map_view_menuitem:
                 final CharSequence[] items = getResources().getTextArray(R.array.map_views);
