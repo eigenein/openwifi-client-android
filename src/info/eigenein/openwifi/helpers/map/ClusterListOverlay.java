@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.activities.NetworkSetActivity;
 import info.eigenein.openwifi.helpers.comparators.ClusterComparator;
 import info.eigenein.openwifi.helpers.entities.Area;
@@ -39,7 +41,7 @@ public class ClusterListOverlay extends Overlay {
     private final PriorityBuffer overlays = new PriorityBuffer(ClusterComparator.getInstance());
 
     @Override
-    public boolean onTap(GeoPoint geoPoint, MapView mapView) {
+    public boolean onTap(final GeoPoint geoPoint, final MapView mapView) {
         // Ignore pinch-zoom.
         if (isPinch) {
             return false;
@@ -70,6 +72,7 @@ public class ClusterListOverlay extends Overlay {
         Log.i(LOG_TAG, networkSet.size() + " network(s) tapped.");
 
         if (networkSet.size() == 0) {
+            Toast.makeText(context, R.string.no_networks_here, Toast.LENGTH_SHORT).show();
             return true;
         }
 

@@ -23,7 +23,7 @@
     <string name="share_database">Share database</string>
     <string name="share_database_summary">Upload the application database</string>
     <string name="max_scan_results_for_bssid">Remember for a single access point</string>
-    <string name="cluster">Available Networks</string>
+    <string name="cluster">Networks available in this place</string>
     <string name="show_details">Show details</string>
     <string name="ignore_network_name">Ignore %s</string>
     <string name="ignore_similar_networks">Ignore similar networks</string>
@@ -60,4 +60,5 @@
     <string name="networks_string_1">network</string>
     <string name="networks_string_2">networks</string>
     <string name="networks_string_3">networks</string>
+    <string name="no_networks_here">There is no known networks in this place.</string>
 </resources>

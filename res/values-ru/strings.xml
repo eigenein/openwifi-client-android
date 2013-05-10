@@ -23,7 +23,7 @@
     <string name="share_database">Экспортировать базу данных</string>
     <string name="share_database_summary">Выгрузить файл базы данных приложения</string>
     <string name="max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
-    <string name="cluster">Доступные сети</string>
+    <string name="cluster">Доступные сети в этом месте</string>
     <string name="show_details">Показать сведения</string>
     <string name="ignore_network_name">Скрыть %s</string>
     <string name="ignore_similar_networks">Скрыть похожие сети</string>
@@ -58,4 +58,5 @@
     <string name="networks_string_1">сеть</string>
     <string name="networks_string_2">сети</string>
     <string name="networks_string_3">сетей</string>
+    <string name="no_networks_here">В этом месте нет известных сетей.</string>
 </resources>

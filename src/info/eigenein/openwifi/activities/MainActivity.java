@@ -223,6 +223,9 @@ public class MainActivity extends MapActivity {
         return false;
     }
 
+    /**
+     * Updates zoom buttons enabled/disabled state for the current zoom level.
+     */
     private void updateZoomButtonsState() {
         final ImageButton zoomOutButton = (ImageButton)findViewById(R.id.button_zoom_out);
         zoomOutButton.setEnabled(mapView.getZoomLevel() != 1);
