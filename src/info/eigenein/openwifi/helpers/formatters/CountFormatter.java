@@ -18,7 +18,7 @@ public class CountFormatter {
             return resourceId3;
         } else if (lastDigit == 1) {
             return resourceId1;
-        } else if (count >= 2 && count <= 4) {
+        } else if (lastDigit >= 2 && lastDigit <= 4) {
             return resourceId2;
         } else {
             return resourceId3;
