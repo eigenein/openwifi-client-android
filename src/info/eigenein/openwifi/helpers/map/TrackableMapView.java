@@ -18,7 +18,7 @@ public class TrackableMapView extends MapView {
 
     private boolean isMapMoving = false;
 
-    private List<MapViewListener> listeners = new ArrayList<MapViewListener>();
+    private final List<MapViewListener> listeners = new ArrayList<MapViewListener>();
 
     @SuppressWarnings("UnusedDeclaration")
     public TrackableMapView(android.content.Context context, android.util.AttributeSet attrs) {
@@ -76,18 +76,16 @@ public class TrackableMapView extends MapView {
      * Tells that the moved or zoomed event should be fired when the next
      * stable location and zoom are drawn.
      */
-    public void invalidateMovedOrZoomed() {
+    public synchronized void invalidateMovedOrZoomed() {
         Log.d(LOG_TAG + ".invalidateMovedOrZoomed", "isMapMoving = " + isMapMoving);
         isMapMoving = true;
     }
 
-    private void fireMovedOrZoomed() {
+    private synchronized void fireMovedOrZoomed() {
         Log.d(LOG_TAG + ".fireMovedOrZoomed ", "center: " + getMapCenter() + ", zoomLevel: " + getZoomLevel());
 
-        for (MapViewListener listener : listeners) {
-            synchronized (listener) {
-                listener.onMovedOrZoomed();
-            }
+        for (final MapViewListener listener : listeners) {
+            listener.onMovedOrZoomed();
         }
     }
 }

@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class ScanResultUpSyncer extends ScanResultSyncer {
-    private static String LOG_TAG = ScanResultUpSyncer.class.getCanonicalName();
+    private static final String LOG_TAG = ScanResultUpSyncer.class.getCanonicalName();
 
     private static final String URL = "http://openwifi.info/api/scan-results/";
 

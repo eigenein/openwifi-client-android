@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScanResultDownSyncer extends ScanResultSyncer {
-    private static final String LOG_TAG = ScanResultDownSyncer.class.getCanonicalName();
-
     private static final String URL = "http://openwifi.info/api/scan-results/%s/%s/";
 
     private final Settings settings;
@@ -34,7 +32,7 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
     @Override
     public boolean processResponse(Context context, TaggedRequest request, HttpResponse response) {
         // Parse JSON.
-        JSONArray scanResultList = null;
+        JSONArray scanResultList;
         try {
             scanResultList = new JSONArray(EntityUtils.toString(response.getEntity()));
         } catch (Exception e) {
@@ -44,9 +42,9 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
         // Process the source objects.
         String lastSyncId = null;
         for (int i = 0; i < scanResultList.length(); i++) {
-            String syncId = null;
+            String syncId;
             // Initialize entities.
-            MyScanResult scanResult = null;
+            MyScanResult scanResult;
             try {
                 final JSONObject scanResultObject = scanResultList.getJSONObject(i);
                 syncId = scanResultObject.getString("_id");

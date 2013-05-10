@@ -16,7 +16,7 @@ import info.eigenein.openwifi.R;
  * Background service that runs a WiFi access point scan.
  */
 public class ScanIntentService extends IntentService {
-    public static final String SERVICE_NAME = ScanIntentService.class.getCanonicalName();
+    private static final String SERVICE_NAME = ScanIntentService.class.getCanonicalName();
 
     public ScanIntentService() {
         super(SERVICE_NAME);

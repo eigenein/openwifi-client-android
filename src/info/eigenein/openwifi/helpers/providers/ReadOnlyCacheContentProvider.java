@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
  * Used to provide access to the internal cache.
  */
 public class ReadOnlyCacheContentProvider extends ContentProvider {
-    private static String LOG_TAG = ReadOnlyCacheContentProvider.class.getCanonicalName();
+    private static final String LOG_TAG = ReadOnlyCacheContentProvider.class.getCanonicalName();
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {

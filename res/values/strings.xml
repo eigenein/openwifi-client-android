@@ -55,4 +55,6 @@
     <string name="enable_acra_summary">Helps to improve the application quality.</string>
     <string name="acra_syslog_summary">Helps to find a cause of a problem.</string>
     <string name="acra_deviceid_summary">Whether to include Android device ID.</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
 </resources>

@@ -86,7 +86,7 @@ public class MainActivity extends MapActivity {
             }
         });
         // Setup my location button.
-        ((ImageButton)findViewById(R.id.button_my_location)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_my_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final GeoPoint myLocation = myLocationOverlay.getMyLocation();
@@ -99,14 +99,14 @@ public class MainActivity extends MapActivity {
             }
         });
         // Setup zoom buttons.
-        ((ImageButton)findViewById(R.id.button_zoom_out)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_zoom_out).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mapController.zoomOut();
                 mapView.invalidateMovedOrZoomed();
             }
         });
-        ((ImageButton)findViewById(R.id.button_zoom_in)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_zoom_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mapController.zoomIn();

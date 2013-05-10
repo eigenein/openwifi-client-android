@@ -53,4 +53,6 @@
     <string name="enable_acra_summary">Отчеты помогают улучшить качество приложения.</string>
     <string name="acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
     <string name="acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
+    <string name="zoom_in">Увеличить масштаб</string>
+    <string name="zoom_out">Уменьшить масштаб</string>
 </resources>

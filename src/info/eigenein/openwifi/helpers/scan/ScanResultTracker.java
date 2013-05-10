@@ -253,8 +253,7 @@ public class ScanResultTracker {
      */
     private static Dao<MyScanResult, Long> getScanResultDao(DatabaseHelper databaseHelper)
             throws SQLException {
-        final Dao<MyScanResult, Long> scanResultDao = databaseHelper.getDao(MyScanResult.class);
-        return scanResultDao;
+        return databaseHelper.getDao(MyScanResult.class);
     }
 
     /**

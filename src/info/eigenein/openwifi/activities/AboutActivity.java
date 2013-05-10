@@ -14,7 +14,8 @@ import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.Settings;
 
 public class AboutActivity extends Activity {
-    private static String LOG_TAG = AboutActivity.class.getCanonicalName();
+    private static final String LOG_TAG = AboutActivity.class.getCanonicalName();
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

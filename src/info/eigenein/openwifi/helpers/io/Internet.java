@@ -30,10 +30,8 @@ public class Internet {
                 return true;
             } catch (MalformedURLException e) {
                 Log.w(LOG_TAG, "Malformed URL error.");
-                continue;
             } catch (IOException e) {
                 Log.w(LOG_TAG, "I/O error.");
-                continue;
             }
         }
         Log.w(LOG_TAG, "Failed to connect.");

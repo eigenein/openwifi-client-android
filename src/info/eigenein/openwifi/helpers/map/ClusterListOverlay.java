@@ -28,8 +28,6 @@ import java.util.HashSet;
 public class ClusterListOverlay extends Overlay {
     private static final String LOG_TAG = ClusterListOverlay.class.getCanonicalName();
 
-    private static long VIBRATE_MILLISECONDS = 25L;
-
     /**
      * Used to track pinch-zoom.
      */
