@@ -167,14 +167,14 @@ public class SettingsActivity extends PreferenceActivity
 
     @SuppressWarnings("deprecation")
     private void updatePeriodPreference() {
-        ListPreference periodPreference =
+        final ListPreference periodPreference =
                 (ListPreference)getPreferenceScreen().findPreference(Settings.SCAN_PERIOD_KEY);
         periodPreference.setSummary(periodPreference.getEntry());
     }
 
     @SuppressWarnings("deprecation")
     private void updateMaxScanResultsForBssidPreference() {
-        ListPreference maxScanResultsForBssidPreference =
+        final ListPreference maxScanResultsForBssidPreference =
                 (ListPreference)getPreferenceScreen().findPreference(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY);
         maxScanResultsForBssidPreference.setSummary(maxScanResultsForBssidPreference.getEntry());
     }
