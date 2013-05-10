@@ -3,7 +3,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
     <info.eigenein.openwifi.helpers.map.TrackableMapView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -14,17 +13,19 @@
                   android:orientation="vertical"
                   android:layout_alignParentBottom="true"
                   android:layout_alignParentRight="true">
-        <ImageButton android:layout_width="wrap_content"
+        <ImageButton android:id="@+id/button_zoom_in"
+                     android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:padding="0dip"
                      android:layout_marginRight="12dip"
                      android:layout_marginBottom="0dip"
-                     android:background="@drawable/ic_map_zoom_in_enabled"/>
-        <ImageButton android:layout_width="wrap_content"
+                     android:background="@drawable/ic_map_zoom_in"/>
+        <ImageButton android:id="@+id/button_zoom_out"
+                     android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:padding="0dip"
                      android:layout_marginRight="12dip"
                      android:layout_marginBottom="12dip"
-                     android:background="@drawable/ic_map_zoom_out_disabled"/>
+                     android:background="@drawable/ic_map_zoom_out"/>
     </LinearLayout>
 </RelativeLayout>

@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
@@ -50,6 +52,7 @@ public class MainActivity extends MapActivity {
         // Setup default values for the settings.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        // Setup view.
         setContentView(R.layout.main);
 
         // Setup action bar.
@@ -64,10 +67,11 @@ public class MainActivity extends MapActivity {
             @Override
             public void onMovedOrZoomed() {
                 Log.d(LOG_TAG + ".onCreate", "onMovedOrZoomed");
+                updateZoomButtonsState();
                 startRefreshingScanResultsOnMap();
             }
         });
-        mapView.invalidateMoving();
+        mapView.invalidateMovedOrZoomed();
         // Setup map controller.
         final MapController mapController = mapView.getController();
         // Setup current location.
@@ -78,7 +82,22 @@ public class MainActivity extends MapActivity {
                 // Zoom in to current location
                 mapController.setZoom(DEFAULT_ZOOM);
                 mapController.animateTo(myLocationOverlay.getMyLocation());
-                mapView.invalidateMoving();
+                mapView.invalidateMovedOrZoomed();
+            }
+        });
+        // Setup zoom buttons.
+        ((ImageButton)findViewById(R.id.button_zoom_out)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapController.zoomOut();
+                mapView.invalidateMovedOrZoomed();
+            }
+        });
+        ((ImageButton)findViewById(R.id.button_zoom_in)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapController.zoomIn();
+                mapView.invalidateMovedOrZoomed();
             }
         });
         // Setup overlays.
@@ -156,7 +175,7 @@ public class MainActivity extends MapActivity {
                 GeoPoint myLocation = myLocationOverlay.getMyLocation();
                 if (myLocation != null) {
                     mapView.getController().animateTo(myLocation);
-                    mapView.invalidateMoving();
+                    mapView.invalidateMovedOrZoomed();
                 } else {
                     Toast.makeText(this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
                 }
@@ -198,6 +217,13 @@ public class MainActivity extends MapActivity {
     @Override
     protected boolean isRouteDisplayed() {
         return false;
+    }
+
+    private void updateZoomButtonsState() {
+        final ImageButton zoomOutButton = (ImageButton)findViewById(R.id.button_zoom_out);
+        zoomOutButton.setEnabled(mapView.getZoomLevel() != 1);
+        final ImageButton zoomInButton = (ImageButton)findViewById(R.id.button_zoom_in);
+        zoomInButton.setEnabled(mapView.getZoomLevel() != mapView.getMaxZoomLevel());
     }
 
     /**

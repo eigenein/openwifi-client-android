@@ -76,8 +76,8 @@ public class TrackableMapView extends MapView {
      * Tells that the moved or zoomed event should be fired when the next
      * stable location and zoom are drawn.
      */
-    public void invalidateMoving() {
-        Log.d(LOG_TAG + ".invalidateMoving", "isMapMoving = " + isMapMoving);
+    public void invalidateMovedOrZoomed() {
+        Log.d(LOG_TAG + ".invalidateMovedOrZoomed", "isMapMoving = " + isMapMoving);
         isMapMoving = true;
     }
 
