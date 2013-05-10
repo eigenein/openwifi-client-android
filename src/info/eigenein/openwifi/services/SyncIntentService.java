@@ -3,6 +3,8 @@ package info.eigenein.openwifi.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.sync.ScanResultDownSyncer;
 import info.eigenein.openwifi.sync.ScanResultUpSyncer;
@@ -109,13 +111,18 @@ public class SyncIntentService extends IntentService {
                 break;
             }
         }
-        // The loop is finished.
+        // The sync loop is finished. Collect sync statistics.
         final long syncTime = System.currentTimeMillis() - syncStartTime;
-        final int syncedEntitiesCount = syncer.getSyncedEntitiesCount();
+        final long syncedEntitiesCount = syncer.getSyncedEntitiesCount();
+        final long entitySyncTime = syncedEntitiesCount != 0 ? syncTime / syncedEntitiesCount : 0;
         Log.i(SERVICE_NAME + ".sync", String.format("Synced %s entities in %sms (%sms per entity)",
                 syncedEntitiesCount,
                 syncTime,
-                syncedEntitiesCount != 0 ? syncTime / syncedEntitiesCount : 0));
+                entitySyncTime));
+        // Send sync statistics.
+        final Tracker tracker = EasyTracker.getTracker();
+        tracker.sendEvent(SERVICE_NAME, "sync", syncer.toString(), syncedEntitiesCount);
+        tracker.sendTiming(SERVICE_NAME, syncTime, "sync", syncer.toString());
     }
 
     /**
