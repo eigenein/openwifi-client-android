@@ -88,7 +88,12 @@ public class ScanResultTracker {
         try {
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
-            return scanResultDao.countOf();
+            final long countOfStartTime = System.currentTimeMillis();
+            long count = scanResultDao.countOf();
+            Log.d(LOG_TAG + ".getScanResultCount", String.format(
+                    "%sms",
+                    System.currentTimeMillis() - countOfStartTime));
+            return count;
         } catch (SQLException e) {
             Log.e(LOG_TAG + ".getScanResultCount", "Error while querying scan result count count.", e);
             throw new RuntimeException(e);
@@ -302,9 +307,16 @@ public class ScanResultTracker {
         try {
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
-            return Long.parseLong(scanResultDao.queryRaw(
+            final long countOfStartTime = System.currentTimeMillis();
+            final long count = Long.parseLong(scanResultDao.queryRaw(
                     "select count(distinct " +columnName + ") from my_scan_results;")
                     .getFirstResult()[0]);
+            Log.d(LOG_TAG + ".getScanResultDistinctCount", String.format(
+                    "[columnName=%s] %sms",
+                    columnName,
+                    System.currentTimeMillis() - countOfStartTime
+            ));
+            return count;
         } catch (SQLException e) {
             throw new RuntimeException("Error while querying unique count.", e);
         } finally {

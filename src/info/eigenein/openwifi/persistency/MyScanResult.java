@@ -94,7 +94,8 @@ public class MyScanResult {
     @DatabaseField(
             columnName = SSID,
             canBeNull = false,
-            width = MAX_SSID_LENGTH
+            width = MAX_SSID_LENGTH,
+            index = true
     )
     private String ssid;
 
