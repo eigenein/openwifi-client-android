@@ -61,6 +61,9 @@ public class SyncIntentService extends IntentService {
 
     private void sync(final Syncer syncer, final String clientId) {
         Log.i(SERVICE_NAME + ".sync", "Starting syncronization with " + syncer);
+        // Prepare the event tracker.
+        EasyTracker.getInstance().setContext(this);
+        final Tracker tracker = EasyTracker.getTracker();
         // Prepare the HTTP client.
         final DefaultHttpClient client = prepareHttpClient();
         // Performance counters.
@@ -97,17 +100,26 @@ public class SyncIntentService extends IntentService {
             // Process the response.
             if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
                 Log.w(SERVICE_NAME + ".sync", "Syncing is broken.");
+                tracker.sendEvent(
+                        SERVICE_NAME,
+                        "client.execute",
+                        String.format("%s/%d", syncer, statusLine.getStatusCode()),
+                        Long.valueOf(syncer.getSyncedEntitiesCount()));
                 break;
             }
             Log.d(SERVICE_NAME + ".sync", "Processing the response ...");
             final long processResponseStartTime = System.currentTimeMillis();
             boolean hasNext = syncer.processResponse(this, taggedRequest, response);
-            final long processResponseEndTime = System.currentTimeMillis();
-            Log.d(SERVICE_NAME + ".sync", String.format(
-                    "Response is processed in %sms.",
-                    processResponseEndTime - processResponseStartTime));
+            final long processResponseTime = System.currentTimeMillis() - processResponseStartTime;
+            Log.d(SERVICE_NAME + ".sync", String.format("Response is processed in %sms.", processResponseTime));
+            tracker.sendTiming(SERVICE_NAME, processResponseTime, "syncer.processResponse", syncer.toString());
             if (!hasNext) {
                 Log.i(SERVICE_NAME + ".sync", "Sync is finished.");
+                tracker.sendEvent(
+                        SERVICE_NAME,
+                        "sync",
+                        syncer.toString(),
+                        Long.valueOf(syncer.getSyncedEntitiesCount()));
                 break;
             }
         }
@@ -119,10 +131,7 @@ public class SyncIntentService extends IntentService {
                 syncedEntitiesCount,
                 syncTime,
                 entitySyncTime));
-        // Send sync statistics.
-        EasyTracker.getInstance().setContext(this);
-        final Tracker tracker = EasyTracker.getTracker();
-        tracker.sendEvent(SERVICE_NAME, "sync", syncer.toString(), syncedEntitiesCount);
+        // Send sync time.
         tracker.sendTiming(SERVICE_NAME, syncTime, "sync", syncer.toString());
     }
 
