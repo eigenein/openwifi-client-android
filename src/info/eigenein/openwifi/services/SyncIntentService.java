@@ -120,6 +120,7 @@ public class SyncIntentService extends IntentService {
                 syncTime,
                 entitySyncTime));
         // Send sync statistics.
+        EasyTracker.getInstance().setContext(this);
         final Tracker tracker = EasyTracker.getTracker();
         tracker.sendEvent(SERVICE_NAME, "sync", syncer.toString(), syncedEntitiesCount);
         tracker.sendTiming(SERVICE_NAME, syncTime, "sync", syncer.toString());
