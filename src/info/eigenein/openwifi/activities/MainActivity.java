@@ -91,7 +91,7 @@ public class MainActivity extends MapActivity {
             public void onClick(View view) {
                 final GeoPoint myLocation = myLocationOverlay.getMyLocation();
                 if (myLocation != null) {
-                    mapView.getController().animateTo(myLocation);
+                    mapController.animateTo(myLocation);
                     mapView.invalidateMovedOrZoomed();
                 } else {
                     Toast.makeText(MainActivity.this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
