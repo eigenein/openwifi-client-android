@@ -14,5 +14,5 @@ public abstract class Syncer {
             TaggedRequest request,
             HttpResponse response);
 
-    public abstract int getSyncedEntitiesCount();
+    public abstract long getSyncedEntitiesCount();
 }

@@ -6,10 +6,10 @@ public abstract class ScanResultSyncer extends Syncer {
      */
     protected static final int PAGE_SIZE = 128;
 
-    protected int syncedEntitiesCount = 0;
+    protected long syncedEntitiesCount = 0;
 
     @Override
-    public int getSyncedEntitiesCount() {
+    public long getSyncedEntitiesCount() {
         return syncedEntitiesCount;
     }
 }

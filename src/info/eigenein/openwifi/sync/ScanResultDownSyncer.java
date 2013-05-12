@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScanResultDownSyncer extends ScanResultSyncer {
-    private static final String URL = "http://openwifi.info/api/scan-results/%s/%s/";
+    private static final String URL = "https://openwifi.info/api/scan-results/%s/%s/";
 
     private final Settings settings;
 

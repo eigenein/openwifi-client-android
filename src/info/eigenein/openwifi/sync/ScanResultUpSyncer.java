@@ -16,7 +16,7 @@ import java.util.List;
 public class ScanResultUpSyncer extends ScanResultSyncer {
     private static final String LOG_TAG = ScanResultUpSyncer.class.getCanonicalName();
 
-    private static final String URL = "http://openwifi.info/api/scan-results/";
+    private static final String URL = "https://openwifi.info/api/scan-results/";
 
     public TaggedRequest getNextRequest(Context context) {
         // Prepare the page.

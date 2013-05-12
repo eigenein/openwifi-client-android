@@ -11,8 +11,12 @@ import info.eigenein.openwifi.sync.ScanResultUpSyncer;
 import info.eigenein.openwifi.sync.Syncer;
 import info.eigenein.openwifi.sync.TaggedRequest;
 import org.apache.http.*;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
@@ -40,32 +44,38 @@ public class SyncIntentService extends IntentService {
 
         final Settings settings = Settings.with(this);
 
+        // The client ID will be used in the HTTP(S) requests.
+        final String clientId = settings.clientId();
+        // Prepare the HTTP client.
+        final DefaultHttpClient client = prepareHttpClient();
         // Set the "syncing now" flag.
         settings.edit().syncingNow(true).commit();
-
-        final String clientId = settings.clientId();
+        // Start syncing.
         try {
             // Download the scan results.
-            sync(new ScanResultDownSyncer(settings), clientId);
+            sync(client, new ScanResultDownSyncer(settings), clientId);
             // Upload our scan results.
-            sync(new ScanResultUpSyncer(), clientId);
+            sync(client, new ScanResultUpSyncer(), clientId);
             // Update last sync time.
             settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
         } finally {
             // Reset the "syncing now" flag.
             settings.edit().syncingNow(false).commit();
+            // Ensure immediate deallocation of all system resources.
+            client.getConnectionManager().shutdown();
         }
 
         Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
     }
 
-    private void sync(final Syncer syncer, final String clientId) {
-        Log.i(SERVICE_NAME + ".sync", "Starting syncronization with " + syncer);
+    /**
+     * Performs syncing with the specified syncer.
+     */
+    private void sync(final DefaultHttpClient client, final Syncer syncer, final String clientId) {
+        Log.i(SERVICE_NAME + ".sync", "Starting syncing with " + syncer);
         // Prepare the event tracker.
         EasyTracker.getInstance().setContext(this);
         final Tracker tracker = EasyTracker.getTracker();
-        // Prepare the HTTP client.
-        final DefaultHttpClient client = prepareHttpClient();
         // Performance counters.
         final long syncStartTime = System.currentTimeMillis();
         // Synchronization loop.
@@ -73,6 +83,7 @@ public class SyncIntentService extends IntentService {
             // Get next request.
             final TaggedRequest taggedRequest = syncer.getNextRequest(this);
             if (taggedRequest == null) {
+                Log.d(SERVICE_NAME, "getNextRequest returned null.");
                 break;
             }
             // Initialize the request with the common parameters.
@@ -84,7 +95,12 @@ public class SyncIntentService extends IntentService {
             try {
                 response = client.execute(taggedRequest.getRequest());
             } catch (IOException e) {
-                Log.w(SERVICE_NAME + ".sync", e.getMessage());
+                Log.w(SERVICE_NAME + ".sync", "Syncing is broken: " + e.getMessage());
+                tracker.sendEvent(
+                        SERVICE_NAME,
+                        "client.execute",
+                        String.format("%s/%s", syncer, e.getClass().getSimpleName()),
+                        syncer.getSyncedEntitiesCount());
                 break;
             }
             final long requestEndTime = System.currentTimeMillis();
@@ -99,27 +115,23 @@ public class SyncIntentService extends IntentService {
                     statusLine));
             // Process the response.
             if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-                Log.w(SERVICE_NAME + ".sync", "Syncing is broken.");
+                Log.w(SERVICE_NAME + ".sync", "Syncing is broken:" + statusLine);
                 tracker.sendEvent(
                         SERVICE_NAME,
                         "client.execute",
                         String.format("%s/%d", syncer, statusLine.getStatusCode()),
-                        Long.valueOf(syncer.getSyncedEntitiesCount()));
+                        syncer.getSyncedEntitiesCount());
                 break;
             }
             Log.d(SERVICE_NAME + ".sync", "Processing the response ...");
             final long processResponseStartTime = System.currentTimeMillis();
-            boolean hasNext = syncer.processResponse(this, taggedRequest, response);
+            final boolean hasNext = syncer.processResponse(this, taggedRequest, response);
             final long processResponseTime = System.currentTimeMillis() - processResponseStartTime;
             Log.d(SERVICE_NAME + ".sync", String.format("Response is processed in %sms.", processResponseTime));
             tracker.sendTiming(SERVICE_NAME, processResponseTime, "syncer.processResponse", syncer.toString());
             if (!hasNext) {
                 Log.i(SERVICE_NAME + ".sync", "Sync is finished.");
-                tracker.sendEvent(
-                        SERVICE_NAME,
-                        "sync",
-                        syncer.toString(),
-                        Long.valueOf(syncer.getSyncedEntitiesCount()));
+                tracker.sendEvent(SERVICE_NAME, "sync", syncer.toString(), syncer.getSyncedEntitiesCount());
                 break;
             }
         }
@@ -137,12 +149,19 @@ public class SyncIntentService extends IntentService {
 
     /**
      * Initializes the HTTP client.
+     * TODO: incapsulate this into the separate class derived from DefaultHttpClient.
      */
     private static DefaultHttpClient prepareHttpClient() {
         final HttpParams params = new BasicHttpParams();
+        // Use HTTP 1.1.
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        // Set up the client.
         final DefaultHttpClient client = new DefaultHttpClient(params);
         client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy());
+        client.getConnectionManager().getSchemeRegistry().register(
+                new Scheme("https", SSLSocketFactory.getSocketFactory(), 443)
+        );
+        // Return the initialized client.
         return client;
     }
 
