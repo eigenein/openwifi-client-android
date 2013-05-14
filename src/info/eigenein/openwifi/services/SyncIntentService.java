@@ -99,7 +99,7 @@ public class SyncIntentService extends IntentService {
                 tracker.sendEvent(
                         SERVICE_NAME,
                         "client.execute",
-                        String.format("%s/%s", syncer, e.getClass().getSimpleName()),
+                        String.format("%s/%s", syncer.getClass().getSimpleName(), e.getClass().getSimpleName()),
                         syncer.getSyncedEntitiesCount());
                 break;
             }
@@ -119,7 +119,7 @@ public class SyncIntentService extends IntentService {
                 tracker.sendEvent(
                         SERVICE_NAME,
                         "client.execute",
-                        String.format("%s/%d", syncer, statusLine.getStatusCode()),
+                        String.format("%s/%d", syncer.getClass().getSimpleName(), statusLine.getStatusCode()),
                         syncer.getSyncedEntitiesCount());
                 break;
             }
@@ -131,7 +131,7 @@ public class SyncIntentService extends IntentService {
             tracker.sendTiming(SERVICE_NAME, processResponseTime, "syncer.processResponse", syncer.toString());
             if (!hasNext) {
                 Log.i(SERVICE_NAME + ".sync", "Sync is finished.");
-                tracker.sendEvent(SERVICE_NAME, "sync", syncer.toString(), syncer.getSyncedEntitiesCount());
+                tracker.sendEvent(SERVICE_NAME, "sync", syncer.getClass().getSimpleName(), syncer.getSyncedEntitiesCount());
                 break;
             }
         }
