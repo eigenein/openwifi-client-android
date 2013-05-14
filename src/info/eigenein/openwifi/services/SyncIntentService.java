@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.io.SyncHttpClient;
 import info.eigenein.openwifi.sync.ScanResultDownSyncer;
 import info.eigenein.openwifi.sync.ScanResultUpSyncer;
 import info.eigenein.openwifi.sync.Syncer;
@@ -47,7 +48,7 @@ public class SyncIntentService extends IntentService {
         // The client ID will be used in the HTTP(S) requests.
         final String clientId = settings.clientId();
         // Prepare the HTTP client.
-        final DefaultHttpClient client = prepareHttpClient();
+        final SyncHttpClient client = new SyncHttpClient(this);
         // Set the "syncing now" flag.
         settings.edit().syncingNow(true).commit();
         // Start syncing.
@@ -145,24 +146,6 @@ public class SyncIntentService extends IntentService {
                 entitySyncTime));
         // Send sync time.
         tracker.sendTiming(SERVICE_NAME, syncTime, "sync", syncer.toString());
-    }
-
-    /**
-     * Initializes the HTTP client.
-     * TODO: incapsulate this into the separate class derived from DefaultHttpClient.
-     */
-    private static DefaultHttpClient prepareHttpClient() {
-        final HttpParams params = new BasicHttpParams();
-        // Use HTTP 1.1.
-        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-        // Set up the client.
-        final DefaultHttpClient client = new DefaultHttpClient(params);
-        client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy());
-        client.getConnectionManager().getSchemeRegistry().register(
-                new Scheme("https", SSLSocketFactory.getSocketFactory(), 443)
-        );
-        // Return the initialized client.
-        return client;
     }
 
     /**
