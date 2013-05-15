@@ -21,22 +21,29 @@ public class TrackableMapView extends MapView {
     private final List<MapViewListener> listeners = new ArrayList<MapViewListener>();
 
     @SuppressWarnings("UnusedDeclaration")
-    public TrackableMapView(android.content.Context context, android.util.AttributeSet attrs) {
+    public TrackableMapView(
+            final android.content.Context context,
+            final android.util.AttributeSet attrs) {
         super(context, attrs);
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public TrackableMapView(android.content.Context context, android.util.AttributeSet attrs, int defStyle) {
+    public TrackableMapView(
+            final android.content.Context context,
+            final android.util.AttributeSet attrs,
+            final int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public TrackableMapView(android.content.Context context, java.lang.String apiKey) {
+    public TrackableMapView(
+            final android.content.Context context,
+            final java.lang.String apiKey) {
         super(context, apiKey);
     }
 
     @Override
-    public void dispatchDraw(Canvas canvas) {
+    public void dispatchDraw(final Canvas canvas) {
         super.dispatchDraw(canvas);
 
         if (isMapMoving) {
@@ -56,7 +63,7 @@ public class TrackableMapView extends MapView {
      * http://stackoverflow.com/a/7443880/359730
      */
     @Override
-    public boolean onTouchEvent(android.view.MotionEvent event)
+    public boolean onTouchEvent(final android.view.MotionEvent event)
     {
         super.onTouchEvent(event);
 
@@ -68,7 +75,7 @@ public class TrackableMapView extends MapView {
         return true;
     }
 
-    public void addMovedOrZoomedObserver(MapViewListener listener) {
+    public void addMovedOrZoomedObserver(final MapViewListener listener) {
         listeners.add(listener);
     }
 

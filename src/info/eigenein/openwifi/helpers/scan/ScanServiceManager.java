@@ -1,17 +1,11 @@
 package info.eigenein.openwifi.helpers.scan;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.SystemClock;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import info.eigenein.openwifi.activities.SettingsActivity;
-import info.eigenein.openwifi.helpers.Settings;
-import info.eigenein.openwifi.helpers.location.DefaultLocationListener;
-import info.eigenein.openwifi.helpers.location.LocationUpdatesManager;
+import android.app.*;
+import android.content.*;
+import android.os.*;
+import android.util.*;
+import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.location.*;
 
 /**
  * Manages the background WiFi scan service.
@@ -29,8 +23,8 @@ public class ScanServiceManager {
         // Stop the scan service.
         stop(context);
         // Schedule the scan.
-        long period = Settings.with(context).scanPeriod();
-        PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
+        final long period = Settings.with(context).scanPeriod();
+        final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
                 scanServiceIntent,
@@ -47,7 +41,7 @@ public class ScanServiceManager {
     /**
      * Restarts the scan service if it is already started.
      */
-    public static void restartIfStarted(Context context) {
+    public static void restartIfStarted(final Context context) {
         if (isStarted(context)) {
             Log.i(LOG_TAG, "restartIfStarted");
             restart(context);
@@ -57,11 +51,11 @@ public class ScanServiceManager {
     /**
      * Stops the scan service.
      */
-    public static void stop(Context context) {
+    public static void stop(final Context context) {
         // Stop location tracking.
         LocationUpdatesManager.removeUpdates(context, DefaultLocationListener.getInstance());
         // Stop pending intent.
-        PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
+        final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
                 scanServiceIntent,
@@ -75,7 +69,7 @@ public class ScanServiceManager {
     /**
      * Gets whether the scan service is started.
      */
-    public static boolean isStarted(Context context) {
+    public static boolean isStarted(final Context context) {
         return PendingIntent.getBroadcast(
                 context,
                 0,
@@ -86,7 +80,7 @@ public class ScanServiceManager {
     /**
      * Gets the alarm manager instance.
      */
-    private static AlarmManager getAlarmManager(Context context) {
+    private static AlarmManager getAlarmManager(final Context context) {
         return (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
     }
 }

@@ -15,7 +15,7 @@ public class ClusterList implements Iterable<Cluster> {
         return clusters.iterator();
     }
 
-    public void add(Cluster cluster) {
+    public void add(final Cluster cluster) {
         clusters.add(cluster);
     }
 

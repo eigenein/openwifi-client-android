@@ -33,11 +33,11 @@ public class LocationTracker {
     /**
      * Gets the best tracked location.
      */
-    public Location getLocation(Context context) {
+    public Location getLocation(final Context context) {
         final LocationManager locationManager = getLocationManager(context);
 
         // Find the best location from the current location and last known locations.
-        Location bestLocation = getBestLocation(
+        final Location bestLocation = getBestLocation(
                 location,
                 getBestLocation(
                         locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
@@ -58,7 +58,7 @@ public class LocationTracker {
     /**
      * Notifies the tracker that there is location update.
      */
-    public void notifyLocationChanged(Location location) {
+    public void notifyLocationChanged(final Location location) {
         Log.d(LOG_TAG, "notifyLocationChanged " + formatLocation(location));
 
         // Choose the best location.
@@ -68,14 +68,14 @@ public class LocationTracker {
         Log.d(LOG_TAG, "LocationTracker.location " + formatLocation(LocationTracker.location));
     }
 
-    private static LocationManager getLocationManager(Context context) {
+    private static LocationManager getLocationManager(final Context context) {
         return (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     /**
      * See https://developer.android.com/guide/topics/location/strategies.html
      */
-    private static Location getBestLocation(Location location2, Location location1) {
+    private static Location getBestLocation(final Location location2, final Location location1) {
         // A new location is always better than no location.
         if (location1 == null) {
             return location2;
@@ -123,14 +123,14 @@ public class LocationTracker {
     /**
      * Checks whether two providers are the same.
      */
-    private static boolean isSameProvider(String provider1, String provider2) {
+    private static boolean isSameProvider(final String provider1, final String provider2) {
         if (provider1 == null) {
             return provider2 == null;
         }
         return provider1.equals(provider2);
     }
 
-    private static String formatLocation(Location location) {
+    private static String formatLocation(final Location location) {
         if (location == null) {
             return "null";
         }

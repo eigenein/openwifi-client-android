@@ -12,7 +12,7 @@ import java.util.zip.*;
  * See https://androidto.googlecode.com/svn-history/r2/trunk/src/com/google/android/apps/iosched/service/SyncService.java
  */
 public class InflatingEntity extends HttpEntityWrapper {
-    public InflatingEntity(HttpEntity wrapped) {
+    public InflatingEntity(final HttpEntity wrapped) {
         super(wrapped);
     }
 

@@ -142,7 +142,7 @@ public class SyncIntentService extends IntentService {
     /**
      * Initializes the request.
      */
-    private static void initializeRequest(HttpRequest request, String clientId) {
+    private static void initializeRequest(final HttpRequest request, final String clientId) {
         request.setHeader("X-Client-ID", clientId);
         request.setHeader("Accept", "application/json");
         request.setHeader("Content-Type", "application/json");

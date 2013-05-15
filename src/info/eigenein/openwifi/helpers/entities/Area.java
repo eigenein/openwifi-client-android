@@ -10,7 +10,7 @@ public class Area {
 
     private final float accuracy;
 
-    public Area(double latitude, double longitude, float accuracy) {
+    public Area(final double latitude, final double longitude, final float accuracy) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.accuracy = accuracy;

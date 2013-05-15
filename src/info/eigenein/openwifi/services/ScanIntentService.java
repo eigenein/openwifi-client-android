@@ -23,7 +23,7 @@ public class ScanIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(final Intent intent) {
         final WifiManager wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
         if (!wifiManager.isWifiEnabled()) {
@@ -53,9 +53,9 @@ public class ScanIntentService extends IntentService {
                 0
         );
 
-        String wifi_is_disabled_title = getString(R.string.wifi_is_disabled_title);
-        String wifi_is_disabled_text = getString(R.string.wifi_is_disabled_text);
-        Notification notification = new NotificationCompat.Builder(this)
+        final String wifi_is_disabled_title = getString(R.string.wifi_is_disabled_title);
+        final String wifi_is_disabled_text = getString(R.string.wifi_is_disabled_text);
+        final Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setAutoCancel(true)
                 .setTicker(wifi_is_disabled_title +

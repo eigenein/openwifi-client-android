@@ -65,7 +65,7 @@ public class SyncHttpClient extends DefaultHttpClient {
                 final HttpEntity entity = response.getEntity();
                 final Header contentEncoding = entity.getContentEncoding();
                 if (contentEncoding != null) {
-                    for (HeaderElement element : contentEncoding.getElements()) {
+                    for (final HeaderElement element : contentEncoding.getElements()) {
                         if (element.getName().equalsIgnoreCase(ENCODING_GZIP)) {
                             response.setEntity(new InflatingEntity(response.getEntity()));
                             break;

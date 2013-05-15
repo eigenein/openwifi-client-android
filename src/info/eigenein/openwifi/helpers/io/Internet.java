@@ -20,10 +20,10 @@ public class Internet {
     };
 
     public static boolean check() {
-        for (String url : urls) {
+        for (final String url : urls) {
             Log.d(LOG_TAG, "Trying " + url);
             try {
-                HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+                final HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.connect();
                 Log.i(LOG_TAG, "Successfully connected.");

@@ -18,7 +18,7 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
 
     private static final String URL = "https://openwifi.info/api/scan-results/";
 
-    public TaggedRequest getNextRequest(Context context) {
+    public TaggedRequest getNextRequest(final Context context) {
         // Prepare the page.
         Log.d(LOG_TAG + ".getNextRequest", "Querying for the page ...");
         final List<MyScanResult> scanResults =
@@ -44,7 +44,10 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
     }
 
     @Override
-    public boolean processResponse(Context context, TaggedRequest request, HttpResponse response) {
+    public boolean processResponse(
+            final Context context,
+            final TaggedRequest request,
+            final HttpResponse response) {
         Log.d(LOG_TAG + ".processResponse", "Marking the results as synced ...");
         final List<MyScanResult> scanResults = (List<MyScanResult>)request.getTag();
         ScanResultTracker.markAsSynced(context, scanResults);

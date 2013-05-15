@@ -6,11 +6,11 @@ package info.eigenein.openwifi.helpers.location;
 public class L {
     private final static double TO_E6_FIX = 1.0e6;
 
-    public static double fromE6(int value) {
+    public static double fromE6(final int value) {
         return value / TO_E6_FIX;
     }
 
-    public static int toE6(double value) {
+    public static int toE6(final double value) {
         return (int)(value * TO_E6_FIX);
     }
 }

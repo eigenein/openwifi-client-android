@@ -11,7 +11,7 @@ public class Network implements Serializable {
 
     private final HashSet<String> bssids;
 
-    public Network(String ssid, HashSet<String> bssids) {
+    public Network(final String ssid, final HashSet<String> bssids) {
         this.ssid = ssid;
         this.bssids = bssids;
     }
@@ -36,7 +36,7 @@ public class Network implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return ssid.equals(((Network)o).getSsid());
     }
 }

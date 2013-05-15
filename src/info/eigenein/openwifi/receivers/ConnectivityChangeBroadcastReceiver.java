@@ -66,11 +66,11 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
     /**
      * Called when the device failed to connect to the Internet.
      */
-    private void onFailed(WifiInfo info) {
+    private void onFailed(final WifiInfo info) {
         Log.w(LOG_TAG, "onFailed: " + info.getSSID());
     }
 
-    private WifiInfo getInfo(Context context) {
+    private WifiInfo getInfo(final Context context) {
         return ((WifiManager)context.getSystemService(Context.WIFI_SERVICE))
                 .getConnectionInfo();
     }
@@ -81,12 +81,12 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
     private class CheckConnectivityAsyncTask extends AsyncTask<Void, Void, Void> {
         private final Context context;
 
-        public CheckConnectivityAsyncTask(Context context) {
+        public CheckConnectivityAsyncTask(final Context context) {
             this.context = context;
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(final Void... voids) {
             if (Internet.check()) {
                 onSucceeded(context, getInfo(context));
             } else {

@@ -12,7 +12,7 @@ public class Cluster implements Iterable<Network> {
 
     private final Area area;
 
-    public Cluster(Area area) {
+    public Cluster(final Area area) {
         this.area = area;
     }
 
@@ -25,7 +25,7 @@ public class Cluster implements Iterable<Network> {
         return area;
     }
 
-    public void add(Network network) {
+    public void add(final Network network) {
         networks.add(network);
     }
 
@@ -36,8 +36,8 @@ public class Cluster implements Iterable<Network> {
     @Override
     public String toString() {
         // Construct the network SSID list.
-        StringBuilder networksStringBuilder = new StringBuilder();
-        Iterator<Network> networkIterator = networks.iterator();
+        final StringBuilder networksStringBuilder = new StringBuilder();
+        final Iterator<Network> networkIterator = networks.iterator();
         while (networkIterator.hasNext()) {
             networksStringBuilder.append(networkIterator.next().getSsid());
             if (!networkIterator.hasNext()) {

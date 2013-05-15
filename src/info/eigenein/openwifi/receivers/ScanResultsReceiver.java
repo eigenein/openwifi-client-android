@@ -27,9 +27,9 @@ public class ScanResultsReceiver extends BroadcastReceiver {
     private static final int MAX_ACCURACY = 50;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         // Check current location.
-        Location location = LocationTracker.getInstance().getLocation(context);
+        final Location location = LocationTracker.getInstance().getLocation(context);
         if (location == null) {
             Log.w(LOG_TAG, "getLocation returned null.");
             return;
@@ -52,9 +52,9 @@ public class ScanResultsReceiver extends BroadcastReceiver {
 
         Log.i(LOG_TAG, "An access point scan has completed.");
         // Filter out open access points.
-        List<ScanResult> openScanResults = new ArrayList<ScanResult>();
+        final List<ScanResult> openScanResults = new ArrayList<ScanResult>();
         for (ScanResult scanResult : scanResults) {
-            ScanResultCapabilities capabilities = ScanResultCapabilities.fromString(
+            final ScanResultCapabilities capabilities = ScanResultCapabilities.fromString(
                     scanResult.capabilities);
             if (!capabilities.isSecured()) {
                 openScanResults.add(scanResult);

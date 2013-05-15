@@ -90,14 +90,14 @@ public class ClusterListOverlay extends Overlay {
      * http://stackoverflow.com/questions/4806061/how-do-i-respond-to-a-tap-on-an-android-mapview-but-ignore-pinch-zoom
      */
     @Override
-    public boolean onTouchEvent(MotionEvent e, MapView mapView)
+    public boolean onTouchEvent(final MotionEvent e, final MapView mapView)
     {
         int fingers = e.getPointerCount();
         if(e.getAction() == MotionEvent.ACTION_DOWN ) {
             // Touch DOWN, don't know if it's a pinch yet.
             isPinch = false;
         }
-        if(e.getAction()==MotionEvent.ACTION_MOVE && fingers == 2) {
+        if(e.getAction() == MotionEvent.ACTION_MOVE && fingers == 2) {
             // Two fingers, def a pinch
             isPinch = true;
         }
@@ -105,8 +105,8 @@ public class ClusterListOverlay extends Overlay {
     }
 
     @Override
-    public void draw(Canvas canvas, MapView mapView, boolean shadow) {
-        for (Object overlay : overlays) {
+    public void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+        for (final Object overlay : overlays) {
             ((ClusterOverlay)overlay).draw(canvas, mapView, shadow);
         }
     }
@@ -115,7 +115,7 @@ public class ClusterListOverlay extends Overlay {
         overlays.clear();
     }
 
-    public void addClusterOverlay(ClusterOverlay overlay) {
+    public void addClusterOverlay(final ClusterOverlay overlay) {
         overlays.add(overlay);
     }
 }

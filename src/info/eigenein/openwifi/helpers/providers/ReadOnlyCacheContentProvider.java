@@ -17,11 +17,11 @@ public class ReadOnlyCacheContentProvider extends ContentProvider {
     private static final String LOG_TAG = ReadOnlyCacheContentProvider.class.getCanonicalName();
 
     @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+    public ParcelFileDescriptor openFile(final Uri uri, final String mode) throws FileNotFoundException {
         Log.i(LOG_TAG + ".openFile ", uri.toString());
 
-        File cacheDir = getContext().getCacheDir();
-        File privateFile = new File(cacheDir, uri.getLastPathSegment());
+        final File cacheDir = getContext().getCacheDir();
+        final File privateFile = new File(cacheDir, uri.getLastPathSegment());
 
         return ParcelFileDescriptor.open(privateFile, ParcelFileDescriptor.MODE_READ_ONLY);
     }
@@ -32,27 +32,36 @@ public class ReadOnlyCacheContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings2, String s2) {
+    public Cursor query(
+            final Uri uri,
+            final String[] strings,
+            final String s,
+            final String[] strings2,
+            final String s2) {
         return null;
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(final Uri uri) {
         return null;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
+    public Uri insert(final Uri uri, final ContentValues contentValues) {
         return null;
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
+    public int delete(final Uri uri, final String s, final String[] strings) {
         return 0;
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
+    public int update(
+            final Uri uri,
+            final ContentValues contentValues,
+            final String s,
+            final String[] strings) {
         return 0;
     }
 }

@@ -17,12 +17,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "cache.db";
 
-    public DatabaseHelper(Context context) {
+    public DatabaseHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase, ConnectionSource connectionSource) {
+    public void onCreate(final SQLiteDatabase sqLiteDatabase, final ConnectionSource connectionSource) {
         Log.i(LOG_TAG, "onCreate");
         try {
             TableUtils.createTable(connectionSource, MyScanResult.class);
@@ -33,10 +33,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     @Override
     public void onUpgrade(
-            SQLiteDatabase sqLiteDatabase,
-            ConnectionSource connectionSource,
-            int oldVersion,
-            int newVersion) {
+            final SQLiteDatabase sqLiteDatabase,
+            final ConnectionSource connectionSource,
+            final int oldVersion,
+            final int newVersion) {
         // TODO.
     }
 }

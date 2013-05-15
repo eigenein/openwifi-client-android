@@ -10,7 +10,7 @@ public class TaggedRequest {
 
     private final Object tag;
 
-    public TaggedRequest(HttpUriRequest request, Object tag) {
+    public TaggedRequest(final HttpUriRequest request, final Object tag) {
         this.request = request;
         this.tag = tag;
     }

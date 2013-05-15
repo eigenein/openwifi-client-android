@@ -69,27 +69,27 @@ public class ScanResultTracker {
     /**
      * Gets the unique BSSID count (that is an access point count).
      */
-    public static long getUniqueBssidCount(Context context) {
+    public static long getUniqueBssidCount(final Context context) {
         return getScanResultDistinctCount(context, MyScanResult.BSSID);
     }
 
     /**
      * Gets the unique SSID count (that is a network count).
      */
-    public static long getUniqueSsidCount(Context context) {
+    public static long getUniqueSsidCount(final Context context) {
         return getScanResultDistinctCount(context, MyScanResult.SSID);
     }
 
     /**
      * Gets the scan result count.
      */
-    public static long getScanResultCount(Context context) {
+    public static long getScanResultCount(final Context context) {
         DatabaseHelper databaseHelper = null;
         try {
             databaseHelper = getDatabaseHelper(context);
             final Dao<MyScanResult, Long> scanResultDao = getScanResultDao(databaseHelper);
             final long countOfStartTime = System.currentTimeMillis();
-            long count = scanResultDao.countOf();
+            final long count = scanResultDao.countOf();
             Log.d(LOG_TAG + ".getScanResultCount", String.format(
                     "%sms",
                     System.currentTimeMillis() - countOfStartTime));
@@ -302,7 +302,7 @@ public class ScanResultTracker {
     /**
      * Gets the count of unique scan results by the specified column.
      */
-    private static long getScanResultDistinctCount(Context context, String columnName) {
+    private static long getScanResultDistinctCount(final Context context, final String columnName) {
         DatabaseHelper databaseHelper = null;
         try {
             databaseHelper = getDatabaseHelper(context);
@@ -332,9 +332,9 @@ public class ScanResultTracker {
      * Deletes old scan results for the specified BSSID.
      */
     private static void purgeOldScanResults(
-            Dao<MyScanResult, Long> dao,
-            String bssid,
-            int maxScanResultsForBssidCount)
+            final Dao<MyScanResult, Long> dao,
+            final String bssid,
+            final int maxScanResultsForBssidCount)
             throws SQLException {
         final long startTime = System.currentTimeMillis();
 

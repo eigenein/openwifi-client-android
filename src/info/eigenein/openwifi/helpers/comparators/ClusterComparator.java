@@ -12,7 +12,7 @@ public class ClusterComparator implements Comparator {
     }
 
     @Override
-    public int compare(Object o, Object o2) {
+    public int compare(final Object o, final Object o2) {
         float accuracy = ((ClusterOverlay)o).getCluster().getArea().getAccuracy();
         float accuracy2 = ((ClusterOverlay)o2).getCluster().getArea().getAccuracy();
         // Sort from greater accuracy down to less accuracy.
