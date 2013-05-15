@@ -12,18 +12,9 @@ import info.eigenein.openwifi.sync.ScanResultUpSyncer;
 import info.eigenein.openwifi.sync.Syncer;
 import info.eigenein.openwifi.sync.TaggedRequest;
 import org.apache.http.*;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.client.HttpClient;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Synchronizes the local database with the server database.
@@ -48,7 +39,7 @@ public class SyncIntentService extends IntentService {
         // The client ID will be used in the HTTP(S) requests.
         final String clientId = settings.clientId();
         // Prepare the HTTP client.
-        final SyncHttpClient client = new SyncHttpClient(this);
+        final HttpClient client = new SyncHttpClient(this);
         // Set the "syncing now" flag.
         settings.edit().syncingNow(true).commit();
         // Start syncing.
@@ -72,7 +63,7 @@ public class SyncIntentService extends IntentService {
     /**
      * Performs syncing with the specified syncer.
      */
-    private void sync(final DefaultHttpClient client, final Syncer syncer, final String clientId) {
+    private void sync(final HttpClient client, final Syncer syncer, final String clientId) {
         Log.i(SERVICE_NAME + ".sync", "Starting syncing with " + syncer);
         // Prepare the event tracker.
         EasyTracker.getInstance().setContext(this);
@@ -154,7 +145,6 @@ public class SyncIntentService extends IntentService {
     private static void initializeRequest(HttpRequest request, String clientId) {
         request.setHeader("X-Client-ID", clientId);
         request.setHeader("Accept", "application/json");
-        // TODO: request.setHeader("Accept-Encoding", "gzip");
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Connection", "Keep-Alive");
     }
