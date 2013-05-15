@@ -3,6 +3,7 @@ package info.eigenein.openwifi.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.*;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
 import info.eigenein.openwifi.helpers.location.LocationProcessor;
+import info.eigenein.openwifi.helpers.location.LocationTracker;
 import info.eigenein.openwifi.helpers.map.*;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
@@ -89,7 +91,14 @@ public class MainActivity extends MapActivity {
         findViewById(R.id.button_my_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final GeoPoint myLocation = myLocationOverlay.getMyLocation();
+                GeoPoint myLocation = myLocationOverlay.getMyLocation();
+                if (myLocation == null) {
+                    // Try to obtain current location from the location tracker.
+                    final Location location = LocationTracker.getInstance().getLocation(MainActivity.this);
+                    if (location != null) {
+                        myLocation = L.toGeoPoint(location.getLatitude(), location.getLongitude());
+                    }
+                }
                 if (myLocation != null) {
                     mapController.animateTo(myLocation);
                     mapView.invalidateMovedOrZoomed();
@@ -122,7 +131,7 @@ public class MainActivity extends MapActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
         return true;
