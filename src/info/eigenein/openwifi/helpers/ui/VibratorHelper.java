@@ -8,8 +8,6 @@ public class VibratorHelper {
 
     public static void vibrate(Context context) {
         final Vibrator vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibrator.hasVibrator()) {
-            vibrator.vibrate(VIBRATE_MILLISECONDS);
-        }
+        vibrator.vibrate(VIBRATE_MILLISECONDS);
     }
 }
