@@ -2,7 +2,7 @@ package info.eigenein.openwifi.services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.*;
+import android.support.v4.content.*;
 import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
@@ -21,11 +21,10 @@ import java.io.IOException;
  * Synchronizes the local database with the server database.
  */
 public class SyncIntentService extends IntentService {
-    private static final String SERVICE_NAME = SyncIntentService.class.getCanonicalName();
+    public static final String SERVICE_NAME = SyncIntentService.class.getCanonicalName();
 
-    public static final String RECEIVER_KEY = "receiver";
-
-    public static final int RESULT_CODE_INTENT_HANDLED = 0;
+    public static final String STATUS_CODE_EXTRA_KEY = "statusCode";
+    public static final int RESULT_CODE_NOT_SYNCING = 0;
     public static final int RESULT_CODE_SYNCING = 1;
 
     /**
@@ -41,12 +40,9 @@ public class SyncIntentService extends IntentService {
         Log.i(SERVICE_NAME + ".onHandleIntent", "Service is running.");
 
         final Settings settings = Settings.with(this);
-        final ResultReceiver receiver = intent.getParcelableExtra(RECEIVER_KEY);
 
         // Notify the receiver that we're starting.
-        if (receiver != null) {
-            receiver.send(RESULT_CODE_SYNCING, Bundle.EMPTY);
-        }
+        sendStatusMessage(RESULT_CODE_SYNCING);
         // The client ID will be used in the HTTP(S) requests.
         final String clientId = settings.clientId();
         // Prepare the HTTP client.
@@ -67,12 +63,19 @@ public class SyncIntentService extends IntentService {
             // Ensure immediate deallocation of all system resources.
             client.getConnectionManager().shutdown();
             // Notify the receiver that we've finished.
-            if (receiver != null) {
-                receiver.send(RESULT_CODE_INTENT_HANDLED, Bundle.EMPTY);
-            }
+            sendStatusMessage(RESULT_CODE_NOT_SYNCING);
         }
 
         Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
+    }
+
+    /**
+     * Sends the service status message to the local broadcast receivers.
+     */
+    private void sendStatusMessage(int statusCode) {
+        final Intent intent = new Intent(SERVICE_NAME);
+        intent.putExtra(STATUS_CODE_EXTRA_KEY, statusCode);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**
