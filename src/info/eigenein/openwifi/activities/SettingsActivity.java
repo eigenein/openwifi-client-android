@@ -3,8 +3,7 @@ package info.eigenein.openwifi.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.*;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -17,6 +16,7 @@ import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.io.FileUtils;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
+import info.eigenein.openwifi.receivers.*;
 import info.eigenein.openwifi.services.SyncIntentService;
 
 import java.io.File;
@@ -25,7 +25,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 public class SettingsActivity extends PreferenceActivity
-                              implements SharedPreferences.OnSharedPreferenceChangeListener {
+                              implements SharedPreferences.OnSharedPreferenceChangeListener, SyncIntentServiceResultReceiver.Receiver {
     private static final String LOG_TAG = SettingsActivity.class.getCanonicalName();
 
     @SuppressWarnings("deprecation")
@@ -62,9 +62,15 @@ public class SettingsActivity extends PreferenceActivity
         syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                // Notify the user.
                 Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG).show();
-                startService(new Intent(SettingsActivity.this, SyncIntentService.class));
-                updateSyncNowPreference(true);
+                // Initialize the intent.
+                final Intent syncIntentServiceIntent = new Intent(SettingsActivity.this, SyncIntentService.class);
+                final ResultReceiver resultReceiver = new SyncIntentServiceResultReceiver(SettingsActivity.this);
+                syncIntentServiceIntent.putExtra(SyncIntentService.RECEIVER_KEY, resultReceiver);
+                // Start the service.
+                startService(syncIntentServiceIntent);
+                // Done.
                 return true;
             }
         });
@@ -76,6 +82,13 @@ public class SettingsActivity extends PreferenceActivity
         super.onStart();
 
         EasyTracker.getInstance().activityStart(this);
+    }
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle data) {
+        // Sync service has just changed its state. Update the preference.
+        final boolean syncingNow = resultCode == SyncIntentService.RESULT_CODE_SYNCING;
+        updateSyncNowPreference(syncingNow);
     }
 
     @Override

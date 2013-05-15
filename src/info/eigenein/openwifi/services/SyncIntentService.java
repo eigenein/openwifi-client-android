@@ -2,6 +2,7 @@ package info.eigenein.openwifi.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.*;
 import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
@@ -22,6 +23,11 @@ import java.io.IOException;
 public class SyncIntentService extends IntentService {
     private static final String SERVICE_NAME = SyncIntentService.class.getCanonicalName();
 
+    public static final String RECEIVER_KEY = "receiver";
+
+    public static final int RESULT_CODE_INTENT_HANDLED = 0;
+    public static final int RESULT_CODE_SYNCING = 1;
+
     /**
      * Minimal sync period.
      */
@@ -35,7 +41,12 @@ public class SyncIntentService extends IntentService {
         Log.i(SERVICE_NAME + ".onHandleIntent", "Service is running.");
 
         final Settings settings = Settings.with(this);
+        final ResultReceiver receiver = intent.getParcelableExtra(RECEIVER_KEY);
 
+        // Notify the receiver that we're starting.
+        if (receiver != null) {
+            receiver.send(RESULT_CODE_SYNCING, Bundle.EMPTY);
+        }
         // The client ID will be used in the HTTP(S) requests.
         final String clientId = settings.clientId();
         // Prepare the HTTP client.
@@ -55,6 +66,10 @@ public class SyncIntentService extends IntentService {
             settings.edit().syncingNow(false).commit();
             // Ensure immediate deallocation of all system resources.
             client.getConnectionManager().shutdown();
+            // Notify the receiver that we've finished.
+            if (receiver != null) {
+                receiver.send(RESULT_CODE_INTENT_HANDLED, Bundle.EMPTY);
+            }
         }
 
         Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
