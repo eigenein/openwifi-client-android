@@ -1,6 +1,7 @@
 package info.eigenein.openwifi.helpers.io;
 
 import android.content.Context;
+import android.util.Log;
 import info.eigenein.openwifi.R;
 import org.apache.http.HttpVersion;
 import org.apache.http.conn.scheme.Scheme;
@@ -15,6 +16,8 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 public class SyncHttpClient extends DefaultHttpClient {
+    private final static String LOG_TAG = SyncHttpClient.class.getCanonicalName();
+
     private final static char[] TRUST_STORE_PASSWORD = "St6qe5en".toCharArray();
 
     private final static String KEY_STORE_PASSWORD = "rkJNiD2Mew9mYBo1";
@@ -71,6 +74,7 @@ public class SyncHttpClient extends DefaultHttpClient {
                 trustStoreInputStream.close();
             }
             // Done.
+            Log.d(LOG_TAG + ".loadKeyStore", "Loaded " + keyStore.size() + " key(s).");
             return keyStore;
         } catch (Exception e) {
             throw new RuntimeException("Failed to load the key store..", e);
