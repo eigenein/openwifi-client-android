@@ -1,7 +1,8 @@
 package info.eigenein.openwifi.services;
 
 import android.app.IntentService;
-import android.content.Intent;
+import android.content.*;
+import android.net.wifi.*;
 import android.support.v4.content.*;
 import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -23,7 +24,15 @@ import java.io.IOException;
 public class SyncIntentService extends IntentService {
     public static final String SERVICE_NAME = SyncIntentService.class.getCanonicalName();
 
+    /**
+     * Used to notify receivers with the service state.
+     */
     public static final String STATUS_CODE_EXTRA_KEY = "statusCode";
+    /**
+     * Used to check whether the device is still connected to the specified wireless network.
+     */
+    public static final String SSID_EXTRA_KEY = "ssid";
+
     public static final int RESULT_CODE_NOT_SYNCING = 0;
     public static final int RESULT_CODE_SYNCING = 1;
 
@@ -38,6 +47,14 @@ public class SyncIntentService extends IntentService {
 
     protected void onHandleIntent(final Intent intent) {
         Log.i(SERVICE_NAME + ".onHandleIntent", "Service is running.");
+        EasyTracker.getInstance().setContext(this);
+
+        // Check current network SSID if specified.
+        final String ssid = intent.getStringExtra(SSID_EXTRA_KEY);
+        if (ssid != null && !checkSsid(ssid)) {
+            // We're not connected or connected to the network other than requested.
+            return;
+        }
 
         final Settings settings = Settings.with(this);
 
@@ -67,6 +84,24 @@ public class SyncIntentService extends IntentService {
         }
 
         Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
+    }
+
+    /**
+     * Checks that the device is connected to the wireless network with the specified SSID.
+     */
+    private boolean checkSsid(String expectedSsid) {
+        final WifiInfo wifiInfo = ((WifiManager)getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
+        if (wifiInfo == null || wifiInfo.getSSID() != expectedSsid) {
+            Log.w(SERVICE_NAME + ".checkSsid", "SSID has been changed or Wi-Fi is not available.");
+            EasyTracker.getTracker().sendEvent(
+                    SERVICE_NAME,
+                    "checkSsid",
+                    wifiInfo != null ? "SSID mismatch" : "wifiInfo is null",
+                    0L);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
