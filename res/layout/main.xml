@@ -8,6 +8,18 @@
         android:layout_height="fill_parent"
         android:clickable="true"
         android:apiKey="0ApR5KD5QumoyOjeUB3dBGX8zl_Xr6oQ2ahYDdA"/>
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_alignParentTop="true">
+        <ProgressBar android:layout_width="fill_parent"
+                     android:layout_height="wrap_content"
+                     android:padding="0dip"
+                     android:layout_margin="0dip"
+                     style="?android:attr/progressBarStyleHorizontal"
+                     android:indeterminate="true"
+                     android:maxHeight="1dip"/>
+    </LinearLayout>
     <LinearLayout android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:orientation="vertical"
