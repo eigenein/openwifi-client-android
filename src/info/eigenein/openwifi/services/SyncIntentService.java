@@ -91,8 +91,11 @@ public class SyncIntentService extends IntentService {
      */
     private boolean checkSsid(String expectedSsid) {
         final WifiInfo wifiInfo = ((WifiManager)getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
-        if (wifiInfo == null || wifiInfo.getSSID() != expectedSsid) {
-            Log.w(SERVICE_NAME + ".checkSsid", "SSID has been changed or Wi-Fi is not available.");
+        if (wifiInfo == null || !wifiInfo.getSSID().equals(expectedSsid)) {
+            Log.w(SERVICE_NAME + ".checkSsid", String.format(
+                    "SSID has been changed or Wi-Fi is not available. Expected: %s, actual: %s.",
+                    expectedSsid,
+                    wifiInfo != null ? wifiInfo.getSSID() : "(null)"));
             EasyTracker.getTracker().sendEvent(
                     SERVICE_NAME,
                     "checkSsid",
