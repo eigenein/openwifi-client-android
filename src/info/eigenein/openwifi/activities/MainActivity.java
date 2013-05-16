@@ -13,8 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
@@ -243,13 +242,22 @@ public class MainActivity extends MapActivity {
     }
 
     /**
+     * Updates the refreshing scan results progress bar visibility.
+     */
+    private void updateRefreshingScanResultsProgressBar(boolean visible) {
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar_refreshing_scan_results);
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap() {
         Log.d(LOG_TAG, "startRefreshingScanResultsOnMap");
+        updateRefreshingScanResultsProgressBar(true);
 
         // Check if the task is already running.
-       cancelRefreshScanResultsAsyncTask();
+        cancelRefreshScanResultsAsyncTask();
 
         // Check map bounds.
         if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
@@ -370,7 +378,9 @@ public class MainActivity extends MapActivity {
                 );
                 clusterListOverlay.addClusterOverlay(clusterOverlay);
             }
+
             mapView.invalidate();
+            updateRefreshingScanResultsProgressBar(false);
         }
 
         @Override
