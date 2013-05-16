@@ -124,9 +124,9 @@ public class MainActivity extends MapActivity {
         });
         // Setup overlays.
         final List<Overlay> overlays = mapView.getOverlays();
-        overlays.add(myLocationOverlay);
         clusterListOverlay = new ClusterListOverlay();
         overlays.add(clusterListOverlay);
+        overlays.add(myLocationOverlay);
     }
 
     @Override
