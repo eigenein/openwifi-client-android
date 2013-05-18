@@ -17,6 +17,7 @@ import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
@@ -159,6 +160,12 @@ public class MainActivity extends MapActivity {
         }
         // Update overlays.
         startRefreshingScanResultsOnMap();
+        // Run first-time syncing.
+        final Settings settings = Settings.with(this);
+        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
+            Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
+            SyncIntentService.start(this);
+        }
 
         EasyTracker.getInstance().activityStart(this);
     }
