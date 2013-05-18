@@ -41,6 +41,16 @@ public class SyncIntentService extends IntentService {
      */
     public static final long SYNC_PERIOD_MILLIS = 60L * 60L * 1000L;
 
+    public static void start(final Context context) {
+        context.startService(new Intent(context, SyncIntentService.class));
+    }
+
+    public static void start(final Context context, final String ssid) {
+        final Intent intent = new Intent(context, SyncIntentService.class);
+        intent.putExtra(SSID_EXTRA_KEY, ssid);
+        context.startService(intent);
+    }
+
     public SyncIntentService() {
         super(SERVICE_NAME);
     }

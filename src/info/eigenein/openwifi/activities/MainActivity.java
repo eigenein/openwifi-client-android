@@ -26,8 +26,8 @@ import info.eigenein.openwifi.helpers.location.LocationProcessor;
 import info.eigenein.openwifi.helpers.location.LocationTracker;
 import info.eigenein.openwifi.helpers.map.*;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.persistency.MyScanResult;
+import info.eigenein.openwifi.services.*;
 import org.apache.commons.collections.map.MultiKeyMap;
 
 import java.util.*;
@@ -140,7 +140,7 @@ public class MainActivity extends MapActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        boolean isServiceStarted = ScanServiceManager.isStarted(this);
+        boolean isServiceStarted = ScanIntentService.isStarted(this);
         menu.findItem(R.id.start_scan_menuitem).setVisible(!isServiceStarted);
         menu.findItem(R.id.pause_scan_menuitem).setVisible(isServiceStarted);
 
@@ -183,12 +183,12 @@ public class MainActivity extends MapActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.start_scan_menuitem:
-                ScanServiceManager.restart(this);
+                ScanIntentService.restart(this);
                 Toast.makeText(this, R.string.scan_started, Toast.LENGTH_LONG).show();
                 invalidateOptionsMenu();
                 return true;
             case R.id.pause_scan_menuitem:
-                ScanServiceManager.stop(this);
+                ScanIntentService.stop(this);
                 Toast.makeText(this, R.string.scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
                 return true;

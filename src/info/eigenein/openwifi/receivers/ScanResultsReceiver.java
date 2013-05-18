@@ -9,8 +9,8 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.helpers.parsers.ScanResultCapabilities;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.location.LocationTracker;
+import info.eigenein.openwifi.services.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
         }
 
         // Reset alarm in case the scan results were not requested.
-        ScanServiceManager.restartIfStarted(context);
+        ScanIntentService.restartIfStarted(context);
 
         Log.i(LOG_TAG, "An access point scan has completed.");
         // Filter out open access points.

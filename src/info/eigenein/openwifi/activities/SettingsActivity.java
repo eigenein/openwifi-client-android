@@ -13,10 +13,9 @@ import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.Settings;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.io.FileUtils;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
-import info.eigenein.openwifi.services.SyncIntentService;
+import info.eigenein.openwifi.services.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +63,7 @@ public class SettingsActivity extends PreferenceActivity
                 // Notify the user.
                 Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG).show();
                 // Start the service.
-                startService(new Intent(SettingsActivity.this, SyncIntentService.class));
+                SyncIntentService.start(SettingsActivity.this);
                 // Done.
                 return true;
             }
@@ -159,10 +158,10 @@ public class SettingsActivity extends PreferenceActivity
             // Update UI.
             updatePeriodPreference();
             // Restart the service so that the new period is used.
-            ScanServiceManager.restartIfStarted(this);
+            ScanIntentService.restartIfStarted(this);
         } else if (key.equals(Settings.IS_NETWORK_PROVIDER_ENABLED_KEY)) {
             // Restart the service so that the new provider set is used.
-            ScanServiceManager.restartIfStarted(this);
+            ScanIntentService.restartIfStarted(this);
         } else if (key.equals(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY)) {
             // Update UI.
             updateMaxScanResultsForBssidPreference();

@@ -1,16 +1,14 @@
 package info.eigenein.openwifi.services;
 
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.net.wifi.WifiManager;
-import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import info.eigenein.openwifi.R;
+import android.app.*;
+import android.content.*;
+import android.net.wifi.*;
+import android.os.*;
+import android.provider.*;
+import android.support.v4.app.*;
+import android.util.*;
+import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.helpers.location.*;
 
 /**
  * Background service that runs a WiFi access point scan.
@@ -18,8 +16,71 @@ import info.eigenein.openwifi.R;
 public class ScanIntentService extends IntentService {
     private static final String SERVICE_NAME = ScanIntentService.class.getCanonicalName();
 
+    private static final Intent scanServiceIntent = new Intent("info.eigenein.intents.SCAN_INTENT");
+
     public ScanIntentService() {
         super(SERVICE_NAME);
+    }
+
+    /**
+     * Starts or updates the scan service.
+     */
+    public static void restart(Context context) {
+        // Stop the scan service.
+        stop(context);
+        // Schedule the scan.
+        final long period = info.eigenein.openwifi.helpers.Settings.with(context).scanPeriod();
+        final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                scanServiceIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        getAlarmManager(context).setInexactRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + period,
+                info.eigenein.openwifi.helpers.Settings.with(context).scanPeriod(),
+                scanPendingIntent);
+        // Start location tracking.
+        LocationUpdatesManager.requestUpdates(context, DefaultLocationListener.getInstance());
+    }
+
+    /**
+     * Restarts the scan service if it is already started.
+     */
+    public static void restartIfStarted(final Context context) {
+        if (isStarted(context)) {
+            Log.i(SERVICE_NAME, "restartIfStarted");
+            restart(context);
+        }
+    }
+
+    /**
+     * Stops the scan service.
+     */
+    public static void stop(final Context context) {
+        // Stop location tracking.
+        LocationUpdatesManager.removeUpdates(context, DefaultLocationListener.getInstance());
+        // Stop pending intent.
+        final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                scanServiceIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        if (scanPendingIntent != null) {
+            getAlarmManager(context).cancel(scanPendingIntent);
+            scanPendingIntent.cancel();
+        }
+    }
+
+    /**
+     * Gets whether the scan service is started.
+     */
+    public static boolean isStarted(final Context context) {
+        return PendingIntent.getBroadcast(
+                context,
+                0,
+                scanServiceIntent,
+                PendingIntent.FLAG_NO_CREATE) != null;
     }
 
     @Override
@@ -40,8 +101,15 @@ public class ScanIntentService extends IntentService {
     }
 
     /**
-     * Shows notification that WiFi is disabled and allows the user
-     * to enable WiFi through WiFi settings intent.
+     * Gets the alarm manager instance.
+     */
+    private static AlarmManager getAlarmManager(final Context context) {
+        return (AlarmManager)context.getSystemService(ALARM_SERVICE);
+    }
+
+    /**
+     * Shows notification that Wi-Fi is disabled and allows the user
+     * to enable Wi-Fi through WiFi settings intent.
      */
     private void notifyWiFiIsNotEnabled() {
         final NotificationManager notificationManager = (NotificationManager)getSystemService(
