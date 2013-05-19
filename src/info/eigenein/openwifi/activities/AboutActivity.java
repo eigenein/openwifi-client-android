@@ -44,10 +44,10 @@ public class AboutActivity extends Activity {
         projectLinkTextView.setText(Html.fromHtml(getString(R.string.about_project_link)));
         projectLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        // Linkify UserEcho link.
-        TextView userEchoLinkTextView = (TextView)findViewById(R.id.user_echo_link_text_view);
-        userEchoLinkTextView.setText(Html.fromHtml(getString(R.string.user_echo_link)));
-        userEchoLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        // Linkify feedback link.
+        TextView feedbackLinkTextView = (TextView)findViewById(R.id.feedback_link_text_view);
+        feedbackLinkTextView.setText(Html.fromHtml(getString(R.string.feedback_link)));
+        feedbackLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Client ID.
         TextView clientIdTextView = (TextView)findViewById(R.id.client_id_text_view);

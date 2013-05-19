@@ -39,7 +39,7 @@
     <string name="sync_now_never_synced_summary">Never synced</string>
     <string name="sync_now_syncing_summary">Syncing right now</string>
     <string name="sync_now_started">Started to synchronize.</string>
-    <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Send Feedback&lt;/a&gt;</string>
+    <string name="feedback_link">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="crash_dialog_text">
         An unexpected error occurred forcing the
         application to stop. Please help us fix this by sending us error data,

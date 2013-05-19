@@ -38,7 +38,7 @@
     <string name="sync_now_never_synced_summary">Синхронизация не выполнялась</string>
     <string name="sync_now_syncing_summary">Синхронизация выполняется прямо сейчас</string>
     <string name="sync_now_started">Начинается синхронизация.</string>
-    <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Отправить отзыв&lt;/a&gt;</string>
+    <string name="feedback_link">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Отправить отзыв&lt;/a&gt;</string>
     <string name="crash_dialog_text">
         В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке,
         чтобы помочь исправить ее?
