@@ -15,11 +15,11 @@
     <!-- For ACRA. -->
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <application android:name="Application"
-                 android:label="@string/app_name"
+                 android:label="@string/application_name"
                  android:icon="@drawable/ic_launcher"
                  android:theme="@style/MainTheme">
         <activity android:name=".activities.MainActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/application_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -27,16 +27,16 @@
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
-            android:label="@string/settings"/>
+            android:label="@string/menu_item_settings"/>
         <activity
             android:name=".activities.StatisticsActivity"
-            android:label="@string/statistics"/>
+            android:label="@string/preference_statistics"/>
         <activity
             android:name=".activities.NetworkSetActivity"
-            android:label="@string/cluster"/>
+            android:label="@string/activity_title_network_set"/>
         <activity
             android:name=".activities.AboutActivity"
-            android:label="@string/about"/>
+            android:label="@string/activity_title_about"/>
         <activity android:name="org.acra.CrashReportDialog"
                   android:theme="@style/DialogTheme"
                   android:launchMode="singleInstance"
@@ -70,9 +70,5 @@
             android:name=".services.SyncIntentService"
             android:exported="false"/>
         <uses-library android:name="com.google.android.maps"/>
-        <provider
-            android:name=".helpers.providers.ReadOnlyCacheContentProvider"
-            android:authorities="info.eigenein.openwifi"
-            android:exported="true"/>
     </application>
 </manifest>

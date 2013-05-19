@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.*;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -58,7 +57,7 @@ public class MainActivity extends MapActivity {
         setContentView(R.layout.main);
 
         // Setup action bar.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (BuildHelper.isHoneyComb()) {
             getActionBar().setDisplayShowTitleEnabled(false);
         }
 
@@ -103,7 +102,7 @@ public class MainActivity extends MapActivity {
                     mapController.animateTo(myLocation);
                     mapView.invalidateMovedOrZoomed();
                 } else {
-                    Toast.makeText(MainActivity.this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.toast_my_location_is_unavailable, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -191,18 +190,18 @@ public class MainActivity extends MapActivity {
                 return true;
             case R.id.start_scan_menuitem:
                 ScanIntentService.restart(this);
-                Toast.makeText(this, R.string.scan_started, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.toast_scan_started, Toast.LENGTH_LONG).show();
                 invalidateOptionsMenu();
                 return true;
             case R.id.pause_scan_menuitem:
                 ScanIntentService.stop(this);
-                Toast.makeText(this, R.string.scan_paused, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.toats_scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
                 return true;
             case R.id.map_view_menuitem:
                 final CharSequence[] items = getResources().getTextArray(R.array.map_views);
                 new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.map_view))
+                        .setTitle(getString(R.string.dialog_title_map_view))
                         .setItems(items, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
                                 switch (item) {
@@ -227,7 +226,7 @@ public class MainActivity extends MapActivity {
 
     @Override
     public void invalidateOptionsMenu() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (BuildHelper.isHoneyComb()) {
             // Added in API level 11
             super.invalidateOptionsMenu();
         }

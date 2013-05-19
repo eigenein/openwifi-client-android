@@ -1,59 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="@string/scan_category"
-        android:key="scan_settings">
+    <PreferenceCategory android:title="@string/preference_category_general">
+        <Preference
+            android:title="@string/preference_sync_now"
+            android:key="sync_now"/>
+        <Preference
+            android:title="@string/preference_statistics"
+            android:key="show_statistics"
+            android:summary="@string/preference_statistics_summary"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preferences_category_scan">
         <ListPreference
-            android:title="@string/scan_period"
+            android:title="@string/preference_scan_period"
             android:key="scan_period"
             android:entries="@array/scan_period_entries"
             android:entryValues="@array/scan_period_values"
             android:defaultValue="120"/>
         <CheckBoxPreference
             android:key="is_network_provider_enabled"
-            android:title="@string/is_network_provider_enabled"
-            android:summary="@string/is_network_provider_enabled_summary"
+            android:title="@string/preference_is_network_provider_enabled"
+            android:summary="@string/preference_is_network_provider_enabled_summary"
             android:defaultValue="true"/>
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/advanced_settings_category"
-        android:key="advanced_settings">
-        <Preference
-            android:title="@string/sync_now"
-            android:key="sync_now"/>
-        <Preference
-            android:title="@string/statistics"
-            android:key="show_statistics"
-            android:summary="@string/statistics_summary"/>
+    <PreferenceCategory android:title="@string/preferences_category_advanced">
         <ListPreference
-            android:title="@string/max_scan_results_for_bssid"
+            android:title="@string/preference_max_scan_results_for_bssid"
             android:key="max_scan_results_for_bssid"
             android:entries="@array/max_scan_results_for_bssid_entries"
             android:entryValues="@array/max_scan_results_for_bssid_values"
             android:defaultValue="4"/>
-        <Preference
-            android:title="@string/share_database"
-            android:key="share_database"
-            android:summary="@string/share_database_summary"/>
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/support"
-        android:key="support_settings">
+    <PreferenceCategory android:title="@string/preference_category_support" android:key="support_settings">
         <CheckBoxPreference
             android:key="acra.enable"
-            android:title="@string/enable_acra"
-            android:summary="@string/enable_acra_summary"
+            android:title="@string/preference_acra_enable"
+            android:summary="@string/preference_acra_enable_summary"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="acra.syslog.enable"
-            android:title="@string/acra_syslog"
-            android:summary="@string/acra_syslog_summary"
+            android:title="@string/preference_acra_syslog"
+            android:summary="@string/preference_acra_syslog_summary"
             android:defaultValue="true"
             android:dependency="acra.enable"/>
         <CheckBoxPreference
             android:key="acra.deviceid.enable"
-            android:title="@string/acra_deviceid"
-            android:summary="@string/acra_deviceid_summary"
+            android:title="@string/preference_acra_deviceid"
+            android:summary="@string/preference_acra_deviceid_summary"
             android:defaultValue="false"
             android:dependency="acra.enable"/>
     </PreferenceCategory>

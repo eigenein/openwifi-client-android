@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.ui.VibratorHelper;
 
@@ -32,7 +33,7 @@ public class NetworkSetActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (BuildHelper.isHoneyComb()) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 

@@ -121,8 +121,8 @@ public class ScanIntentService extends IntentService {
                 0
         );
 
-        final String wifi_is_disabled_title = getString(R.string.wifi_is_disabled_title);
-        final String wifi_is_disabled_text = getString(R.string.wifi_is_disabled_text);
+        final String wifi_is_disabled_title = getString(R.string.notification_wifi_is_disabled_title);
+        final String wifi_is_disabled_text = getString(R.string.notification_wifi_is_disabled_text);
         final Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setAutoCancel(true)
