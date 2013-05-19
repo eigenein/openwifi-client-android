@@ -22,13 +22,15 @@ public class SettingsActivity extends PreferenceActivity
         @SuppressWarnings("deprecation")
         @Override
         public void onAuthenticated(final String authToken, final String accountName) {
+            assert(authToken == null || accountName != null);
+
             final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
 
             if (authToken != null) {
-                logInPreference.setTitle(R.string.preference_different_log_in);
+                logInPreference.setTitle(R.string.preference_different_sign_in);
                 logInPreference.setSummary(accountName);
             } else {
-                logInPreference.setTitle(R.string.preference_log_in);
+                logInPreference.setTitle(R.string.preference_sign_in);
             }
         }
     };
@@ -59,10 +61,8 @@ public class SettingsActivity extends PreferenceActivity
         syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // Notify the user.
-                Toast.makeText(SettingsActivity.this, R.string.toast_sync_now_started, Toast.LENGTH_LONG).show();
                 // Start the service.
-                SyncIntentService.start(SettingsActivity.this);
+                SyncIntentService.start(SettingsActivity.this, false);
                 // Done.
                 return true;
             }

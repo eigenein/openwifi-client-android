@@ -55,7 +55,7 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
         Log.d(LOG_TAG + ".onSucceeded", "last synced at " + new Date(lastSyncTime));
         if (System.currentTimeMillis() - lastSyncTime >= SyncIntentService.SYNC_PERIOD_MILLIS) {
             // Starting the synchronization service.
-            SyncIntentService.start(context, info.getSSID());
+            SyncIntentService.start(context, info.getSSID(), true);
         } else {
             Log.i(LOG_TAG + ".onSucceeded", "Will not sync now.");
             return;

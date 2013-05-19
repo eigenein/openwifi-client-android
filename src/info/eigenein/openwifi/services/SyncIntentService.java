@@ -5,10 +5,13 @@ import android.content.*;
 import android.net.wifi.*;
 import android.support.v4.content.*;
 import android.util.Log;
+import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
+import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.io.SyncHttpClient;
+import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.sync.ScanResultDownSyncer;
 import info.eigenein.openwifi.sync.ScanResultUpSyncer;
 import info.eigenein.openwifi.sync.Syncer;
@@ -32,6 +35,7 @@ public class SyncIntentService extends IntentService {
      * Used to check whether the device is still connected to the specified wireless network.
      */
     public static final String SSID_EXTRA_KEY = "ssid";
+    public static final String AUTH_TOKEN_EXTRA_KEY = "auth_token";
 
     public static final int RESULT_CODE_NOT_SYNCING = 0;
     public static final int RESULT_CODE_SYNCING = 1;
@@ -41,14 +45,35 @@ public class SyncIntentService extends IntentService {
      */
     public static final long SYNC_PERIOD_MILLIS = 60L * 60L * 1000L;
 
-    public static void start(final Context context) {
-        context.startService(new Intent(context, SyncIntentService.class));
+    public static void start(final Context context, final boolean background) {
+        start(context, new Intent(context, SyncIntentService.class), background);
     }
 
-    public static void start(final Context context, final String ssid) {
+    public static void start(final Context context, final String ssid, final boolean background) {
         final Intent intent = new Intent(context, SyncIntentService.class);
         intent.putExtra(SSID_EXTRA_KEY, ssid);
-        context.startService(intent);
+        start(context, intent, background);
+    }
+
+    private static void start(final Context context, final Intent intent, final boolean background) {
+        // Authenticate.
+        Log.i(SERVICE_NAME + ".start", "Authenticating ...");
+        Authenticator.authenticate(context, false, background, !background, new Authenticator.AuthenticatedHandler() {
+            @Override
+            public void onAuthenticated(final String authToken, final String accountName) {
+                if (authToken != null) {
+                    Log.d(SERVICE_NAME + ".start.onAuthenticated", "Authenticated.");
+                    // Put the authentication token.
+                    intent.putExtra(AUTH_TOKEN_EXTRA_KEY, authToken);
+                    // Notify the user.
+                    Toast.makeText(context, R.string.toast_sync_now_started, Toast.LENGTH_LONG).show();
+                    // Start the service.
+                    context.startService(intent);
+                } else {
+                    Log.w(SERVICE_NAME + ".start.onAuthenticated", "No authentication token.");
+                }
+            }
+        });
     }
 
     public SyncIntentService() {
@@ -70,8 +95,11 @@ public class SyncIntentService extends IntentService {
 
         // Notify the receiver that we're starting.
         sendStatusMessage(RESULT_CODE_SYNCING);
-        // The client ID will be used in the HTTP(S) requests.
+        // These will be used as the additional headers.
         final String clientId = settings.clientId();
+        assert(clientId != null);
+        final String authToken = intent.getStringExtra(AUTH_TOKEN_EXTRA_KEY);
+        assert(authToken != null);
         // Prepare the HTTP client.
         final HttpClient client = new SyncHttpClient(this);
         // Set the "syncing now" flag.
@@ -79,9 +107,9 @@ public class SyncIntentService extends IntentService {
         // Start syncing.
         try {
             // Download the scan results.
-            sync(client, new ScanResultDownSyncer(settings), clientId);
+            sync(client, new ScanResultDownSyncer(settings), clientId, authToken);
             // Upload our scan results.
-            sync(client, new ScanResultUpSyncer(), clientId);
+            sync(client, new ScanResultUpSyncer(), clientId, authToken);
             // Update last sync time.
             settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
         } finally {
@@ -129,7 +157,11 @@ public class SyncIntentService extends IntentService {
     /**
      * Performs syncing with the specified syncer.
      */
-    private void sync(final HttpClient client, final Syncer syncer, final String clientId) {
+    private void sync(
+            final HttpClient client,
+            final Syncer syncer,
+            final String clientId,
+            final String authToken) {
         Log.i(SERVICE_NAME + ".sync", "Starting syncing with " + syncer);
         // Prepare the event tracker.
         EasyTracker.getInstance().setContext(this);
@@ -145,7 +177,7 @@ public class SyncIntentService extends IntentService {
                 break;
             }
             // Initialize the request with the common parameters.
-            initializeRequest(taggedRequest.getRequest(), clientId);
+            initializeRequest(taggedRequest.getRequest(), clientId, authToken);
             // Execute the request.
             Log.d(SERVICE_NAME + ".sync", "Executing the request: " + taggedRequest.getRequest().getURI());
             final long requestStartTime = System.currentTimeMillis();
@@ -208,10 +240,14 @@ public class SyncIntentService extends IntentService {
     /**
      * Initializes the request.
      */
-    private static void initializeRequest(final HttpRequest request, final String clientId) {
-        request.setHeader("X-Client-ID", clientId);
+    private static void initializeRequest(
+            final HttpRequest request,
+            final String clientId,
+            final String authToken) {
         request.setHeader("Accept", "application/json");
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Connection", "Keep-Alive");
+        request.setHeader("X-Auth-Token", authToken);
+        request.setHeader("X-Client-ID", clientId);
     }
 }

@@ -58,8 +58,9 @@
     <string name="overlay_networks_string_3">сетей</string>
     <string name="toast_no_networks_here">В этом месте нет известных сетей.</string>
     <string name="preference_category_general">Общие</string>
-    <string name="preference_log_in">Войти с помощью Аккаунта Google</string>
+    <string name="preference_sign_in">Войти с помощью Аккаунта Google</string>
     <string name="dialog_get_auth_token_title">Вход</string>
     <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
-    <string name="preference_different_log_in">Сменить Аккаунт Google</string>
+    <string name="preference_different_sign_in">Сменить Аккаунт Google</string>
+    <string name="toast_no_google_account">Настройте Аккаунт Google.</string>
 </resources>

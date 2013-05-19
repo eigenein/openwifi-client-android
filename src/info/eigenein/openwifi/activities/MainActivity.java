@@ -163,7 +163,7 @@ public class MainActivity extends MapActivity {
         final Settings settings = Settings.with(this);
         if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
             Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
-            SyncIntentService.start(this);
+            SyncIntentService.start(this, true);
         }
 
         EasyTracker.getInstance().activityStart(this);
