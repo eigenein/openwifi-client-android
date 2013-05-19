@@ -17,7 +17,7 @@
     <application android:name="Application"
                  android:label="@string/application_name"
                  android:icon="@drawable/ic_launcher"
-                 android:theme="@style/MainTheme">
+                 android:theme="@style/OpenWiFi.Theme">
         <activity android:name=".activities.MainActivity"
                   android:label="@string/application_name">
             <intent-filter>
@@ -38,7 +38,7 @@
             android:name=".activities.AboutActivity"
             android:label="@string/activity_title_about"/>
         <activity android:name="org.acra.CrashReportDialog"
-                  android:theme="@style/DialogTheme"
+                  android:theme="@style/OpenWiFi.Theme.Dialog"
                   android:launchMode="singleInstance"
                   android:excludeFromRecents="true"
                   android:finishOnTaskLaunch="true" />

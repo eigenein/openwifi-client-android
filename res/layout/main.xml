@@ -15,8 +15,8 @@
         <ProgressBar android:id="@+id/progress_bar_refreshing_scan_results"
                      android:layout_width="fill_parent"
                      android:layout_height="wrap_content"
-                     android:layout_marginTop="-6dip"
-                     style="@style/Holo.ProgressBar.Horizontal.Light"
+                     android:layout_marginTop="0dip"
+                     style="@style/Holo.ProgressBar.Horizontal.Light.Top"
                      android:indeterminate="true"
                      android:visibility="gone"/>
     </LinearLayout>
