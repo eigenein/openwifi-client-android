@@ -2,6 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/preference_category_general">
         <Preference
+            android:title="@string/preference_log_in"
+            android:key="log_in"/>
+        <Preference
             android:title="@string/preference_sync_now"
             android:key="sync_now"/>
         <Preference

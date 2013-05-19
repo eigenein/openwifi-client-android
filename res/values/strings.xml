@@ -60,4 +60,8 @@
     <string name="overlay_networks_string_3">networks</string>
     <string name="toast_no_networks_here">There is no known networks in this place.</string>
     <string name="preference_category_general">General</string>
+    <string name="preference_log_in">Log in using your Google Account</string>
+    <string name="dialog_get_auth_token_title">Authenticating</string>
+    <string name="dialog_get_auth_token_message">Please wait while you will be authenticated.</string>
+    <string name="preference_different_log_in">Change Google Account</string>
 </resources>

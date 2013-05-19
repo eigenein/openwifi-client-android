@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- For authenticating with Account Manager. -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <!-- For ACRA. -->
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <application android:name="Application"

@@ -10,6 +10,7 @@ import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.services.*;
 
 import java.text.*;
@@ -17,8 +18,23 @@ import java.util.*;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onAuthenticated(final String authToken, final String accountName) {
+            final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
+
+            if (authToken != null) {
+                logInPreference.setTitle(R.string.preference_different_log_in);
+                logInPreference.setSummary(accountName);
+            } else {
+                logInPreference.setTitle(R.string.preference_log_in);
+            }
+        }
+    };
+
+
     @SuppressWarnings("deprecation")
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -52,6 +68,17 @@ public class SettingsActivity extends PreferenceActivity
             }
         });
         updateSyncNowPreference(false);
+
+        // The log in option.
+        final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
+        logInPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                // Authenticate.
+                Authenticator.authenticate(SettingsActivity.this, true, false, true, authenticatedHandler);
+                return true;
+            }
+        });
 
         // Subscribe to the sync service status updates.
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -98,13 +125,6 @@ public class SettingsActivity extends PreferenceActivity
         return false;
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        EasyTracker.getInstance().activityStop(this);
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     protected void onPause() {
@@ -124,9 +144,19 @@ public class SettingsActivity extends PreferenceActivity
         updateMaxScanResultsForBssidPreference();
         updateSyncNowPreference(false);
 
+        // Update the authentication state.
+        Authenticator.authenticate(this, false, false, false, authenticatedHandler);
+
         // Listen to changes.
         getPreferenceManager().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        EasyTracker.getInstance().activityStop(this);
     }
 
     @Override
