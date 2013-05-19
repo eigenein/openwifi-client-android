@@ -9,7 +9,7 @@ public class ScanResultCapabilities {
     /**
      * Parses the capabilities string.
      */
-    public static ScanResultCapabilities fromString(String capabilities) {
+    public static ScanResultCapabilities fromString(final String capabilities) {
         return new ScanResultCapabilities(
                 capabilities.contains("WEP") ||
                         capabilities.contains("WPA") ||
@@ -17,7 +17,7 @@ public class ScanResultCapabilities {
         );
     }
 
-    private ScanResultCapabilities(boolean secured) {
+    private ScanResultCapabilities(final boolean secured) {
         this.secured = secured;
     }
 

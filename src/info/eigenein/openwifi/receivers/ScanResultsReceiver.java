@@ -9,8 +9,8 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.helpers.parsers.ScanResultCapabilities;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.location.LocationTracker;
+import info.eigenein.openwifi.services.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ public class ScanResultsReceiver extends BroadcastReceiver {
     private static final int MAX_ACCURACY = 50;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         // Check current location.
-        Location location = LocationTracker.getInstance().getLocation(context);
+        final Location location = LocationTracker.getInstance().getLocation(context);
         if (location == null) {
             Log.w(LOG_TAG, "getLocation returned null.");
             return;
@@ -48,13 +48,13 @@ public class ScanResultsReceiver extends BroadcastReceiver {
         }
 
         // Reset alarm in case the scan results were not requested.
-        ScanServiceManager.restartIfStarted(context);
+        ScanIntentService.restartIfStarted(context);
 
         Log.i(LOG_TAG, "An access point scan has completed.");
         // Filter out open access points.
-        List<ScanResult> openScanResults = new ArrayList<ScanResult>();
+        final List<ScanResult> openScanResults = new ArrayList<ScanResult>();
         for (ScanResult scanResult : scanResults) {
-            ScanResultCapabilities capabilities = ScanResultCapabilities.fromString(
+            final ScanResultCapabilities capabilities = ScanResultCapabilities.fromString(
                     scanResult.capabilities);
             if (!capabilities.isSecured()) {
                 openScanResults.add(scanResult);

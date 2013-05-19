@@ -15,7 +15,7 @@ public class LocationProcessor {
 
     private final List<MyScanResult> scanResults = new ArrayList<MyScanResult>();
 
-    public void add(MyScanResult scanResult) {
+    public void add(final MyScanResult scanResult) {
         scanResults.add(scanResult);
     }
 

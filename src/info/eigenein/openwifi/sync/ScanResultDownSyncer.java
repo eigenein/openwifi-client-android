@@ -15,22 +15,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScanResultDownSyncer extends ScanResultSyncer {
-    private static final String URL = "http://openwifi.info/api/scan-results/%s/%s/";
+    private static final String URL = "https://openwifi.info/api/scan-results/%s/%s/";
 
     private final Settings settings;
 
-    public ScanResultDownSyncer(Settings settings) {
+    public ScanResultDownSyncer(final Settings settings) {
         this.settings = settings;
     }
 
     @Override
-    public TaggedRequest getNextRequest(Context context) {
+    public TaggedRequest getNextRequest(final Context context) {
         HttpGet request = new HttpGet(String.format(URL, settings.lastSyncId(), PAGE_SIZE));
         return new TaggedRequest(request, null);
     }
 
     @Override
-    public boolean processResponse(Context context, TaggedRequest request, HttpResponse response) {
+    public boolean processResponse(
+            final Context context,
+            final TaggedRequest request,
+            final HttpResponse response) {
         // Parse JSON.
         JSONArray scanResultList;
         try {

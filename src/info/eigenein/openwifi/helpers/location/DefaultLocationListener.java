@@ -15,22 +15,22 @@ public class DefaultLocationListener implements LocationListener {
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(final Location location) {
         LocationTracker.getInstance().notifyLocationChanged(location);
     }
 
     @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    public void onStatusChanged(final String s, final int i, final Bundle bundle) {
         // Do nothing.
     }
 
     @Override
-    public void onProviderEnabled(String s) {
+    public void onProviderEnabled(final String s) {
         // Do nothing.
     }
 
     @Override
-    public void onProviderDisabled(String s) {
+    public void onProviderDisabled(final String s) {
         // Do nothing.
     }
 }

@@ -35,11 +35,11 @@ public class Settings {
 
     private final SharedPreferences preferences;
 
-    public static Settings with(Context context) {
+    public static Settings with(final Context context) {
         return new Settings(context);
     }
 
-    private Settings(Context context) {
+    private Settings(final Context context) {
         this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -52,7 +52,7 @@ public class Settings {
     }
 
     public long scanPeriod() {
-        String periodString = preferences.getString(SCAN_PERIOD_KEY, "60");
+        final String periodString = preferences.getString(SCAN_PERIOD_KEY, "60");
         return 1000L * Long.parseLong(periodString);
     }
 

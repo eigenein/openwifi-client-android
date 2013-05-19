@@ -1,23 +1,21 @@
 package info.eigenein.openwifi.activities;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.*;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.v4.content.*;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.Settings;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.helpers.io.FileUtils;
 import info.eigenein.openwifi.persistency.DatabaseHelper;
-import info.eigenein.openwifi.services.SyncIntentService;
+import info.eigenein.openwifi.services.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,13 +60,29 @@ public class SettingsActivity extends PreferenceActivity
         syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                // Notify the user.
                 Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG).show();
-                startService(new Intent(SettingsActivity.this, SyncIntentService.class));
-                updateSyncNowPreference(true);
+                // Start the service.
+                SyncIntentService.start(SettingsActivity.this);
+                // Done.
                 return true;
             }
         });
         updateSyncNowPreference(false);
+
+        // Subscribe to the sync service status updates.
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(final Context context, final Intent intent) {
+                        // Update the preference when the sync service status has changed.
+                        final int statusCode = intent.getIntExtra(
+                                SyncIntentService.STATUS_CODE_EXTRA_KEY,
+                                SyncIntentService.RESULT_CODE_NOT_SYNCING);
+                        updateSyncNowPreference(statusCode == SyncIntentService.RESULT_CODE_SYNCING);
+                    }
+                },
+                new IntentFilter(SyncIntentService.SERVICE_NAME));
     }
 
     @Override
@@ -144,10 +158,10 @@ public class SettingsActivity extends PreferenceActivity
             // Update UI.
             updatePeriodPreference();
             // Restart the service so that the new period is used.
-            ScanServiceManager.restartIfStarted(this);
+            ScanIntentService.restartIfStarted(this);
         } else if (key.equals(Settings.IS_NETWORK_PROVIDER_ENABLED_KEY)) {
             // Restart the service so that the new provider set is used.
-            ScanServiceManager.restartIfStarted(this);
+            ScanIntentService.restartIfStarted(this);
         } else if (key.equals(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY)) {
             // Update UI.
             updateMaxScanResultsForBssidPreference();

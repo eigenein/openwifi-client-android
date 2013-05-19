@@ -27,11 +27,11 @@ public class LocationUpdatesManager {
     /**
      * Stops location tracking.
      */
-    public static void removeUpdates(Context context, LocationListener listener) {
+    public static void removeUpdates(final Context context, final LocationListener listener) {
         getLocationManager(context).removeUpdates(listener);
     }
 
-    private static LocationManager getLocationManager(Context context) {
+    private static LocationManager getLocationManager(final Context context) {
         return (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
     }
 }

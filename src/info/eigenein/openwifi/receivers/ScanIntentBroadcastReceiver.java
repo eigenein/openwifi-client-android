@@ -13,10 +13,10 @@ public class ScanIntentBroadcastReceiver extends BroadcastReceiver {
     private static final String LOG_TAG = ScanIntentBroadcastReceiver.class.getCanonicalName();
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         Log.i(LOG_TAG, "onReceive");
 
-        Intent scanServiceIntent = new Intent(context, ScanIntentService.class);
+        final Intent scanServiceIntent = new Intent(context, ScanIntentService.class);
         context.startService(scanServiceIntent);
     }
 }

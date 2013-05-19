@@ -6,4 +6,10 @@
     <style name="DialogTheme" parent="@android:style/Theme.Dialog">
         <!-- Any customizations for your app running on pre-3.0 devices here -->
     </style>
+    <style name="Holo.ProgressBar.Horizontal.Light" parent="@android:Widget.ProgressBar.Horizontal">
+        <item name="android:indeterminateDrawable">@drawable/progress_indeterminate_horizontal_holo</item>
+        <item name="android:maxHeight">16dip</item>
+        <item name="android:minHeight">16dip</item>
+        <item name="android:progressDrawable">@drawable/progress_horizontal_holo_light</item>
+    </style>
 </resources>

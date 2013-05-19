@@ -12,7 +12,7 @@ import info.eigenein.openwifi.helpers.location.L;
 
 public class ClusterOverlay {
 
-    private static final float TEXT_SIZE = 18.0f;
+    private static final float TEXT_SIZE = 14.0f;
 
     /**
      * Used to draw the cluster area.
@@ -28,11 +28,15 @@ public class ClusterOverlay {
     private static final Paint strokePaint = new Paint();
 
     private final Cluster cluster;
-
     private final GeoPoint clusterCenter;
 
     private final Bitmap clusterBitmap;
     private final String clusterString;
+
+    /**
+     * Screen density.
+     */
+    private final float density;
 
     static
     {
@@ -79,6 +83,8 @@ public class ClusterOverlay {
         this.clusterCenter = new GeoPoint(
                 L.toE6(cluster.getArea().getLatitude()),
                 L.toE6(cluster.getArea().getLongitude()));
+        // Used to draw the text.
+        this.density = context.getResources().getDisplayMetrics().density;
     }
 
     public Cluster getCluster() {
@@ -109,12 +115,15 @@ public class ClusterOverlay {
         final float bitmapTop = y - clusterBitmap.getHeight() / 2.0f;
         canvas.drawBitmap(clusterBitmap, bitmapLeft, bitmapTop, defaultPaint);
 
-        // Draw the text.
+        // Find the text bounds.
         final Rect textBounds = new Rect();
         defaultPaint.getTextBounds(clusterString, 0, clusterString.length(), textBounds);
         final float textLeft = bitmapLeft + clusterBitmap.getWidth();
         final float textTop = y + textBounds.height() / 2.0f;
+        // Draw the text.
+        strokePaint.setTextSize(TEXT_SIZE * density);
         canvas.drawText(clusterString, textLeft, textTop, strokePaint);
+        defaultPaint.setTextSize(TEXT_SIZE * density);
         canvas.drawText(clusterString, textLeft, textTop, defaultPaint);
     }
 }

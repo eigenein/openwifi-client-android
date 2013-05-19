@@ -3,6 +3,7 @@ package info.eigenein.openwifi.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.*;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,21 +13,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
 import info.eigenein.openwifi.helpers.location.L;
 import info.eigenein.openwifi.helpers.location.LocationProcessor;
+import info.eigenein.openwifi.helpers.location.LocationTracker;
 import info.eigenein.openwifi.helpers.map.*;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.helpers.scan.ScanServiceManager;
 import info.eigenein.openwifi.persistency.MyScanResult;
+import info.eigenein.openwifi.services.*;
 import org.apache.commons.collections.map.MultiKeyMap;
 
 import java.util.*;
@@ -89,9 +91,16 @@ public class MainActivity extends MapActivity {
         findViewById(R.id.button_my_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final GeoPoint myLocation = myLocationOverlay.getMyLocation();
+                GeoPoint myLocation = myLocationOverlay.getMyLocation();
+                if (myLocation == null) {
+                    // Try to obtain current location from the location tracker.
+                    final Location location = LocationTracker.getInstance().getLocation(MainActivity.this);
+                    if (location != null) {
+                        myLocation = L.toGeoPoint(location.getLatitude(), location.getLongitude());
+                    }
+                }
                 if (myLocation != null) {
-                    mapView.getController().animateTo(myLocation);
+                    mapController.animateTo(myLocation);
                     mapView.invalidateMovedOrZoomed();
                 } else {
                     Toast.makeText(MainActivity.this, R.string.my_location_is_unavailable, Toast.LENGTH_SHORT).show();
@@ -115,14 +124,14 @@ public class MainActivity extends MapActivity {
         });
         // Setup overlays.
         final List<Overlay> overlays = mapView.getOverlays();
-        overlays.add(myLocationOverlay);
         clusterListOverlay = new ClusterListOverlay();
         overlays.add(clusterListOverlay);
+        overlays.add(myLocationOverlay);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
         return true;
@@ -132,7 +141,7 @@ public class MainActivity extends MapActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        boolean isServiceStarted = ScanServiceManager.isStarted(this);
+        boolean isServiceStarted = ScanIntentService.isStarted(this);
         menu.findItem(R.id.start_scan_menuitem).setVisible(!isServiceStarted);
         menu.findItem(R.id.pause_scan_menuitem).setVisible(isServiceStarted);
 
@@ -151,6 +160,12 @@ public class MainActivity extends MapActivity {
         }
         // Update overlays.
         startRefreshingScanResultsOnMap();
+        // Run first-time syncing.
+        final Settings settings = Settings.with(this);
+        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
+            Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
+            SyncIntentService.start(this);
+        }
 
         EasyTracker.getInstance().activityStart(this);
     }
@@ -175,12 +190,12 @@ public class MainActivity extends MapActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.start_scan_menuitem:
-                ScanServiceManager.restart(this);
+                ScanIntentService.restart(this);
                 Toast.makeText(this, R.string.scan_started, Toast.LENGTH_LONG).show();
                 invalidateOptionsMenu();
                 return true;
             case R.id.pause_scan_menuitem:
-                ScanServiceManager.stop(this);
+                ScanIntentService.stop(this);
                 Toast.makeText(this, R.string.scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
                 return true;
@@ -234,13 +249,22 @@ public class MainActivity extends MapActivity {
     }
 
     /**
+     * Updates the refreshing scan results progress bar visibility.
+     */
+    private void updateRefreshingScanResultsProgressBar(boolean visible) {
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar_refreshing_scan_results);
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap() {
         Log.d(LOG_TAG, "startRefreshingScanResultsOnMap");
+        updateRefreshingScanResultsProgressBar(true);
 
         // Check if the task is already running.
-       cancelRefreshScanResultsAsyncTask();
+        cancelRefreshScanResultsAsyncTask();
 
         // Check map bounds.
         if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
@@ -361,7 +385,9 @@ public class MainActivity extends MapActivity {
                 );
                 clusterListOverlay.addClusterOverlay(clusterOverlay);
             }
+
             mapView.invalidate();
+            updateRefreshingScanResultsProgressBar(false);
         }
 
         @Override
