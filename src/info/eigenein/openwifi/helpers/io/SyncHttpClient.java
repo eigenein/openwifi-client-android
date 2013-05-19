@@ -1,25 +1,22 @@
 package info.eigenein.openwifi.helpers.io;
 
-import android.content.Context;
-import android.content.pm.*;
-import android.util.Log;
-import info.eigenein.openwifi.R;
+import android.content.*;
+import android.util.*;
+import info.eigenein.openwifi.*;
 import org.apache.http.*;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.scheme.*;
+import org.apache.http.conn.ssl.*;
+import org.apache.http.impl.client.*;
 import org.apache.http.params.*;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.*;
 
-import java.io.InputStream;
-import java.security.KeyStore;
+import java.io.*;
+import java.security.*;
 
 public class SyncHttpClient extends DefaultHttpClient {
     private final static String LOG_TAG = SyncHttpClient.class.getCanonicalName();
 
     private final static char[] TRUST_STORE_PASSWORD = "St6qe5en".toCharArray();
-    private final static String KEY_STORE_PASSWORD = "rkJNiD2Mew9mYBo1";
 
     private final static String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
     private final static String ENCODING_GZIP = "gzip";
@@ -81,11 +78,10 @@ public class SyncHttpClient extends DefaultHttpClient {
      */
     private SSLSocketFactory createSslSocketFactory() {
         try {
-            // Load the key and trust stores.
-            final KeyStore keyStore = loadKeyStore(R.raw.key_store, KEY_STORE_PASSWORD.toCharArray());
+            // Load the trust store.
             final KeyStore trustStore = loadKeyStore(R.raw.trust_store, TRUST_STORE_PASSWORD);
             // Create and return the SSL socket factory.
-            return new SSLSocketFactory(keyStore, KEY_STORE_PASSWORD, trustStore);
+            return new SSLSocketFactory(trustStore);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create SSL socket factory.", e);
         }
