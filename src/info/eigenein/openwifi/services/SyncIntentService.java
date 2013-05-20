@@ -35,6 +35,9 @@ public class SyncIntentService extends IntentService {
      * Used to check whether the device is still connected to the specified wireless network.
      */
     public static final String SSID_EXTRA_KEY = "ssid";
+    /**
+     * Used to authenticate the user.
+     */
     public static final String AUTH_TOKEN_EXTRA_KEY = "auth_token";
 
     public static final int RESULT_CODE_NOT_SYNCING = 0;
@@ -45,20 +48,26 @@ public class SyncIntentService extends IntentService {
      */
     public static final long SYNC_PERIOD_MILLIS = 60L * 60L * 1000L;
 
-    public static void start(final Context context, final boolean background) {
-        start(context, new Intent(context, SyncIntentService.class), background);
+    /**
+     * Starts the service.
+     */
+    public static void start(final Context context, final boolean silent) {
+        start(context, new Intent(context, SyncIntentService.class), silent);
     }
 
-    public static void start(final Context context, final String ssid, final boolean background) {
+    /**
+     * Starts the service with SSID check.
+     */
+    public static void start(final Context context, final String ssid, final boolean silent) {
         final Intent intent = new Intent(context, SyncIntentService.class);
         intent.putExtra(SSID_EXTRA_KEY, ssid);
-        start(context, intent, background);
+        start(context, intent, silent);
     }
 
-    private static void start(final Context context, final Intent intent, final boolean background) {
+    private static void start(final Context context, final Intent intent, final boolean silent) {
         // Authenticate.
         Log.i(SERVICE_NAME + ".start", "Authenticating ...");
-        Authenticator.authenticate(context, false, background, !background, new Authenticator.AuthenticatedHandler() {
+        Authenticator.authenticate(context, false, silent, !silent, new Authenticator.AuthenticatedHandler() {
             @Override
             public void onAuthenticated(final String authToken, final String accountName) {
                 if (authToken != null) {
@@ -66,7 +75,9 @@ public class SyncIntentService extends IntentService {
                     // Put the authentication token.
                     intent.putExtra(AUTH_TOKEN_EXTRA_KEY, authToken);
                     // Notify the user.
-                    Toast.makeText(context, R.string.toast_sync_now_started, Toast.LENGTH_LONG).show();
+                    if (!silent) {
+                        Toast.makeText(context, R.string.toast_sync_now_started, Toast.LENGTH_LONG).show();
+                    }
                     // Start the service.
                     context.startService(intent);
                 } else {
