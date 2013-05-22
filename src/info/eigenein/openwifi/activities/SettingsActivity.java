@@ -29,7 +29,7 @@ public class SettingsActivity extends PreferenceActivity
 
             EasyTracker.getInstance().setContext(SettingsActivity.this);
             if (authToken != null) {
-                logInPreference.setTitle(R.string.preference_different_sign_in);
+                logInPreference.setTitle(R.string.preference_sign_in_again);
                 logInPreference.setSummary(accountName);
                 EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "success", 1L);
             } else {
