@@ -61,6 +61,6 @@
     <string name="preference_sign_in">Войти с помощью Аккаунта Google</string>
     <string name="dialog_get_auth_token_title">Вход</string>
     <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
-    <string name="preference_different_sign_in">Сменить Аккаунт Google</string>
-    <string name="toast_no_google_account">Настройте Аккаунт Google.</string>
+    <string name="preference_different_sign_in">Сменить аккаунт Google</string>
+    <string name="toast_no_google_account">Настройте аккаунт Google.</string>
 </resources>
