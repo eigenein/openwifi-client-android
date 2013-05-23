@@ -56,11 +56,6 @@ public class MainActivity extends MapActivity {
         // Setup view.
         setContentView(R.layout.main);
 
-        // Setup action bar.
-        if (BuildHelper.isHoneyComb()) {
-            getActionBar().setDisplayShowTitleEnabled(false);
-        }
-
         // Setup map.
         mapView = (TrackableMapView)findViewById(R.id.map_view);
         mapView.setBuiltInZoomControls(false);
