@@ -6,7 +6,6 @@ import android.os.*;
 import android.preference.*;
 import android.support.v4.content.*;
 import android.view.*;
-import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.*;
@@ -18,6 +17,8 @@ import java.util.*;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String LOG_TAG = SettingsActivity.class.getCanonicalName();
+
     private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {
         @SuppressWarnings("deprecation")
         @Override
@@ -26,11 +27,14 @@ public class SettingsActivity extends PreferenceActivity
 
             final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
 
+            EasyTracker.getInstance().setContext(SettingsActivity.this);
             if (authToken != null) {
-                logInPreference.setTitle(R.string.preference_different_sign_in);
+                logInPreference.setTitle(R.string.preference_sign_in_again);
                 logInPreference.setSummary(accountName);
+                EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "success", 1L);
             } else {
                 logInPreference.setTitle(R.string.preference_sign_in);
+                EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "null", 0L);
             }
         }
     };

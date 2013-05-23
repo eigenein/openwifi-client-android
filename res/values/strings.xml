@@ -63,6 +63,6 @@
     <string name="preference_sign_in">Sign using your Google Account</string>
     <string name="dialog_get_auth_token_title">Authenticating</string>
     <string name="dialog_get_auth_token_message">Please wait while you will be authenticated.</string>
-    <string name="preference_different_sign_in">Change Google Account</string>
+    <string name="preference_sign_in_again">Sign in again</string>
     <string name="toast_no_google_account">You need a Google Account to sign in.</string>
 </resources>

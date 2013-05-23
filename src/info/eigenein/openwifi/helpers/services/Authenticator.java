@@ -13,7 +13,7 @@ public class Authenticator {
     private static final String GOOGLE_AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
 
     public interface AuthenticatedHandler {
-        void onAuthenticated(final String authToken, String accountName);
+        void onAuthenticated(final String authToken, final String accountName);
     }
 
     @SuppressWarnings("deprecation")
