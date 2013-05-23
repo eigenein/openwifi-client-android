@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Open WiFi</string>
-    <string name="help">Help</string>
-    <string name="settings">Settings</string>
-    <string name="start_scan">Start Searching for Wi-Fi</string>
-    <string name="pause_scan">Pause Searching</string>
-    <string name="scan_started">Started to scan for Wi-Fi networks.</string>
-    <string name="scan_paused">Paused to search.</string>
-    <string name="scan_category">Searching</string>
-    <string name="scan_period">Period</string>
-    <string name="wifi_is_disabled_title">Wi-Fi is disabled</string>
-    <string name="wifi_is_disabled_text">To resume searching please enable WiFi.</string>
-    <string name="is_network_provider_enabled">Use wireless networks</string>
-    <string name="is_network_provider_enabled_summary">Allows to find more access points but uses existing Internet connection</string>
-    <string name="statistics">Statistics</string>
-    <string name="unique_bssid_count">Access Point Count</string>
-    <string name="unique_ssid_count">Network Count</string>
-    <string name="scan_result_count">Search Result Count</string>
-    <string name="show_my_location">Show My Location</string>
-    <string name="map_view">Map View</string>
-    <string name="advanced_settings_category">Advanced</string>
-    <string name="share_database">Share database</string>
-    <string name="share_database_summary">Upload the application database</string>
-    <string name="max_scan_results_for_bssid">Remember for a single access point</string>
-    <string name="cluster">Networks available in this place</string>
-    <string name="show_details">Show details</string>
-    <string name="ignore_network_name">Ignore %s</string>
-    <string name="ignore_similar_networks">Ignore similar networks</string>
-    <string name="my_location_is_unavailable">Try again later. Your location is not available now.</string>
-    <string name="statistics_summary">View collected data summary</string>
-    <string name="about">About Application</string>
-    <string name="version">Version %s</string>
-    <string name="about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
-    <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
+    <string name="application_name">Open WiFi</string>
+    <string name="menu_item_help">Help</string>
+    <string name="menu_item_settings">Settings</string>
+    <string name="menu_item_start_scan">Start Searching for Wi-Fi</string>
+    <string name="menu_item_pause_scan">Pause Searching</string>
+    <string name="toast_scan_started">Started to scan for Wi-Fi networks.</string>
+    <string name="toats_scan_paused">Paused to search.</string>
+    <string name="preferences_category_scan">Searching</string>
+    <string name="preference_scan_period">Period</string>
+    <string name="notification_wifi_is_disabled_title">Wi-Fi is disabled</string>
+    <string name="notification_wifi_is_disabled_text">To resume searching please enable WiFi.</string>
+    <string name="preference_is_network_provider_enabled">Use wireless networks</string>
+    <string name="preference_is_network_provider_enabled_summary">Allows to find more access points but uses existing Internet connection</string>
+    <string name="preference_statistics">Statistics</string>
+    <string name="statistics_unique_bssid_count">Access Point Count</string>
+    <string name="statistics_unique_ssid_count">Network Count</string>
+    <string name="statistics_scan_result_count">Database Record Count</string>
+    <string name="button_show_my_location">Show My Location</string>
+    <string name="dialog_title_map_view">Map View</string>
+    <string name="preferences_category_advanced">Advanced</string>
+    <string name="preference_max_scan_results_for_bssid">Remember for a single access point</string>
+    <string name="activity_title_network_set">Networks available in this place</string>
+    <string name="menu_item_show_details">Show details</string>
+    <string name="menu_item_ignore_network_name">Ignore %s</string>
+    <string name="menu_item_ignore_similar_networks">Ignore similar networks</string>
+    <string name="toast_my_location_is_unavailable">Try again later. Your location is not available now.</string>
+    <string name="preference_statistics_summary">View collected data summary</string>
+    <string name="activity_title_about">About Application</string>
+    <string name="text_view_version">Version %s</string>
+    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
+    <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
     <string name="client_id">Support ID: %s</string>
-    <string name="sync_now">Synchronize Now</string>
-    <string name="sync_now_synced_at_summary">Last synced: %1$s</string>
-    <string name="sync_now_never_synced_summary">Never synced</string>
-    <string name="sync_now_syncing_summary">Syncing right now</string>
-    <string name="sync_now_started">Started to synchronize.</string>
-    <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Send Feedback&lt;/a&gt;</string>
+    <string name="preference_sync_now">Synchronize Now</string>
+    <string name="preference_sync_now_synced_at_summary">Last synced: %1$s</string>
+    <string name="preference_sync_now_never_synced_summary">Never synced</string>
+    <string name="preference_sync_now_syncing_summary">Syncing right now</string>
+    <string name="toast_sync_now_started">Started to synchronize.</string>
+    <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="crash_dialog_text">
         An unexpected error occurred forcing the
         application to stop. Please help us fix this by sending us error data,
@@ -48,17 +46,23 @@
     <string name="crash_dialog_comment_prompt">
         Please describe what was you are doing right before the error has occurred:
     </string>
-    <string name="support">Support</string>
-    <string name="enable_acra">Enable error reporting</string>
-    <string name="acra_syslog">Send system logs</string>
-    <string name="acra_deviceid">Send Device ID</string>
-    <string name="enable_acra_summary">Helps to improve the application quality.</string>
-    <string name="acra_syslog_summary">Helps to find a cause of a problem.</string>
-    <string name="acra_deviceid_summary">Whether to include Android device ID.</string>
-    <string name="zoom_in">Zoom In</string>
-    <string name="zoom_out">Zoom Out</string>
-    <string name="networks_string_1">network</string>
-    <string name="networks_string_2">networks</string>
-    <string name="networks_string_3">networks</string>
-    <string name="no_networks_here">There is no known networks in this place.</string>
+    <string name="preference_category_support">Technical Support</string>
+    <string name="preference_acra_enable">Enable error reporting</string>
+    <string name="preference_acra_syslog">Send system logs</string>
+    <string name="preference_acra_deviceid">Send Device ID</string>
+    <string name="preference_acra_enable_summary">Helps to improve the application quality.</string>
+    <string name="preference_acra_syslog_summary">Helps to find a cause of a problem.</string>
+    <string name="preference_acra_deviceid_summary">Whether to include Android device ID.</string>
+    <string name="button_zoom_in">Zoom In</string>
+    <string name="button_zoom_out">Zoom Out</string>
+    <string name="overlay_networks_string_1">network</string>
+    <string name="overlay_networks_string_2">networks</string>
+    <string name="overlay_networks_string_3">networks</string>
+    <string name="toast_no_networks_here">There is no known networks in this place.</string>
+    <string name="preference_category_general">General</string>
+    <string name="preference_sign_in">Sign using your Google Account</string>
+    <string name="dialog_get_auth_token_title">Authenticating</string>
+    <string name="dialog_get_auth_token_message">Please wait while you will be authenticated.</string>
+    <string name="preference_sign_in_again">Sign in again</string>
+    <string name="toast_no_google_account">You need a Google Account to sign in.</string>
 </resources>

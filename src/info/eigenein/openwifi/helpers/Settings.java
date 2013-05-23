@@ -17,8 +17,6 @@ public class Settings {
 
     public static final String IS_NETWORK_PROVIDER_ENABLED_KEY = "is_network_provider_enabled";
 
-    public static final String SHARE_DATABASE_KEY = "share_database";
-
     public static final String STATISTICS_KEY = "show_statistics";
 
     public static final String MAX_SCAN_RESULTS_FOR_BSSID_KEY = "max_scan_results_for_bssid";
@@ -32,6 +30,8 @@ public class Settings {
     public static final String LAST_SYNC_TIME = "last_sync_date";
 
     public static final String SYNCING_NOW_KEY = "syncing_now";
+
+    public static final String LOG_IN_KEY = "log_in";
 
     private final SharedPreferences preferences;
 
@@ -109,7 +109,7 @@ public class Settings {
     public class SettingsEditor {
         private final SharedPreferences.Editor editor;
 
-        private SettingsEditor(SharedPreferences.Editor editor) {
+        private SettingsEditor(final SharedPreferences.Editor editor) {
             this.editor = editor;
         }
 
@@ -123,7 +123,7 @@ public class Settings {
         /**
          * Sets the ID of the last synchronized scan result.
          */
-        public SettingsEditor lastSyncId(String syncId) {
+        public SettingsEditor lastSyncId(final String syncId) {
             editor.putString(LAST_SYNC_ID_KEY, syncId);
             ACRA.getErrorReporter().putCustomData("lastSyncId", syncId);
             return this;
@@ -132,12 +132,12 @@ public class Settings {
         /**
          * Sets the last synchronization time.
          */
-        public SettingsEditor lastSyncTime(long syncTime) {
+        public SettingsEditor lastSyncTime(final long syncTime) {
             editor.putLong(LAST_SYNC_TIME, syncTime);
             return this;
         }
 
-        public SettingsEditor syncingNow(boolean syncingNow) {
+        public SettingsEditor syncingNow(final boolean syncingNow) {
             editor.putBoolean(SYNCING_NOW_KEY, syncingNow);
             return this;
         }

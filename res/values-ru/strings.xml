@@ -1,44 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Open WiFi</string>
-    <string name="help">Справка</string>
-    <string name="settings">Настройки</string>
-    <string name="start_scan">Начать поиск сетей</string>
-    <string name="pause_scan">Остановить поиск</string>
-    <string name="scan_started">Начинается поиск беспроводных сетей.</string>
-    <string name="scan_paused">Поиск остановлен.</string>
-    <string name="scan_category">Поиск сетей</string>
-    <string name="scan_period">Интервал</string>
-    <string name="wifi_is_disabled_title">WiFi отключен</string>
-    <string name="wifi_is_disabled_text">Чтобы возобновить поиск сетей, включите WiFi.</string>
-    <string name="is_network_provider_enabled">По координатам сети</string>
-    <string name="is_network_provider_enabled_summary">Позволяет обнаружить больше точек доступа, но использует существующее подключение к Интернету</string>
-    <string name="statistics">Статистика</string>
-    <string name="unique_bssid_count">Точки доступа</string>
-    <string name="unique_ssid_count">Сети</string>
-    <string name="scan_result_count">Результаты поиска</string>
-    <string name="show_my_location">Мое местоположение</string>
-    <string name="map_view">Вид</string>
-    <string name="advanced_settings_category">Расширенные</string>
-    <string name="share_database">Экспортировать базу данных</string>
-    <string name="share_database_summary">Выгрузить файл базы данных приложения</string>
-    <string name="max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
-    <string name="cluster">Доступные сети в этом месте</string>
-    <string name="show_details">Показать сведения</string>
-    <string name="ignore_network_name">Скрыть %s</string>
-    <string name="ignore_similar_networks">Скрыть похожие сети</string>
-    <string name="my_location_is_unavailable">Попробуйте позже. Текущее местоположение недоступно.</string>
-    <string name="statistics_summary">Просмотреть сведения о количестве собранных данных</string>
-    <string name="about">О приложении</string>
-    <string name="version">Версия %s</string>
-    <string name="about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
-    <string name="about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
-    <string name="sync_now">Синхронизировать сейчас</string>
-    <string name="sync_now_synced_at_summary">Последняя синхронизация: %1$s</string>
-    <string name="sync_now_never_synced_summary">Синхронизация не выполнялась</string>
-    <string name="sync_now_syncing_summary">Синхронизация выполняется прямо сейчас</string>
-    <string name="sync_now_started">Начинается синхронизация.</string>
-    <string name="user_echo_link">&lt;a href=\'http://openwifi.userecho.com/\'&gt;Отправить отзыв&lt;/a&gt;</string>
+    <string name="application_name">Open WiFi</string>
+    <string name="menu_item_help">Справка</string>
+    <string name="menu_item_settings">Настройки</string>
+    <string name="menu_item_start_scan">Начать поиск сетей</string>
+    <string name="menu_item_pause_scan">Остановить поиск</string>
+    <string name="toast_scan_started">Начинается поиск беспроводных сетей.</string>
+    <string name="toats_scan_paused">Поиск остановлен.</string>
+    <string name="preferences_category_scan">Поиск сетей</string>
+    <string name="preference_scan_period">Интервал</string>
+    <string name="notification_wifi_is_disabled_title">WiFi отключен</string>
+    <string name="notification_wifi_is_disabled_text">Чтобы возобновить поиск сетей, включите WiFi.</string>
+    <string name="preference_is_network_provider_enabled">По координатам сети</string>
+    <string name="preference_is_network_provider_enabled_summary">Позволяет обнаружить больше точек доступа, но использует существующее подключение к Интернету</string>
+    <string name="preference_statistics">Статистика</string>
+    <string name="statistics_unique_bssid_count">Точки доступа</string>
+    <string name="statistics_unique_ssid_count">Сети</string>
+    <string name="statistics_scan_result_count">Записей в базе данных</string>
+    <string name="button_show_my_location">Мое местоположение</string>
+    <string name="dialog_title_map_view">Вид</string>
+    <string name="preferences_category_advanced">Расширенные</string>
+    <string name="preference_max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
+    <string name="activity_title_network_set">Доступные сети в этом месте</string>
+    <string name="menu_item_show_details">Показать сведения</string>
+    <string name="menu_item_ignore_network_name">Скрыть %s</string>
+    <string name="menu_item_ignore_similar_networks">Скрыть похожие сети</string>
+    <string name="toast_my_location_is_unavailable">Попробуйте позже. Текущее местоположение недоступно.</string>
+    <string name="preference_statistics_summary">Просмотреть сведения о количестве собранных данных</string>
+    <string name="activity_title_about">О приложении</string>
+    <string name="text_view_version">Версия %s</string>
+    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
+    <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
+    <string name="preference_sync_now">Синхронизировать сейчас</string>
+    <string name="preference_sync_now_synced_at_summary">Последняя синхронизация: %1$s</string>
+    <string name="preference_sync_now_never_synced_summary">Синхронизация не выполнялась</string>
+    <string name="preference_sync_now_syncing_summary">Синхронизация выполняется прямо сейчас</string>
+    <string name="toast_sync_now_started">Начинается синхронизация.</string>
+    <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Отправить отзыв&lt;/a&gt;</string>
     <string name="crash_dialog_text">
         В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке,
         чтобы помочь исправить ее?
@@ -46,17 +44,23 @@
     <string name="crash_dialog_comment_prompt">
         Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:
     </string>
-    <string name="support">Поддержка</string>
-    <string name="enable_acra">Отправлять отчеты об ошибках</string>
-    <string name="acra_syslog">Системные отчеты</string>
-    <string name="acra_deviceid">Идентификатор устройства</string>
-    <string name="enable_acra_summary">Отчеты помогают улучшить качество приложения.</string>
-    <string name="acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
-    <string name="acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
-    <string name="zoom_in">Увеличить масштаб</string>
-    <string name="zoom_out">Уменьшить масштаб</string>
-    <string name="networks_string_1">сеть</string>
-    <string name="networks_string_2">сети</string>
-    <string name="networks_string_3">сетей</string>
-    <string name="no_networks_here">В этом месте нет известных сетей.</string>
+    <string name="preference_category_support">Техническая поддержка</string>
+    <string name="preference_acra_enable">Отправлять отчеты об ошибках</string>
+    <string name="preference_acra_syslog">Системные отчеты</string>
+    <string name="preference_acra_deviceid">Идентификатор устройства</string>
+    <string name="preference_acra_enable_summary">Отчеты помогают улучшить качество приложения.</string>
+    <string name="preference_acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
+    <string name="preference_acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
+    <string name="button_zoom_in">Увеличить масштаб</string>
+    <string name="button_zoom_out">Уменьшить масштаб</string>
+    <string name="overlay_networks_string_1">сеть</string>
+    <string name="overlay_networks_string_2">сети</string>
+    <string name="overlay_networks_string_3">сетей</string>
+    <string name="toast_no_networks_here">В этом месте нет известных сетей.</string>
+    <string name="preference_category_general">Общие</string>
+    <string name="preference_sign_in">Войти с помощью Аккаунта Google</string>
+    <string name="dialog_get_auth_token_title">Вход</string>
+    <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
+    <string name="preference_sign_in_again">Войти заново</string>
+    <string name="toast_no_google_account">Настройте аккаунт Google.</string>
 </resources>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="info.eigenein.openwifi"
-          android:versionCode="4"
-          android:versionName="0.1.1">
+          android:versionCode="6"
+          android:versionName="0.1.2">
     <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="16"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -12,14 +12,17 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- For authenticating with Account Manager. -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <!-- For ACRA. -->
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <application android:name="Application"
-                 android:label="@string/app_name"
+                 android:label="@string/application_name"
                  android:icon="@drawable/ic_launcher"
-                 android:theme="@style/MainTheme">
+                 android:theme="@style/OpenWiFi.Theme">
         <activity android:name=".activities.MainActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/application_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -27,18 +30,18 @@
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
-            android:label="@string/settings"/>
+            android:label="@string/menu_item_settings"/>
         <activity
             android:name=".activities.StatisticsActivity"
-            android:label="@string/statistics"/>
+            android:label="@string/preference_statistics"/>
         <activity
             android:name=".activities.NetworkSetActivity"
-            android:label="@string/cluster"/>
+            android:label="@string/activity_title_network_set"/>
         <activity
             android:name=".activities.AboutActivity"
-            android:label="@string/about"/>
+            android:label="@string/activity_title_about"/>
         <activity android:name="org.acra.CrashReportDialog"
-                  android:theme="@style/DialogTheme"
+                  android:theme="@style/OpenWiFi.Theme.Dialog"
                   android:launchMode="singleInstance"
                   android:excludeFromRecents="true"
                   android:finishOnTaskLaunch="true" />
@@ -70,9 +73,5 @@
             android:name=".services.SyncIntentService"
             android:exported="false"/>
         <uses-library android:name="com.google.android.maps"/>
-        <provider
-            android:name=".helpers.providers.ReadOnlyCacheContentProvider"
-            android:authorities="info.eigenein.openwifi"
-            android:exported="true"/>
     </application>
 </manifest>

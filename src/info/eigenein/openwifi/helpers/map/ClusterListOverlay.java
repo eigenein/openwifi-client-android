@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
@@ -72,7 +71,7 @@ public class ClusterListOverlay extends Overlay {
         Log.i(LOG_TAG, networkSet.size() + " network(s) tapped.");
 
         if (networkSet.size() == 0) {
-            Toast.makeText(context, R.string.no_networks_here, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.toast_no_networks_here, Toast.LENGTH_SHORT).show();
             return true;
         }
 

@@ -74,9 +74,9 @@ public class ClusterOverlay {
                     clusterSize,
                     context.getString(CountFormatter.format(
                             clusterSize,
-                            R.string.networks_string_1,
-                            R.string.networks_string_2,
-                            R.string.networks_string_3)));
+                            R.string.overlay_networks_string_1,
+                            R.string.overlay_networks_string_2,
+                            R.string.overlay_networks_string_3)));
         }
         // Used to draw the area.
         this.cluster = cluster;

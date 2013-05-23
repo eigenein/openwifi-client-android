@@ -1,12 +1,12 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.ListActivity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class StatisticsActivity extends ListActivity {
 
         setListAdapter(createAdapter());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (BuildHelper.isHoneyComb()) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -56,15 +56,15 @@ public class StatisticsActivity extends ListActivity {
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
         items.add(createItem(
-                R.string.unique_bssid_count,
+                R.string.statistics_unique_bssid_count,
                 Long.toString(ScanResultTracker.getUniqueBssidCount(this))
         ));
         items.add(createItem(
-                R.string.unique_ssid_count,
+                R.string.statistics_unique_ssid_count,
                 Long.toString(ScanResultTracker.getUniqueSsidCount(this))
         ));
         items.add(createItem(
-                R.string.scan_result_count,
+                R.string.statistics_scan_result_count,
                 Long.toString(ScanResultTracker.getScanResultCount(this))
         ));
 

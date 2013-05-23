@@ -1,49 +1,54 @@
 package info.eigenein.openwifi.activities;
 
+import android.app.*;
 import android.content.*;
-import android.net.Uri;
 import android.os.*;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
+import android.preference.*;
 import android.support.v4.content.*;
-import android.util.Log;
-import android.view.MenuItem;
-import android.widget.Toast;
-import com.google.analytics.tracking.android.EasyTracker;
-import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.Settings;
-import info.eigenein.openwifi.helpers.io.FileUtils;
-import info.eigenein.openwifi.persistency.DatabaseHelper;
+import android.view.*;
+import com.google.analytics.tracking.android.*;
+import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.services.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.util.Date;
+import java.text.*;
+import java.util.*;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = SettingsActivity.class.getCanonicalName();
 
+    private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onAuthenticated(final String authToken, final String accountName) {
+            assert(authToken == null || accountName != null);
+
+            final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
+
+            EasyTracker.getInstance().setContext(SettingsActivity.this);
+            if (authToken != null) {
+                logInPreference.setTitle(R.string.preference_sign_in_again);
+                logInPreference.setSummary(accountName);
+                EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "success", 1L);
+            } else {
+                logInPreference.setTitle(R.string.preference_sign_in);
+                EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "null", 0L);
+            }
+        }
+    };
+
+
     @SuppressWarnings("deprecation")
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (BuildHelper.isHoneyComb()) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         addPreferencesFromResource(R.xml.preferences);
-
-        // Share database option.
-        final Preference shareDatabasePreference = findPreference(Settings.SHARE_DATABASE_KEY);
-        shareDatabasePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                return ShareDatabase();
-            }
-        });
 
         // Statistics option.
         final Preference statisticsPreference = findPreference(Settings.STATISTICS_KEY);
@@ -60,15 +65,24 @@ public class SettingsActivity extends PreferenceActivity
         syncNowPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // Notify the user.
-                Toast.makeText(SettingsActivity.this, R.string.sync_now_started, Toast.LENGTH_LONG).show();
                 // Start the service.
-                SyncIntentService.start(SettingsActivity.this);
+                SyncIntentService.start(SettingsActivity.this, false);
                 // Done.
                 return true;
             }
         });
         updateSyncNowPreference(false);
+
+        // The log in option.
+        final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
+        logInPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                // Authenticate.
+                Authenticator.authenticate(SettingsActivity.this, true, false, true, authenticatedHandler);
+                return true;
+            }
+        });
 
         // Subscribe to the sync service status updates.
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -92,40 +106,27 @@ public class SettingsActivity extends PreferenceActivity
         EasyTracker.getInstance().activityStart(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void onStop() {
-        super.onStop();
-
-        EasyTracker.getInstance().activityStop(this);
-    }
-
     /**
-     * Shares the application database.
+     * http://stackoverflow.com/questions/16374820/action-bar-home-button-not-functional-with-nested-preferencescreen
      */
-    private boolean ShareDatabase() {
-        // Copy the database into the internal cache.
-        final File sourceFile = new File("/data/data/" + getPackageName() + "/databases/" + DatabaseHelper.DATABASE_NAME);
-        if (!sourceFile.exists()) {
-            Toast.makeText(this, "No database file.", Toast.LENGTH_SHORT).show();
-            return true;
+    public boolean onPreferenceTreeClick(
+            final PreferenceScreen preferenceScreen,
+            final Preference preference)
+    {
+        super.onPreferenceTreeClick(preferenceScreen, preference);
+
+        // Enable home button for child preference screens.
+        if (BuildHelper.isHoneyComb()) {
+            if (preference != null && preference instanceof PreferenceScreen) {
+                final Dialog dialog = ((PreferenceScreen)preference).getDialog();
+                if (dialog != null) {
+                    dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
+                }
+            }
         }
-        final File cacheDir = getCacheDir();
-        final File outputFile = new File(cacheDir, DatabaseHelper.DATABASE_NAME);
-        Log.i(LOG_TAG, "copying database");
-        try {
-            FileUtils.copy(sourceFile, outputFile);
-        } catch (IOException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        // Share it.
-        Log.i(LOG_TAG, "sharing database");
-        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("application/x-sqlite3");
-        final Uri uri = Uri.parse("content://info.eigenein.openwifi/" + DatabaseHelper.DATABASE_NAME);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_database)));
-        return true;
+        return false;
     }
 
     @SuppressWarnings("deprecation")
@@ -147,13 +148,25 @@ public class SettingsActivity extends PreferenceActivity
         updateMaxScanResultsForBssidPreference();
         updateSyncNowPreference(false);
 
+        // Update the authentication state.
+        Authenticator.authenticate(this, false, false, false, authenticatedHandler);
+
         // Listen to changes.
         getPreferenceManager().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    public void onStop() {
+        super.onStop();
+
+        EasyTracker.getInstance().activityStop(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(
+            final SharedPreferences sharedPreferences,
+            final String key) {
         if (key.equals(Settings.SCAN_PERIOD_KEY)) {
             // Update UI.
             updatePeriodPreference();
@@ -169,7 +182,7 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -200,17 +213,17 @@ public class SettingsActivity extends PreferenceActivity
 
         if (forceSyncingNow || settings.isSyncingNow()) {
             // Syncing right now.
-            syncNowPreference.setSummary(getString(R.string.sync_now_syncing_summary));
+            syncNowPreference.setSummary(getString(R.string.preference_sync_now_syncing_summary));
         } else {
             final long lastSyncTime = settings.lastSyncTime();
             if (lastSyncTime != 0) {
                 // Synced at the lastSyncTime.
                 syncNowPreference.setSummary(String.format(
-                        getString(R.string.sync_now_synced_at_summary),
+                        getString(R.string.preference_sync_now_synced_at_summary),
                         DateFormat.getDateTimeInstance().format(new Date(lastSyncTime))));
             } else {
                 // Never synced.
-                syncNowPreference.setSummary(getString(R.string.sync_now_never_synced_summary));
+                syncNowPreference.setSummary(getString(R.string.preference_sync_now_never_synced_summary));
             }
         }
     }

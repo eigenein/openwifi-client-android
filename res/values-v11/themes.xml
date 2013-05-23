@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="MainTheme" parent="@android:style/Theme.Holo.Light">
+    <style name="OpenWiFi.Theme"
+           parent="@android:style/Theme.Holo.Light">
+        <!-- Any customizations for your app running on devices with Theme.Holo here -->
+        <!-- <item name="android:actionBarStyle">@style/OpenWiFi.Theme.ActionBar</item> -->
+    </style>
+    <style name="OpenWiFi.Theme.Dialog"
+           parent="@android:style/Theme.Holo.Dialog">
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
     </style>
-    <style name="DialogTheme" parent="@android:style/Theme.Holo.Dialog">
-        <!-- Any customizations for your app running on devices with Theme.Holo here -->
+    <style name="OpenWiFi.Theme.ActionBar"
+           parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:titleTextStyle">@style/OpenWiFi.Theme.ActionBar.TitleText</item>
+        <!--<item name="android:background">#33B5E5</item>-->
+    </style>
+    <style name="OpenWiFi.Theme.ActionBar.TitleText"
+           parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <!--<item name="android:textColor">#FFFFFF</item>-->
     </style>
 </resources>
