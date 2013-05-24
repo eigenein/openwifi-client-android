@@ -173,6 +173,8 @@ public class MainActivity extends MapActivity {
             myLocationOverlay.disableCompass();
             myLocationOverlay.disableMyLocation();
         }
+        // Cancel the scan results refresh task if any.
+        cancelRefreshScanResultsAsyncTask();
 
         EasyTracker.getInstance().activityStop(this);
     }
