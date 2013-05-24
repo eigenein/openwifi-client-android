@@ -3,6 +3,7 @@ package info.eigenein.openwifi.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.*;
 import android.location.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -204,6 +205,7 @@ public class MainActivity extends MapActivity {
                                 switch (item) {
                                     case 0:
                                         mapView.setSatellite(false);
+                                        startRefreshingScanResultsOnMap();
                                         break;
                                     case 1:
                                         mapView.setSatellite(true);
@@ -373,7 +375,9 @@ public class MainActivity extends MapActivity {
         protected synchronized void onPostExecute(final ClusterList clusterList) {
             Log.d(LOG_TAG + ".onPostExecute", clusterList.toString());
 
+            // Clear old overlays.
             clusterListOverlay.clearClusterOverlays();
+            // Add the overlays for the clusters.
             for (final Cluster cluster : clusterList) {
                 ClusterOverlay clusterOverlay = new ClusterOverlay(
                         MainActivity.this,

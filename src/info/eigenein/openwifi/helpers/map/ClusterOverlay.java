@@ -12,12 +12,17 @@ import info.eigenein.openwifi.helpers.location.L;
 
 public class ClusterOverlay {
 
+    /**
+     * Used to draw the cluster area when map view is enabled.
+     */
+    public static final Paint LIGHT_CIRCLE_PAINT = new Paint();
+    /**
+     * Used to draw the cluster area when satellite view is enabled.
+     */
+    public static final Paint DARK_CIRCLE_PAINT = new Paint();
+
     private static final float TEXT_SIZE = 14.0f;
 
-    /**
-     * Used to draw the cluster area.
-     */
-    private static final Paint circlePaint = new Paint();
     /**
      * Used to draw the bitmap and the text.
      */
@@ -40,6 +45,16 @@ public class ClusterOverlay {
 
     static
     {
+        DARK_CIRCLE_PAINT.setAntiAlias(true);
+        DARK_CIRCLE_PAINT.setColor(Color.BLACK);
+        DARK_CIRCLE_PAINT.setAlpha(32);
+        DARK_CIRCLE_PAINT.setStyle(Paint.Style.FILL);
+
+        LIGHT_CIRCLE_PAINT.setAntiAlias(true);
+        LIGHT_CIRCLE_PAINT.setColor(Color.WHITE);
+        LIGHT_CIRCLE_PAINT.setAlpha(96);
+        LIGHT_CIRCLE_PAINT.setStyle(Paint.Style.FILL);
+
         defaultPaint.setAntiAlias(true);
         defaultPaint.setColor(Color.BLACK);
         defaultPaint.setTextSize(TEXT_SIZE);
@@ -51,14 +66,11 @@ public class ClusterOverlay {
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setTextSize(TEXT_SIZE);
         strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
-
-        circlePaint.setAntiAlias(true);
-        circlePaint.setColor(Color.BLACK);
-        circlePaint.setAlpha(32);
-        circlePaint.setStyle(Paint.Style.FILL);
     }
 
-    public ClusterOverlay(final Context context, final Cluster cluster) {
+    public ClusterOverlay(
+            final Context context,
+            final Cluster cluster) {
         this.clusterBitmap = BitmapFactory.decodeResource(
                 context.getResources(),
                 R.drawable.ic_cluster);
@@ -80,9 +92,9 @@ public class ClusterOverlay {
         }
         // Used to draw the area.
         this.cluster = cluster;
-        this.clusterCenter = new GeoPoint(
-                L.toE6(cluster.getArea().getLatitude()),
-                L.toE6(cluster.getArea().getLongitude()));
+        this.clusterCenter = L.toGeoPoint(
+                cluster.getArea().getLatitude(),
+                cluster.getArea().getLongitude());
         // Used to draw the text.
         this.density = context.getResources().getDisplayMetrics().density;
     }
@@ -108,6 +120,9 @@ public class ClusterOverlay {
         final float y = (float)point.y;
 
         // Draw the area.
+        final Paint circlePaint = mapView.isSatellite() ?
+                ClusterOverlay.LIGHT_CIRCLE_PAINT :
+                ClusterOverlay.DARK_CIRCLE_PAINT;
         canvas.drawCircle(x, y, radius, circlePaint);
 
         // Draw the bitmap.
