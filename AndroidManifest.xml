@@ -40,6 +40,9 @@
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/activity_title_about"/>
+        <activity
+            android:name=".activities.HelpActivity"
+            android:label="@string/activity_title_help"/>
         <activity android:name="org.acra.CrashReportDialog"
                   android:theme="@style/OpenWiFi.Theme.Dialog"
                   android:launchMode="singleInstance"

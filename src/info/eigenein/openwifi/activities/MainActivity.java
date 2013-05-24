@@ -3,7 +3,6 @@ package info.eigenein.openwifi.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.*;
 import android.location.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -137,8 +136,8 @@ public class MainActivity extends MapActivity {
         super.onPrepareOptionsMenu(menu);
 
         boolean isServiceStarted = ScanIntentService.isStarted(this);
-        menu.findItem(R.id.start_scan_menuitem).setVisible(!isServiceStarted);
-        menu.findItem(R.id.pause_scan_menuitem).setVisible(isServiceStarted);
+        menu.findItem(R.id.menuitem_start_scan).setVisible(!isServiceStarted);
+        menu.findItem(R.id.menuitem_pause_scan).setVisible(isServiceStarted);
 
         return true;
     }
@@ -183,20 +182,20 @@ public class MainActivity extends MapActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settings_menuitem:
+            case R.id.menuitem_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            case R.id.start_scan_menuitem:
+            case R.id.menuitem_start_scan:
                 ScanIntentService.restart(this);
                 Toast.makeText(this, R.string.toast_scan_started, Toast.LENGTH_LONG).show();
                 invalidateOptionsMenu();
                 return true;
-            case R.id.pause_scan_menuitem:
+            case R.id.menuitem_pause_scan:
                 ScanIntentService.stop(this);
                 Toast.makeText(this, R.string.toats_scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
                 return true;
-            case R.id.map_view_menuitem:
+            case R.id.menuitem_map_view:
                 final CharSequence[] items = getResources().getTextArray(R.array.map_views);
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.dialog_title_map_view))
@@ -215,8 +214,11 @@ public class MainActivity extends MapActivity {
                         })
                         .show();
                 return true;
-            case R.id.about_menuitem:
+            case R.id.menuitem_about:
                 startActivity(new Intent(this, AboutActivity.class));
+                return true;
+            case R.id.menuitem_help:
+                startActivity(new Intent(this, HelpActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

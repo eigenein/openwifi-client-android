@@ -63,4 +63,5 @@
     <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
     <string name="preference_sign_in_again">Войти заново</string>
     <string name="toast_no_google_account">Настройте аккаунт Google.</string>
+    <string name="activity_title_help">Справка</string>
 </resources>
