@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- For authenticating with Account Manager. -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <!-- For ACRA. -->
     <uses-permission android:name="android.permission.READ_LOGS"/>
