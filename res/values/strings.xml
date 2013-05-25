@@ -66,4 +66,11 @@
     <string name="preference_sign_in_again">Sign in again</string>
     <string name="toast_no_google_account">You need a Google Account to sign in.</string>
     <string name="activity_title_help">Help</string>
+    <string name="tab_help_welcome">Welcome</string>
+    <string name="tab_help_scan">Searching</string>
+    <string name="help_welcome">
+        Open WiFi is an application that allows you to stay in touch.
+        Regularly, in the background, the application updates the available open Wi-Fi networks around the world
+        and displays them on the map.
+    </string>
 </resources>

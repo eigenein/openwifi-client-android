@@ -49,9 +49,8 @@ public class HelpActivity extends Activity {
                 }
             };
             // Add the tabs, specifying the tab's text and TabListener.
-            for (int i = 0; i < 2; i++) {
-                actionBar.addTab(actionBar.newTab().setText("Tab " + (i + 1)).setTabListener(tabListener));
-            }
+            actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_welcome).setTabListener(tabListener));
+            actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_scan).setTabListener(tabListener));
             // Select the corresponding tab when the user swipes between pages with a touch gesture.
             viewPager.setOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {

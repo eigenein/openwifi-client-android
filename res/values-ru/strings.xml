@@ -64,4 +64,11 @@
     <string name="preference_sign_in_again">Войти заново</string>
     <string name="toast_no_google_account">Настройте аккаунт Google.</string>
     <string name="activity_title_help">Справка</string>
+    <string name="tab_help_welcome">Знакомство</string>
+    <string name="tab_help_scan">Поиск сетей</string>
+    <string name="help_welcome">
+        Open WiFi – это приложение, которое позволяет всегда оставаться на связи.
+        Регулярно, в фоновом режиме, приложение обновляет данные о доступных открытых сетях Wi-Fi по всему миру
+        и отображает их на карте.
+    </string>
 </resources>
