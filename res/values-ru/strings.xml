@@ -63,4 +63,19 @@
     <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
     <string name="preference_sign_in_again">Войти заново</string>
     <string name="toast_no_google_account">Настройте аккаунт Google.</string>
+    <string name="activity_title_help">Справка</string>
+    <string name="tab_help_welcome">Знакомство</string>
+    <string name="tab_help_scan">Поиск сетей</string>
+    <string name="help_welcome">
+        Open WiFi регулярно, в фоновом режиме, обновляет данные о доступных открытых сетях Wi-Fi по всему миру
+        и отображает их на карте.
+    </string>
+    <string name="help_scan">
+        Просто запустите поиск сетей, и пока вы будете передвигаться – приложение запомнит и отобразит на карте
+        найденные сети и зону их действия.\n
+        \n
+        Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
+    </string>
+    <string name="help_start_scan_now">Начать поиск сейчас</string>
+    <string name="tab_help_finish">Finish</string>
 </resources>

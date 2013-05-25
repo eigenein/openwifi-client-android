@@ -56,11 +56,6 @@ public class MainActivity extends MapActivity {
         // Setup view.
         setContentView(R.layout.main);
 
-        // Setup action bar.
-        if (BuildHelper.isHoneyComb()) {
-            getActionBar().setDisplayShowTitleEnabled(false);
-        }
-
         // Setup map.
         mapView = (TrackableMapView)findViewById(R.id.map_view);
         mapView.setBuiltInZoomControls(false);
@@ -141,8 +136,8 @@ public class MainActivity extends MapActivity {
         super.onPrepareOptionsMenu(menu);
 
         boolean isServiceStarted = ScanIntentService.isStarted(this);
-        menu.findItem(R.id.start_scan_menuitem).setVisible(!isServiceStarted);
-        menu.findItem(R.id.pause_scan_menuitem).setVisible(isServiceStarted);
+        menu.findItem(R.id.menuitem_start_scan).setVisible(!isServiceStarted);
+        menu.findItem(R.id.menuitem_pause_scan).setVisible(isServiceStarted);
 
         return true;
     }
@@ -170,6 +165,13 @@ public class MainActivity extends MapActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        invalidateOptionsMenu();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 
@@ -178,6 +180,8 @@ public class MainActivity extends MapActivity {
             myLocationOverlay.disableCompass();
             myLocationOverlay.disableMyLocation();
         }
+        // Cancel the scan results refresh task if any.
+        cancelRefreshScanResultsAsyncTask();
 
         EasyTracker.getInstance().activityStop(this);
     }
@@ -185,20 +189,20 @@ public class MainActivity extends MapActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settings_menuitem:
+            case R.id.menuitem_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            case R.id.start_scan_menuitem:
+            case R.id.menuitem_start_scan:
                 ScanIntentService.restart(this);
                 Toast.makeText(this, R.string.toast_scan_started, Toast.LENGTH_LONG).show();
                 invalidateOptionsMenu();
                 return true;
-            case R.id.pause_scan_menuitem:
+            case R.id.menuitem_pause_scan:
                 ScanIntentService.stop(this);
                 Toast.makeText(this, R.string.toats_scan_paused, Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
                 return true;
-            case R.id.map_view_menuitem:
+            case R.id.menuitem_map_view:
                 final CharSequence[] items = getResources().getTextArray(R.array.map_views);
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.dialog_title_map_view))
@@ -207,6 +211,7 @@ public class MainActivity extends MapActivity {
                                 switch (item) {
                                     case 0:
                                         mapView.setSatellite(false);
+                                        startRefreshingScanResultsOnMap();
                                         break;
                                     case 1:
                                         mapView.setSatellite(true);
@@ -216,8 +221,11 @@ public class MainActivity extends MapActivity {
                         })
                         .show();
                 return true;
-            case R.id.about_menuitem:
+            case R.id.menuitem_about:
                 startActivity(new Intent(this, AboutActivity.class));
+                return true;
+            case R.id.menuitem_help:
+                startActivity(new Intent(this, HelpActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -376,7 +384,9 @@ public class MainActivity extends MapActivity {
         protected synchronized void onPostExecute(final ClusterList clusterList) {
             Log.d(LOG_TAG + ".onPostExecute", clusterList.toString());
 
+            // Clear old overlays.
             clusterListOverlay.clearClusterOverlays();
+            // Add the overlays for the clusters.
             for (final Cluster cluster : clusterList) {
                 ClusterOverlay clusterOverlay = new ClusterOverlay(
                         MainActivity.this,

@@ -12,4 +12,7 @@
         <item name="android:minHeight">16dip</item>
         <item name="android:progressDrawable">@drawable/progress_horizontal_holo_light</item>
     </style>
+    <style name="OpenWiFi.Theme.Button" parent="@android:style/Theme.Black">
+        <!-- Any customizations for your app running on pre-3.0 devices here -->
+    </style>
 </resources>

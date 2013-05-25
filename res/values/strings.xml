@@ -65,4 +65,19 @@
     <string name="dialog_get_auth_token_message">Please wait while you will be authenticated.</string>
     <string name="preference_sign_in_again">Sign in again</string>
     <string name="toast_no_google_account">You need a Google Account to sign in.</string>
+    <string name="activity_title_help">Help</string>
+    <string name="tab_help_welcome">Welcome</string>
+    <string name="tab_help_scan">Searching</string>
+    <string name="help_welcome">
+        Open WiFi regularly in the background updates the available open Wi-Fi networks around the world
+        and displays them on the map.
+    </string>
+    <string name="help_scan">
+        Just run a search, and as long as you move around – the application will remember and
+        display networks on the map.\n
+        \n
+        You\'d be surprised how many open networks you have on your usual way!
+    </string>
+    <string name="help_start_scan_now">Start your search now</string>
+    <string name="tab_help_finish">Finish</string>
 </resources>
