@@ -69,8 +69,15 @@
     <string name="tab_help_welcome">Welcome</string>
     <string name="tab_help_scan">Searching</string>
     <string name="help_welcome">
-        Open WiFi is an application that allows you to stay in touch.
-        Regularly, in the background, the application updates the available open Wi-Fi networks around the world
+        Open WiFi regularly in the background updates the available open Wi-Fi networks around the world
         and displays them on the map.
     </string>
+    <string name="help_scan">
+        Just run a search, and as long as you move around – the application will remember and
+        display networks on the map.\n
+        \n
+        You\'d be surprised how many open networks you have on your usual way!
+    </string>
+    <string name="help_start_scan_now">Start your search now</string>
+    <string name="tab_help_finish">Finish</string>
 </resources>

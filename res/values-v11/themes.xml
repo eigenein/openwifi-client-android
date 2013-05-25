@@ -23,4 +23,8 @@
            parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
+    <style name="OpenWiFi.Theme.Button" parent="@android:style/Theme.Black">
+        <item name="android:background">@drawable/button</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

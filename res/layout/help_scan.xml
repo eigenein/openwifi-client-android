@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:padding="14dip"
+              android:background="@color/screen_background_holo_light">
+    <LinearLayout android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:padding="14dip"
+                  android:background="@drawable/help_panel">
+        <ImageView android:layout_width="fill_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_weight="1"
+                   android:layout_marginBottom="14dip"
+                   android:src="@drawable/help_scan"/>
+        <TextView android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="0"
+                  android:layout_marginBottom="14dip"
+                  android:gravity="center_horizontal"
+                  android:text="@string/help_scan"
+                  android:textColor="@android:color/black"/>
+        <Button android:id="@+id/button_help_start_scan_now"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="center"
+                style="@style/OpenWiFi.Theme.Button"
+                android:paddingLeft="6dip"
+                android:drawableLeft="@drawable/ic_action_start"
+                android:text="@string/help_start_scan_now"/>
+    </LinearLayout>
 </LinearLayout>

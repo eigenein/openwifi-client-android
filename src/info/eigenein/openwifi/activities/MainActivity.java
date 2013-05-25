@@ -165,6 +165,13 @@ public class MainActivity extends MapActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        invalidateOptionsMenu();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 
