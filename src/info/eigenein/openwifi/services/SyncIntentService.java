@@ -118,11 +118,15 @@ public class SyncIntentService extends IntentService {
         // Start syncing.
         try {
             // Download the scan results.
-            sync(client, new ScanResultDownSyncer(settings), clientId, authToken);
+            final boolean downSyncSucceeded =
+                    sync(client, new ScanResultDownSyncer(settings), clientId, authToken);
             // Upload our scan results.
-            sync(client, new ScanResultUpSyncer(), clientId, authToken);
+            final boolean upSyncSucceeded =
+                    sync(client, new ScanResultUpSyncer(), clientId, authToken);
             // Update last sync time.
-            settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
+            if (downSyncSucceeded && upSyncSucceeded) {
+                settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
+            }
         } finally {
             // Reset the "syncing now" flag.
             settings.edit().syncingNow(false).commit();
@@ -168,12 +172,13 @@ public class SyncIntentService extends IntentService {
     /**
      * Performs syncing with the specified syncer.
      */
-    private void sync(
+    private boolean sync(
             final HttpClient client,
             final Syncer syncer,
             final String clientId,
             final String authToken) {
         Log.i(SERVICE_NAME + ".sync", "Starting syncing with " + syncer);
+        boolean isSucceeded = true;
         // Prepare the event tracker.
         EasyTracker.getInstance().setContext(this);
         final Tracker tracker = EasyTracker.getTracker();
@@ -202,6 +207,7 @@ public class SyncIntentService extends IntentService {
                         "client.execute",
                         String.format("%s/%s", syncer.getClass().getSimpleName(), e.getClass().getSimpleName()),
                         syncer.getSyncedEntitiesCount());
+                isSucceeded = false;
                 break;
             }
             final long requestEndTime = System.currentTimeMillis();
@@ -222,6 +228,7 @@ public class SyncIntentService extends IntentService {
                         "client.execute",
                         String.format("%s/%d", syncer.getClass().getSimpleName(), statusLine.getStatusCode()),
                         syncer.getSyncedEntitiesCount());
+                isSucceeded = false;
                 break;
             }
             Log.d(SERVICE_NAME + ".sync", "Processing the response ...");
@@ -246,6 +253,8 @@ public class SyncIntentService extends IntentService {
                 entitySyncTime));
         // Send sync time.
         tracker.sendTiming(SERVICE_NAME, syncTime, "sync", syncer.toString());
+        // Return whether we succeeded.
+        return isSucceeded;
     }
 
     /**
