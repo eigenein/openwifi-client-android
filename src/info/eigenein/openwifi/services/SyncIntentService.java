@@ -142,9 +142,9 @@ public class SyncIntentService extends IntentService {
     /**
      * Checks that the device is connected to the wireless network with the specified SSID.
      */
-    private boolean checkSsid(String expectedSsid) {
+    private boolean checkSsid(final String expectedSsid) {
         final WifiInfo wifiInfo = ((WifiManager)getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
-        if (wifiInfo == null || !wifiInfo.getSSID().equals(expectedSsid)) {
+        if (wifiInfo == null || wifiInfo.getSSID() == null || !wifiInfo.getSSID().equals(expectedSsid)) {
             Log.w(SERVICE_NAME + ".checkSsid", String.format(
                     "SSID has been changed or Wi-Fi is not available. Expected: %s, actual: %s.",
                     expectedSsid,
