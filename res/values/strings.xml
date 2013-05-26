@@ -79,5 +79,16 @@
         You\'d be surprised how many open networks you have on your usual way!
     </string>
     <string name="help_start_scan_now">Start your search now</string>
-    <string name="tab_help_finish">Finish</string>
+    <string name="tab_help_finish">Log In</string>
+    <string name="help_log_in">Log in with Google</string>
+    <string name="help_finish">
+        Log in with your account Google, to share information about Wi-Fi networks.
+        This allows us to ensure its authenticity for you.\n
+        \n
+        The first time, it may take several minutes before the data is received from the server
+        and networks are shown on the map.\n
+        \n
+        The map will be updated every time the device is connected to Wi-Fi.
+    </string>
+    <string name="help_finish_logged_in">Successfully logged in</string>
 </resources>

@@ -77,5 +77,16 @@
         Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
     </string>
     <string name="help_start_scan_now">Начать поиск сейчас</string>
-    <string name="tab_help_finish">Finish</string>
+    <string name="tab_help_finish">Вход</string>
+    <string name="help_log_in">Войти с помощью Google</string>
+    <string name="help_finish">
+        Выполните вход с помощью своего аккаунта Google, чтобы обмениваться информацией о сетях Wi-Fi.
+        Это позволяет нам обеспечивать ее достоверность для вас.\n
+        \n
+        В первый раз может пройти несколько минут, прежде чем данные будут получены с сервера,
+        и на карте появятся обозначения сетей.\n
+        \n
+        Карта будет обновляться всякий раз, когда устройство подключается к Wi-Fi.
+    </string>
+    <string name="help_finish_logged_in">Вход успешно выполнен</string>
 </resources>

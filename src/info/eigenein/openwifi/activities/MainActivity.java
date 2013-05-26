@@ -146,6 +146,13 @@ public class MainActivity extends MapActivity {
     public void onStart() {
         super.onStart();
 
+        // Show the help for the very first time.
+        final Settings settings = Settings.with(this);
+        if (!settings.isHelpShown()) {
+            settings.edit().helpShown(true).commit();
+            startActivity(new Intent(this, HelpActivity.class));
+        }
+
         // Initialize my location.
         if (myLocationOverlay != null) {
             // Enable my location.

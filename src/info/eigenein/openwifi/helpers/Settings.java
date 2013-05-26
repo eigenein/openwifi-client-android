@@ -33,6 +33,8 @@ public class Settings {
 
     public static final String LOG_IN_KEY = "log_in";
 
+    public static final String IS_HELP_SHOWN_KEY = "is_help_shown";
+
     private final SharedPreferences preferences;
 
     public static Settings with(final Context context) {
@@ -99,6 +101,10 @@ public class Settings {
         return preferences.getBoolean(SYNCING_NOW_KEY, false);
     }
 
+    public boolean isHelpShown() {
+        return preferences.getBoolean(IS_HELP_SHOWN_KEY, false);
+    }
+
     /**
      * Starts editing the settings.
      */
@@ -139,6 +145,11 @@ public class Settings {
 
         public SettingsEditor syncingNow(final boolean syncingNow) {
             editor.putBoolean(SYNCING_NOW_KEY, syncingNow);
+            return this;
+        }
+
+        public SettingsEditor helpShown(final boolean helpShown) {
+            editor.putBoolean(IS_HELP_SHOWN_KEY, helpShown);
             return this;
         }
     }

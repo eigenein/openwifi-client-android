@@ -2,6 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
-
+              android:layout_height="fill_parent"
+              android:padding="14dip"
+              android:background="@drawable/help_background">
+    <LinearLayout android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:padding="14dip"
+                  android:background="@drawable/help_content"
+                  android:gravity="bottom">
+        <TextView android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="0"
+                  android:layout_marginBottom="14dip"
+                  android:gravity="center_horizontal"
+                  android:text="@string/help_finish"
+                  android:textColor="@android:color/black"/>
+        <Button android:id="@+id/button_help_log_in"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="@string/help_log_in"/>
+    </LinearLayout>
 </LinearLayout>

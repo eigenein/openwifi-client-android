@@ -8,6 +8,7 @@ import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.helpers.ui.*;
 import info.eigenein.openwifi.services.*;
 
@@ -24,10 +25,11 @@ public class HelpActivity extends Activity {
         // Initialize the pages.
         final LayoutInflater inflater = LayoutInflater.from(this);
         final View helpScanView = inflater.inflate(R.layout.help_scan, null);
+        final View helpFinishView = inflater.inflate(R.layout.help_finish, null);
         final List<View> pages = Arrays.asList(
                 inflater.inflate(R.layout.help_welcome, null),
                 helpScanView,
-                inflater.inflate(R.layout.help_finish, null)
+                helpFinishView
         );
 
         // Initialize the pager.
@@ -79,6 +81,22 @@ public class HelpActivity extends Activity {
                 VibratorHelper.vibrate(HelpActivity.this);
                 ScanIntentService.restart(HelpActivity.this);
                 Toast.makeText(HelpActivity.this, R.string.toast_scan_started, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Handle "Log in with Google".
+        final Button logInButton = (Button) helpFinishView.findViewById(R.id.button_help_log_in);
+        logInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Authenticator.authenticate(HelpActivity.this, true, false, true, new Authenticator.AuthenticatedHandler() {
+                    @Override
+                    public void onAuthenticated(final String authToken, final String accountName) {
+                        if (authToken != null) {
+                            logInButton.setText(R.string.help_finish_logged_in);
+                        }
+                    }
+                });
             }
         });
     }
