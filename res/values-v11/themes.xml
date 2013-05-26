@@ -5,6 +5,7 @@
         <!-- Any customizations for your app running on devices with Theme.Holo here -->
         <item name="android:actionBarStyle">@style/OpenWiFi.Theme.ActionBar</item>
         <item name="android:actionOverflowButtonStyle">@style/OpenWiFi.Theme.ActionBar.Overflow</item>
+        <item name="android:buttonStyle">@style/OpenWiFi.Theme.Button</item>
     </style>
     <style name="OpenWiFi.Theme.Dialog"
            parent="@android:style/Theme.Holo.Dialog">
@@ -13,18 +14,14 @@
     <style name="OpenWiFi.Theme.ActionBar"
            parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:titleTextStyle">@style/OpenWiFi.Theme.ActionBar.TitleText</item>
-        <item name="android:background">#33B5E5</item>
+        <item name="android:background">@color/holo_blue_light</item>
     </style>
     <style name="OpenWiFi.Theme.ActionBar.TitleText"
            parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
     <style name="OpenWiFi.Theme.ActionBar.Overflow"
            parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
-    </style>
-    <style name="OpenWiFi.Theme.Button" parent="@android:style/Theme.Black">
-        <item name="android:background">@drawable/button</item>
-        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

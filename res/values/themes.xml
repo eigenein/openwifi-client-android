@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="OpenWiFi.Theme" parent="@android:style/Theme">
-        <!-- Any customizations for your app running on pre-3.0 devices here -->
+        <item name="android:buttonStyle">@style/OpenWiFi.Theme.Button</item>
     </style>
     <style name="OpenWiFi.Theme.Dialog" parent="@android:style/Theme.Dialog">
         <!-- Any customizations for your app running on pre-3.0 devices here -->
@@ -13,6 +13,9 @@
         <item name="android:progressDrawable">@drawable/progress_horizontal_holo_light</item>
     </style>
     <style name="OpenWiFi.Theme.Button" parent="@android:style/Theme.Black">
-        <!-- Any customizations for your app running on pre-3.0 devices here -->
+        <item name="android:background">@drawable/button</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:paddingLeft">6dip</item>
+        <item name="android:gravity">center</item>
     </style>
 </resources>

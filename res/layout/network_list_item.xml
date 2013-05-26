@@ -6,7 +6,8 @@
               android:paddingLeft="9dip"
               android:paddingRight="9dip"
               android:paddingTop="3dip"
-              android:paddingBottom="3dip">
+              android:paddingBottom="3dip"
+              android:background="@drawable/list_item">
     <ImageView android:layout_width="wrap_content"
                android:layout_height="fill_parent"
                android:src="@drawable/ic_cluster"
@@ -19,7 +20,8 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:textAppearance="?android:attr/textAppearanceMedium"
-                  android:focusable="false"/>
+                  android:focusable="false"
+                  android:textColor="@android:color/black"/>
         <LinearLayout android:orientation="horizontal"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content">

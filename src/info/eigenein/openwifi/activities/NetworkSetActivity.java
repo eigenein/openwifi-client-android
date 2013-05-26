@@ -1,6 +1,8 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.ListActivity;
+import android.content.res.*;
+import android.graphics.drawable.*;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,15 +39,25 @@ public class NetworkSetActivity extends ListActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        Bundle networkSetActivityBundle = getIntent().getExtras();
+        final Bundle networkSetActivityBundle = getIntent().getExtras();
         if (networkSetActivityBundle != null) {
-            HashSet<Network> networkSet = (HashSet<Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);
+            final HashSet<Network> networkSet = (HashSet<Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);
             setListAdapter(createAdapter(networkSet));
         } else {
             setListAdapter(createAdapter(null));
         }
 
-        registerForContextMenu(getListView());
+        final ListView listView = getListView();
+
+        if (!BuildHelper.isHoneyComb()) {
+            // Apply theme.
+            final Resources resources = getResources();
+            listView.setBackgroundColor(resources.getColor(R.color.screen_background_holo_light));
+            listView.setDivider(resources.getDrawable(R.drawable.divider_horizontal_holo_light));
+            listView.setDividerHeight(1);
+        }
+
+        registerForContextMenu(listView);
     }
 
     @Override

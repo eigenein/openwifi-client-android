@@ -4,7 +4,8 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:paddingTop="24dip"
-              android:paddingBottom="12dip">
+              android:paddingBottom="12dip"
+              android:background="@color/screen_background_holo_light">
     <LinearLayout
         android:orientation="vertical"
         android:layout_weight="1"
@@ -22,6 +23,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="32dip"
+            android:textColor="@android:color/black"
             android:text="Open WiFi"/>
         <TextView
             android:id="@+id/about_version_text_view"
@@ -29,21 +31,24 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dip"
             android:gravity="center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/black"/>
         <TextView
             android:id="@+id/about_project_link_text_view"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dip"
             android:gravity="center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColorLink="@color/holo_blue_light"/>
         <TextView
             android:id="@+id/feedback_link_text_view"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dip"
             android:gravity="center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColorLink="@color/holo_blue_light"/>
         <TextView
             android:id="@+id/client_id_text_view"
             android:layout_width="fill_parent"
@@ -64,6 +69,7 @@
             android:layout_marginTop="24dip"
             android:gravity="center_horizontal"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@android:color/darker_gray"/>
+            android:textColor="@android:color/darker_gray"
+            android:textColorLink="@color/holo_blue_light"/>
     </LinearLayout>
 </LinearLayout>

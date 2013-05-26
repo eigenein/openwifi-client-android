@@ -26,8 +26,8 @@ public class HelpActivity extends Activity {
         final View helpScanView = inflater.inflate(R.layout.help_scan, null);
         final List<View> pages = Arrays.asList(
                 inflater.inflate(R.layout.help_welcome, null),
-                helpScanView // TODO: ,
-                // TODO: inflater.inflate(R.layout.help_finish, null)
+                helpScanView,
+                inflater.inflate(R.layout.help_finish, null)
         );
 
         // Initialize the pager.
@@ -60,7 +60,7 @@ public class HelpActivity extends Activity {
             // Add the tabs, specifying the tab's text and TabListener.
             actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_welcome).setTabListener(tabListener));
             actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_scan).setTabListener(tabListener));
-            // TODO: actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_finish).setTabListener(tabListener));
+            actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_finish).setTabListener(tabListener));
             // Select the corresponding tab when the user swipes between pages with a touch gesture.
             viewPager.setOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {
