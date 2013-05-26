@@ -89,4 +89,8 @@
         Карта будет обновляться всякий раз, когда устройство подключается к Wi-Fi.
     </string>
     <string name="help_finish_logged_in">Вход успешно выполнен</string>
+    <string name="text_view_rating_is_not_implemented">Рейтинг сетей еще не реализован.</string>
+    <string name="toast_feature_is_not_implemented">
+        Эта функция еще не реализована. Пожалуйста, следите за обновлениями.
+    </string>
 </resources>

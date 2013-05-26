@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/menu_item_show_details"/>
-    <item android:id="@+id/ignore_network_menu_item"
+    <item android:id="@+id/menu_item_show_network_details"
+          android:title="@string/menu_item_show_details"/>
+    <item android:id="@+id/menu_item_ignore_network"
           android:title="@string/menu_item_ignore_network_name"/>
-    <item android:title="@string/menu_item_ignore_similar_networks"/>
+    <item android:id="@+id/menu_item_ignore_similar_networks"
+          android:title="@string/menu_item_ignore_similar_networks"/>
 </menu>

@@ -2,17 +2,13 @@ package info.eigenein.openwifi.activities;
 
 import android.app.ListActivity;
 import android.content.res.*;
-import android.graphics.drawable.*;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.*;
@@ -69,31 +65,47 @@ public class NetworkSetActivity extends ListActivity {
 
     @Override
     public void onCreateContextMenu(
-            ContextMenu menu,
-            View v,
-            ContextMenu.ContextMenuInfo menuInfo) {
+            final ContextMenu menu,
+            final View v,
+            final ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         Log.d(LOG_TAG, "onCreateContextMenu");
 
-        MenuInflater inflater = getMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.network_context_menu, menu);
 
         // Obtain selected SSID.
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-        HashMap<String, String> listItem =
+        final HashMap<String, String> listItem =
                 (HashMap<String, String>)getListAdapter().getItem(info.position);
 
         // Update the menu.
-        MenuItem ignoreNetworkMenuItem = menu.findItem(R.id.ignore_network_menu_item);
+        final MenuItem ignoreNetworkMenuItem = menu.findItem(R.id.menu_item_ignore_network);
         ignoreNetworkMenuItem.setTitle(String.format(
                 ignoreNetworkMenuItem.getTitle().toString(),
                 listItem.get("network_name")
         ));
+
+        // TODO: not implemented.
+        final MenuItem.OnMenuItemClickListener notImplementedListener = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Toast.makeText(
+                        NetworkSetActivity.this,
+                        R.string.toast_feature_is_not_implemented,
+                        Toast.LENGTH_SHORT)
+                        .show();
+                return false;
+            }
+        };
+        ignoreNetworkMenuItem.setOnMenuItemClickListener(notImplementedListener);
+        menu.findItem(R.id.menu_item_ignore_similar_networks).setOnMenuItemClickListener(notImplementedListener);
+        menu.findItem(R.id.menu_item_show_network_details).setOnMenuItemClickListener(notImplementedListener);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -111,17 +123,18 @@ public class NetworkSetActivity extends ListActivity {
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(final ListView l, final View v, final int position, final long id) {
+        Toast.makeText(this, R.string.toast_feature_is_not_implemented, Toast.LENGTH_SHORT).show();
         VibratorHelper.vibrate(l.getContext());
     }
 
     /**
      * Creates the adapter for the list.
      */
-    private SimpleAdapter createAdapter(HashSet<Network> networkSet) {
-        ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
+    private SimpleAdapter createAdapter(final HashSet<Network> networkSet) {
+        final ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
-        for (Network network : networkSet) {
+        for (final Network network : networkSet) {
             items.add(createItem(network));
         }
 
@@ -136,8 +149,8 @@ public class NetworkSetActivity extends ListActivity {
     /**
      * Creates the list item.
      */
-    private HashMap<String, String> createItem(Network network) {
-        HashMap<String, String> item = new HashMap<String, String>();
+    private HashMap<String, String> createItem(final Network network) {
+        final HashMap<String, String> item = new HashMap<String, String>();
         item.put("network_name", network.getSsid());
         return item;
     }
