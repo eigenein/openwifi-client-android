@@ -27,3 +27,5 @@
 -keep class android.support.v4.** { *; }
 -keep class com.google.** { *; }
 -keep class com.j256.** { *; }
+-keep class org.acra.** { *; }
+-keep class info.eigenein.openwifi.persistency.** { *; }
