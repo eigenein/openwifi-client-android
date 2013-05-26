@@ -19,6 +19,8 @@
 #   public *;
 #}
 
+-dontobfuscate
+
 -dontwarn org.apache.commons.collections.BeanMap
 -dontwarn java.beans.**
 
