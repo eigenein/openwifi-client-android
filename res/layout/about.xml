@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:scaleType="center"
             android:src="@drawable/ic_about"
-            android:contentDescription="Open WiFi"/>
+            android:contentDescription="@string/application_name"/>
         <TextView
             android:layout_marginTop="24dip"
             android:layout_width="fill_parent"
@@ -24,7 +24,7 @@
             android:gravity="center"
             android:textSize="32dip"
             android:textColor="@android:color/black"
-            android:text="Open WiFi"/>
+            android:text="@string/application_name"/>
         <TextView
             android:id="@+id/about_version_text_view"
             android:layout_width="fill_parent"

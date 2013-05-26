@@ -27,7 +27,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:drawableLeft="@drawable/ic_help_action_start"
+                android:drawableLeft="@drawable/ic_action_start"
                 android:text="@string/help_start_scan_now"/>
     </LinearLayout>
 </LinearLayout>

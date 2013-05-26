@@ -147,6 +147,7 @@ public class ScanResultTracker {
     /**
      * Gets the unsynchronized scan result list.
      */
+    @SuppressWarnings("deprecation")
     public static List<MyScanResult> getUnsyncedScanResults(
             Context context,
             int limit) {
