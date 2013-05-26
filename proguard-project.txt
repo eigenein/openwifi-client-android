@@ -20,6 +20,7 @@
 #}
 
 -dontobfuscate
+-optimizationpasses 4
 
 -dontwarn org.apache.commons.collections.BeanMap
 -dontwarn java.beans.**
