@@ -1,7 +1,7 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.*;
-import android.os.Bundle;
+import android.os.*;
 import android.support.v4.view.*;
 import android.view.*;
 import android.widget.*;
@@ -14,6 +14,8 @@ import info.eigenein.openwifi.services.*;
 import java.util.*;
 
 public class HelpActivity extends Activity {
+    private static final String LOG_TAG = HelpActivity.class.getCanonicalName();
+
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -102,6 +104,13 @@ public class HelpActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
+
+        // Run first-time syncing.
+        final Settings settings = Settings.with(this);
+        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
+            android.util.Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
+            SyncIntentService.start(this, true);
+        }
 
         EasyTracker.getInstance().activityStop(this);
     }

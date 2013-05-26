@@ -154,12 +154,6 @@ public class MainActivity extends MapActivity {
         }
         // Update overlays.
         startRefreshingScanResultsOnMap();
-        // Run first-time syncing.
-        final Settings settings = Settings.with(this);
-        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
-            Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
-            SyncIntentService.start(this, true);
-        }
 
         EasyTracker.getInstance().activityStart(this);
     }

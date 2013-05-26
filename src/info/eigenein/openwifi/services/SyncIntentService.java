@@ -67,7 +67,7 @@ public class SyncIntentService extends IntentService {
     private static void start(final Context context, final Intent intent, final boolean silent) {
         // Authenticate.
         Log.i(SERVICE_NAME + ".start", "Authenticating ...");
-        Authenticator.authenticate(context, false, silent, !silent, new Authenticator.AuthenticatedHandler() {
+        Authenticator.authenticate(context, true, silent, !silent, new Authenticator.AuthenticatedHandler() {
             @Override
             public void onAuthenticated(final String authToken, final String accountName) {
                 if (authToken != null) {
