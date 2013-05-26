@@ -18,7 +18,7 @@
             android:key="scan_period"
             android:entries="@array/scan_period_entries"
             android:entryValues="@array/scan_period_values"
-            android:defaultValue="120"/>
+            android:defaultValue="10"/>
         <CheckBoxPreference
             android:key="is_network_provider_enabled"
             android:title="@string/preference_is_network_provider_enabled"
