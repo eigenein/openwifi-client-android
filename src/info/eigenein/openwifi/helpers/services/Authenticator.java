@@ -58,11 +58,7 @@ public class Authenticator {
         Log.d(LOG_TAG, "Account: " + account.name);
 
         // Display the progress.
-        final ProgressDialog getAuthTokenProgressDialog = !showAuthDialog ? null : ProgressDialog.show(
-                context,
-                context.getString(R.string.dialog_get_auth_token_title),
-                context.getString(R.string.dialog_get_auth_token_message),
-                true);
+        final ProgressDialog getAuthTokenProgressDialog = getProgressDialog(context, showAuthDialog);
 
         // Obtain the existing token if any.
         Log.d(LOG_TAG, "Obtaining the existing token ...");
@@ -132,6 +128,24 @@ public class Authenticator {
     }
 
     /**
+     * Gets the authentication progress dialog.
+     */
+    private static ProgressDialog getProgressDialog(final Context context, final boolean showAuthDialog) {
+        if (showAuthDialog) {
+            final ProgressDialog progressDialog = ProgressDialog.show(
+                    context,
+                    context.getString(R.string.dialog_get_auth_token_title),
+                    context.getString(R.string.dialog_get_auth_token_message),
+                    true);
+            progressDialog.setCancelable(true);
+            progressDialog.setCanceledOnTouchOutside(true);
+            return progressDialog;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Handles the account manager exception.
      */
     private static void handleAuthenticationException(
@@ -152,6 +166,9 @@ public class Authenticator {
         }
     }
 
+    /**
+     * Hides the dialog if it is showing.
+     */
     private static void hideDialog(final ProgressDialog progressDialog) {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
