@@ -36,7 +36,11 @@ public class SyncIntentService extends IntentService {
      */
     public static final String SSID_EXTRA_KEY = "ssid";
     /**
-     * Used to authenticate the user.
+     * Whether the service is run without user interaction.
+     */
+    public static final String SILENT_EXTRA_KEY = "silent";
+    /**
+     * Authentication token.
      */
     public static final String AUTH_TOKEN_EXTRA_KEY = "auth_token";
 
@@ -65,26 +69,10 @@ public class SyncIntentService extends IntentService {
     }
 
     private static void start(final Context context, final Intent intent, final boolean silent) {
-        // Authenticate.
-        Log.i(SERVICE_NAME + ".start", "Authenticating ...");
-        Authenticator.authenticate(context, true, silent, !silent, new Authenticator.AuthenticatedHandler() {
-            @Override
-            public void onAuthenticated(final String authToken, final String accountName) {
-                if (authToken != null) {
-                    Log.d(SERVICE_NAME + ".start.onAuthenticated", "Authenticated.");
-                    // Put the authentication token.
-                    intent.putExtra(AUTH_TOKEN_EXTRA_KEY, authToken);
-                    // Notify the user.
-                    if (!silent) {
-                        Toast.makeText(context, R.string.toast_sync_now_started, Toast.LENGTH_LONG).show();
-                    }
-                    // Start the service.
-                    context.startService(intent);
-                } else {
-                    Log.w(SERVICE_NAME + ".start.onAuthenticated", "No authentication token.");
-                }
-            }
-        });
+        // Put extras.
+        intent.putExtra(SILENT_EXTRA_KEY, silent);
+        // Start the service.
+        context.startService(intent);
     }
 
     public SyncIntentService() {
@@ -95,13 +83,52 @@ public class SyncIntentService extends IntentService {
         Log.i(SERVICE_NAME + ".onHandleIntent", "Service is running.");
         EasyTracker.getInstance().setContext(this);
 
-        // Check current network SSID if specified.
-        final String ssid = intent.getStringExtra(SSID_EXTRA_KEY);
-        if (ssid != null && !checkSsid(ssid)) {
-            // We're not connected or connected to the network other than requested.
-            return;
+        // Check if we've already authenticated.
+        if (intent.hasExtra(AUTH_TOKEN_EXTRA_KEY)) {
+            // Check current network SSID if specified.
+            final String ssid = intent.getStringExtra(SSID_EXTRA_KEY);
+            if (ssid != null && !checkSsid(ssid)) {
+                // We're not connected or connected to the network other than requested.
+                return;
+            }
+            syncAll(intent.getStringExtra(AUTH_TOKEN_EXTRA_KEY));
+        } else {
+            // We're not authenticated.
+            final boolean silent = intent.getBooleanExtra(SILENT_EXTRA_KEY, true);
+            // Authenticate.
+            Log.i(SERVICE_NAME + ".onHandleIntent", "Authenticating ...");
+            Authenticator.authenticate(this, true, silent, false, !silent, !silent, new Authenticator.AuthenticatedHandler() {
+                @Override
+                public void onAuthenticated(final String authToken, final String accountName) {
+                    if (authToken != null) {
+                        Log.d(SERVICE_NAME + ".onHandleIntent", "Authenticated.");
+                        // Notify the user.
+                        if (!silent) {
+                            Toast.makeText(
+                                    SyncIntentService.this,
+                                    R.string.toast_sync_now_started,
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                        // Restart the service when authenticated.
+                        intent.putExtra(AUTH_TOKEN_EXTRA_KEY, authToken);
+                        startService(intent);
+                    } else {
+                        Log.w(SERVICE_NAME + ".onHandleIntent", "No authentication token.");
+                    }
+                }
+            });
         }
 
+        Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
+    }
+
+
+    /**
+     * Runs the syncing service with the specified authentication token.
+     * @param authToken
+     */
+    private void syncAll(final String authToken) {
         final Settings settings = Settings.with(this);
 
         // Notify the receiver that we're starting.
@@ -109,8 +136,6 @@ public class SyncIntentService extends IntentService {
         // These will be used as the additional headers.
         final String clientId = settings.clientId();
         assert(clientId != null);
-        final String authToken = intent.getStringExtra(AUTH_TOKEN_EXTRA_KEY);
-        assert(authToken != null);
         // Prepare the HTTP client.
         final HttpClient client = new SyncHttpClient(this);
         // Set the "syncing now" flag.
@@ -135,8 +160,6 @@ public class SyncIntentService extends IntentService {
             // Notify the receiver that we've finished.
             sendStatusMessage(RESULT_CODE_NOT_SYNCING);
         }
-
-        Log.i(SERVICE_NAME + ".onHandleIntent", "Everything is finished.");
     }
 
     /**

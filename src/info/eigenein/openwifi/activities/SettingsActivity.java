@@ -79,7 +79,7 @@ public class SettingsActivity extends PreferenceActivity
             @Override
             public boolean onPreferenceClick(final Preference preference) {
                 // Authenticate.
-                Authenticator.authenticate(SettingsActivity.this, true, false, true, authenticatedHandler);
+                Authenticator.authenticate(SettingsActivity.this, true, false, true, true, true, authenticatedHandler);
                 return true;
             }
         });
@@ -149,7 +149,7 @@ public class SettingsActivity extends PreferenceActivity
         updateSyncNowPreference(false);
 
         // Update the authentication state.
-        Authenticator.authenticate(this, false, false, false, authenticatedHandler);
+        Authenticator.authenticate(this, false, false, false, false, false, authenticatedHandler);
 
         // Listen to changes.
         getPreferenceManager().getSharedPreferences()

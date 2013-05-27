@@ -9,6 +9,8 @@ import android.util.*;
 import android.widget.*;
 import info.eigenein.openwifi.*;
 
+import java.io.*;
+
 public class Authenticator {
     private static final String LOG_TAG = Authenticator.class.getCanonicalName();
 
@@ -24,7 +26,9 @@ public class Authenticator {
             final Context context,
             final boolean invalidateExistingToken,
             final boolean notifyAuthFailure,
-            final boolean askUser,
+            final boolean showAuthDialog,
+            final boolean showAuthIntent,
+            final boolean notifyIoException,
             final AuthenticatedHandler handler) {
         // Check the parameters.
         assert(context != null);
@@ -39,7 +43,7 @@ public class Authenticator {
             // Notify the user.
             Toast.makeText(context, R.string.toast_no_google_account, Toast.LENGTH_SHORT).show();
             // Choose whether to go to the account sync settings.
-            if (askUser) {
+            if (showAuthIntent) {
                 // Go to the account settings.
                 context.startActivity(new Intent(Settings.ACTION_SYNC_SETTINGS));
             } else {
@@ -54,7 +58,7 @@ public class Authenticator {
         Log.d(LOG_TAG, "Account: " + account.name);
 
         // Display the progress.
-        final ProgressDialog getAuthTokenProgressDialog = !askUser ? null : ProgressDialog.show(
+        final ProgressDialog getAuthTokenProgressDialog = !showAuthDialog ? null : ProgressDialog.show(
                 context,
                 context.getString(R.string.dialog_get_auth_token_title),
                 context.getString(R.string.dialog_get_auth_token_message),
@@ -78,12 +82,7 @@ public class Authenticator {
                                     accountManager.invalidateAuthToken(GOOGLE_ACCOUNT_TYPE, existingAuthToken);
                                 }
                             } catch (Exception e) {
-                                // Hide the dialog in the case of an error.
-                                if (getAuthTokenProgressDialog != null) {
-                                    getAuthTokenProgressDialog.hide();
-                                }
-                                // Re-throw the exception.
-                                throw new RuntimeException("Failed to invalidate the existing token.", e);
+                                handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                             }
                         }
                         // Request for new authentication token.
@@ -108,7 +107,7 @@ public class Authenticator {
                                                 Log.d(LOG_TAG, "Authenticated with " + accountName);
                                                 handler.onAuthenticated(authToken, accountName);
                                             } else {
-                                                if (askUser) {
+                                                if (showAuthIntent) {
                                                     // Ask the user for permissions.
                                                     Log.d(LOG_TAG, "Asking for the user ...");
                                                     context.startActivity(intent);
@@ -119,12 +118,9 @@ public class Authenticator {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            throw new RuntimeException("Failed to obtain new token.", e);
+                                            handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                                         } finally {
-                                            // Anyway, hide the dialog.
-                                            if (getAuthTokenProgressDialog != null) {
-                                                getAuthTokenProgressDialog.hide();
-                                            }
+                                            hideDialog(getAuthTokenProgressDialog);
                                         }
                                     }
                                 },
@@ -133,5 +129,32 @@ public class Authenticator {
                     }
                 },
                 null);
+    }
+
+    /**
+     * Handles the account manager exception.
+     */
+    private static void handleAuthenticationException(
+            final Context context,
+            final Exception e,
+            final ProgressDialog progressDialog,
+            final boolean notifyIoException) {
+        Log.w(LOG_TAG, "Authentication has failed.", e);
+        // Anyway hide the dialog.
+        hideDialog(progressDialog);
+        // Authentication can fail in IOException (usually because of network trouble).
+        if (e instanceof IOException) {
+            if (notifyIoException) {
+                Toast.makeText(context, R.string.toast_authentication_io_exception, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            throw new RuntimeException("Authentication has failed unexpectedly.", e);
+        }
+    }
+
+    private static void hideDialog(final ProgressDialog progressDialog) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+        }
     }
 }

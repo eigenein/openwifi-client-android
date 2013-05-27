@@ -89,7 +89,7 @@ public class HelpActivity extends Activity {
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Authenticator.authenticate(HelpActivity.this, true, false, true, new Authenticator.AuthenticatedHandler() {
+                Authenticator.authenticate(HelpActivity.this, true, false, true, true, true, new Authenticator.AuthenticatedHandler() {
                     @Override
                     public void onAuthenticated(final String authToken, final String accountName) {
                         if (authToken != null) {
