@@ -34,7 +34,7 @@
     <string name="preference_sync_now">Синхронизировать сейчас</string>
     <string name="preference_sync_now_synced_at_summary">Последняя синхронизация: %1$s</string>
     <string name="preference_sync_now_never_synced_summary">Синхронизация не выполнялась</string>
-    <string name="preference_sync_now_syncing_summary">Синхронизация выполняется прямо сейчас</string>
+    <string name="preference_sync_now_syncing_summary">Синхронизация...</string>
     <string name="toast_sync_now_started">Начинается синхронизация.</string>
     <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Отправить отзыв&lt;/a&gt;</string>
     <string name="crash_dialog_text">
@@ -99,4 +99,5 @@
     <string name="help_close">
         Закрыть справку
     </string>
+    <string name="preference_sync_now_authenticating">Аутентификация...</string>
 </resources>

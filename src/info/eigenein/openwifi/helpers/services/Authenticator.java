@@ -42,13 +42,12 @@ public class Authenticator {
         if (accounts.length == 0) {
             // Notify the user.
             Toast.makeText(context, R.string.toast_no_google_account, Toast.LENGTH_SHORT).show();
+            // Notify that we're not authenticated.
+            handler.onAuthenticated(null, null);
             // Choose whether to go to the account sync settings.
             if (showAuthIntent) {
                 // Go to the account settings.
                 context.startActivity(new Intent(Settings.ACTION_SYNC_SETTINGS));
-            } else {
-                // Notify that we're not authenticated.
-                handler.onAuthenticated(null, null);
             }
             return;
         }
@@ -78,6 +77,7 @@ public class Authenticator {
                                     accountManager.invalidateAuthToken(GOOGLE_ACCOUNT_TYPE, existingAuthToken);
                                 }
                             } catch (Exception e) {
+                                handler.onAuthenticated(null, null);
                                 handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                             }
                         }
@@ -103,6 +103,8 @@ public class Authenticator {
                                                 Log.d(LOG_TAG, "Authenticated with " + accountName);
                                                 handler.onAuthenticated(authToken, accountName);
                                             } else {
+                                                // Notify that we're not authenticated.
+                                                handler.onAuthenticated(null, null);
                                                 if (showAuthIntent) {
                                                     // Ask the user for permissions.
                                                     Log.d(LOG_TAG, "Asking for the user ...");
@@ -110,10 +112,10 @@ public class Authenticator {
                                                 } else {
                                                     // We could not be authenticated then.
                                                     Log.d(LOG_TAG, "The user should be asked but was not.");
-                                                    handler.onAuthenticated(null, null);
                                                 }
                                             }
                                         } catch (Exception e) {
+                                            handler.onAuthenticated(null, null);
                                             handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                                         } finally {
                                             hideDialog(getAuthTokenProgressDialog);

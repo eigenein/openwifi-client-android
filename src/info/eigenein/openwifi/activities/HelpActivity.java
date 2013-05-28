@@ -7,6 +7,7 @@ import android.view.*;
 import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.helpers.ui.*;
@@ -134,7 +135,8 @@ public class HelpActivity extends Activity {
 
         // Run first-time syncing.
         final Settings settings = Settings.with(this);
-        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
+        if (settings.syncStatus() == SyncIntentServiceStatus.NOT_SYNCING &&
+                settings.lastSyncTime() == 0L) {
             android.util.Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
             SyncIntentService.start(this, true);
         }

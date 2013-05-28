@@ -58,7 +58,7 @@
     <string name="preference_sync_now">Synchronize Now</string>
     <string name="preference_sync_now_synced_at_summary">Last synced: %1$s</string>
     <string name="preference_sync_now_never_synced_summary">Never synced</string>
-    <string name="preference_sync_now_syncing_summary">Syncing right now</string>
+    <string name="preference_sync_now_syncing_summary">Syncing...</string>
     <string name="toast_sync_now_started">Started to synchronize.</string>
     <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="crash_dialog_text">
@@ -120,4 +120,5 @@
         later.
     </string>
     <string name="help_close">Close help</string>
+    <string name="preference_sync_now_authenticating">Authenticating...</string>
 </resources>

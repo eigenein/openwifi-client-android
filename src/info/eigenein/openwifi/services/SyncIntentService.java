@@ -9,6 +9,7 @@ import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.io.SyncHttpClient;
 import info.eigenein.openwifi.helpers.services.*;
@@ -30,7 +31,7 @@ public class SyncIntentService extends IntentService {
     /**
      * Used to notify receivers with the service state.
      */
-    public static final String STATUS_CODE_EXTRA_KEY = "statusCode";
+    public static final String STATUS_EXTRA_KEY = "status";
     /**
      * Used to check whether the device is still connected to the specified wireless network.
      */
@@ -43,9 +44,6 @@ public class SyncIntentService extends IntentService {
      * Authentication token.
      */
     public static final String AUTH_TOKEN_EXTRA_KEY = "auth_token";
-
-    public static final int RESULT_CODE_NOT_SYNCING = 0;
-    public static final int RESULT_CODE_SYNCING = 1;
 
     /**
      * Minimal sync period.
@@ -95,6 +93,8 @@ public class SyncIntentService extends IntentService {
         } else {
             // We're not authenticated.
             final boolean silent = intent.getBooleanExtra(SILENT_EXTRA_KEY, true);
+            // Notify the receivers.
+            setStatus(SyncIntentServiceStatus.AUTHENTICATING);
             // Authenticate.
             Log.i(SERVICE_NAME + ".onHandleIntent", "Authenticating ...");
             Authenticator.authenticate(this, true, silent, false, !silent, !silent, new Authenticator.AuthenticatedHandler() {
@@ -110,11 +110,12 @@ public class SyncIntentService extends IntentService {
                                     Toast.LENGTH_LONG)
                                     .show();
                         }
-                        // Restart the service when authenticated.
+                        // Re-start the service when authenticated.
                         intent.putExtra(AUTH_TOKEN_EXTRA_KEY, authToken);
                         startService(intent);
                     } else {
                         Log.w(SERVICE_NAME + ".onHandleIntent", "No authentication token.");
+                        setStatus(SyncIntentServiceStatus.NOT_SYNCING);
                     }
                 }
             });
@@ -131,15 +132,13 @@ public class SyncIntentService extends IntentService {
     private void syncAll(final String authToken) {
         final Settings settings = Settings.with(this);
 
-        // Notify the receiver that we're starting.
-        sendStatusMessage(RESULT_CODE_SYNCING);
+        // Notify the receivers that we're syncing.
+        setStatus(SyncIntentServiceStatus.SYNCING);
         // These will be used as the additional headers.
         final String clientId = settings.clientId();
         assert(clientId != null);
         // Prepare the HTTP client.
         final HttpClient client = new SyncHttpClient(this);
-        // Set the "syncing now" flag.
-        settings.edit().syncingNow(true).commit();
         // Start syncing.
         try {
             // Download the scan results.
@@ -153,12 +152,10 @@ public class SyncIntentService extends IntentService {
                 settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
             }
         } finally {
-            // Reset the "syncing now" flag.
-            settings.edit().syncingNow(false).commit();
             // Ensure immediate deallocation of all system resources.
             client.getConnectionManager().shutdown();
             // Notify the receiver that we've finished.
-            sendStatusMessage(RESULT_CODE_NOT_SYNCING);
+            setStatus(SyncIntentServiceStatus.NOT_SYNCING);
         }
     }
 
@@ -184,11 +181,14 @@ public class SyncIntentService extends IntentService {
     }
 
     /**
-     * Sends the service status message to the local broadcast receivers.
+     * Sends the service status to the local broadcast receivers.
      */
-    private void sendStatusMessage(int statusCode) {
+    private void setStatus(final SyncIntentServiceStatus status) {
+        // Update settings.
+        Settings.with(this).edit().syncStatus(status).commit();
+        // Send the notification.
         final Intent intent = new Intent(SERVICE_NAME);
-        intent.putExtra(STATUS_CODE_EXTRA_KEY, statusCode);
+        intent.putExtra(STATUS_EXTRA_KEY, status);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
