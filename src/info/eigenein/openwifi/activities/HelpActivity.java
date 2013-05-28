@@ -85,7 +85,7 @@ public class HelpActivity extends Activity {
         });
 
         // Handle "Log in with Google".
-        final Button logInButton = (Button) helpFinishView.findViewById(R.id.button_help_log_in);
+        final Button logInButton = (Button)helpFinishView.findViewById(R.id.button_help_log_in);
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +97,15 @@ public class HelpActivity extends Activity {
                         }
                     }
                 });
+            }
+        });
+
+        // Handle "Close help".
+        final Button closeButton = (Button)helpFinishView.findViewById(R.id.button_help_close);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                HelpActivity.this.onBackPressed();
             }
         });
     }

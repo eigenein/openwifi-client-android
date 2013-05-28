@@ -96,4 +96,7 @@
     <string name="toast_authentication_io_exception">
         Не удалось выполнить вход. Вероятно, сеть недоступна. Попробуйте позже.
     </string>
+    <string name="help_close">
+        Закрыть справку
+    </string>
 </resources>
