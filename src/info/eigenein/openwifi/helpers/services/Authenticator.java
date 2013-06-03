@@ -59,6 +59,41 @@ public class Authenticator {
         // Display the progress.
         final ProgressDialog getAuthTokenProgressDialog = getProgressDialog(context, showAuthDialog);
 
+        // Define the main account manager callback.
+        final AccountManagerCallback<Bundle> callback = new AccountManagerCallback<Bundle>() {
+            @Override
+            public void run(final AccountManagerFuture<Bundle> newTokenBundle) {
+                try {
+                    final Bundle result = newTokenBundle.getResult();
+                    final Intent intent = result.getParcelable(AccountManager.KEY_INTENT);
+
+                    if (intent == null) {
+                        Log.d(LOG_TAG, "Getting authentication data ...");
+                        // Get the authentication data.
+                        final String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
+                        final String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
+                        // Pass to the handler.
+                        Log.d(LOG_TAG, "Authenticated with " + accountName);
+                        handler.onAuthenticated(authToken, accountName);
+                    } else {
+                        // Notify that we're not authenticated.
+                        handler.onAuthenticated(null, null);
+                        if (showAuthIntent) {
+                            Log.d(LOG_TAG, "Asking for the user ...");
+                            context.startActivity(intent);
+                        } else {
+                            Log.d(LOG_TAG, "The user should be asked but was not.");
+                        }
+                    }
+                } catch (Exception e) {
+                    handler.onAuthenticated(null, null);
+                    handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
+                } finally {
+                    hideDialog(getAuthTokenProgressDialog);
+                }
+            }
+        };
+
         // Obtain the existing token if any.
         Log.d(LOG_TAG, "Obtaining the existing token ...");
         accountManager.getAuthToken(
@@ -80,50 +115,13 @@ public class Authenticator {
                                 handler.onAuthenticated(null, null);
                                 handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                             }
+                            // Request for a new authentication token.
+                            Log.d(LOG_TAG, "Obtaining the actual token ...");
+                            accountManager.getAuthToken(account, GOOGLE_AUTH_TOKEN_TYPE, notifyAuthFailure, callback, null);
+                        } else {
+                            // Simply pass the existing token to the callback.
+                            callback.run(existingTokenBundle);
                         }
-                        // Request for new authentication token.
-                        Log.d(LOG_TAG, "Obtaining the actual token ...");
-                        accountManager.getAuthToken(
-                                account,
-                                GOOGLE_AUTH_TOKEN_TYPE,
-                                notifyAuthFailure,
-                                new AccountManagerCallback<Bundle>() {
-                                    @Override
-                                    public void run(AccountManagerFuture<Bundle> newTokenBundle) {
-                                        try {
-                                            final Bundle result = newTokenBundle.getResult();
-                                            final Intent intent = result.getParcelable(AccountManager.KEY_INTENT);
-
-                                            if (intent == null) {
-                                                Log.d(LOG_TAG, "Getting authentication data ...");
-                                                // Get the authentication data.
-                                                final String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
-                                                final String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
-                                                // Pass to the handler.
-                                                Log.d(LOG_TAG, "Authenticated with " + accountName);
-                                                handler.onAuthenticated(authToken, accountName);
-                                            } else {
-                                                // Notify that we're not authenticated.
-                                                handler.onAuthenticated(null, null);
-                                                if (showAuthIntent) {
-                                                    // Ask the user for permissions.
-                                                    Log.d(LOG_TAG, "Asking for the user ...");
-                                                    context.startActivity(intent);
-                                                } else {
-                                                    // We could not be authenticated then.
-                                                    Log.d(LOG_TAG, "The user should be asked but was not.");
-                                                }
-                                            }
-                                        } catch (Exception e) {
-                                            handler.onAuthenticated(null, null);
-                                            handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
-                                        } finally {
-                                            hideDialog(getAuthTokenProgressDialog);
-                                        }
-                                    }
-                                },
-                                null
-                        );
                     }
                 },
                 null);
