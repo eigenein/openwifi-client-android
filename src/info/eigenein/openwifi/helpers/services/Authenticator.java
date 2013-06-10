@@ -8,6 +8,9 @@ import android.provider.*;
 import android.util.*;
 import android.widget.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
+
+import java.io.*;
 
 public class Authenticator {
     private static final String LOG_TAG = Authenticator.class.getCanonicalName();
@@ -16,7 +19,7 @@ public class Authenticator {
     private static final String GOOGLE_AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
 
     public interface AuthenticatedHandler {
-        void onAuthenticated(final String authToken, final String accountName);
+        void onAuthenticated(final AuthenticationStatus status, final String authToken, final String accountName);
     }
 
     @SuppressWarnings("deprecation")
@@ -24,7 +27,9 @@ public class Authenticator {
             final Context context,
             final boolean invalidateExistingToken,
             final boolean notifyAuthFailure,
-            final boolean askUser,
+            final boolean showAuthDialog,
+            final boolean showAuthIntent,
+            final boolean notifyIoException,
             final AuthenticatedHandler handler) {
         // Check the parameters.
         assert(context != null);
@@ -38,13 +43,12 @@ public class Authenticator {
         if (accounts.length == 0) {
             // Notify the user.
             Toast.makeText(context, R.string.toast_no_google_account, Toast.LENGTH_SHORT).show();
+            // Notify that we're not authenticated.
+            handler.onAuthenticated(AuthenticationStatus.NOT_AUTHENTICATED, null, null);
             // Choose whether to go to the account sync settings.
-            if (askUser) {
+            if (showAuthIntent) {
                 // Go to the account settings.
                 context.startActivity(new Intent(Settings.ACTION_SYNC_SETTINGS));
-            } else {
-                // Notify that we're not authenticated.
-                handler.onAuthenticated(null, null);
             }
             return;
         }
@@ -54,11 +58,42 @@ public class Authenticator {
         Log.d(LOG_TAG, "Account: " + account.name);
 
         // Display the progress.
-        final ProgressDialog getAuthTokenProgressDialog = !askUser ? null : ProgressDialog.show(
-                context,
-                context.getString(R.string.dialog_get_auth_token_title),
-                context.getString(R.string.dialog_get_auth_token_message),
-                true);
+        final ProgressDialog getAuthTokenProgressDialog = getProgressDialog(context, showAuthDialog);
+
+        // Define the main account manager callback.
+        final AccountManagerCallback<Bundle> callback = new AccountManagerCallback<Bundle>() {
+            @Override
+            public void run(final AccountManagerFuture<Bundle> newTokenBundle) {
+                try {
+                    final Bundle result = newTokenBundle.getResult();
+                    final Intent intent = result.getParcelable(AccountManager.KEY_INTENT);
+
+                    if (intent == null) {
+                        Log.d(LOG_TAG, "Getting authentication data ...");
+                        // Get the authentication data.
+                        final String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
+                        final String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
+                        // Pass to the handler.
+                        Log.d(LOG_TAG, "Authenticated with " + accountName);
+                        handler.onAuthenticated(AuthenticationStatus.AUTHENTICATED, authToken, accountName);
+                    } else {
+                        // Notify that we're not authenticated.
+                        handler.onAuthenticated(AuthenticationStatus.NOT_AUTHENTICATED, null, null);
+                        if (showAuthIntent) {
+                            Log.d(LOG_TAG, "Asking for the user ...");
+                            context.startActivity(intent);
+                        } else {
+                            Log.d(LOG_TAG, "The user should be asked but was not.");
+                        }
+                    }
+                } catch (Exception e) {
+                    handler.onAuthenticated(AuthenticationStatus.ERROR, null, null);
+                    handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
+                } finally {
+                    hideDialog(getAuthTokenProgressDialog);
+                }
+            }
+        };
 
         // Obtain the existing token if any.
         Log.d(LOG_TAG, "Obtaining the existing token ...");
@@ -78,60 +113,68 @@ public class Authenticator {
                                     accountManager.invalidateAuthToken(GOOGLE_ACCOUNT_TYPE, existingAuthToken);
                                 }
                             } catch (Exception e) {
-                                // Hide the dialog in the case of an error.
-                                if (getAuthTokenProgressDialog != null) {
-                                    getAuthTokenProgressDialog.hide();
-                                }
-                                // Re-throw the exception.
-                                throw new RuntimeException("Failed to invalidate the existing token.", e);
+                                handler.onAuthenticated(AuthenticationStatus.ERROR, null, null);
+                                handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                             }
+                            // Request for a new authentication token.
+                            Log.d(LOG_TAG, "Obtaining the actual token ...");
+                            accountManager.getAuthToken(account, GOOGLE_AUTH_TOKEN_TYPE, notifyAuthFailure, callback, null);
+                        } else {
+                            // Simply pass the existing token to the callback.
+                            callback.run(existingTokenBundle);
                         }
-                        // Request for new authentication token.
-                        Log.d(LOG_TAG, "Obtaining the actual token ...");
-                        accountManager.getAuthToken(
-                                account,
-                                GOOGLE_AUTH_TOKEN_TYPE,
-                                notifyAuthFailure,
-                                new AccountManagerCallback<Bundle>() {
-                                    @Override
-                                    public void run(AccountManagerFuture<Bundle> newTokenBundle) {
-                                        try {
-                                            final Bundle result = newTokenBundle.getResult();
-                                            final Intent intent = result.getParcelable(AccountManager.KEY_INTENT);
-
-                                            if (intent == null) {
-                                                Log.d(LOG_TAG, "Getting authentication data ...");
-                                                // Get the authentication data.
-                                                final String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
-                                                final String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
-                                                // Pass to the handler.
-                                                Log.d(LOG_TAG, "Authenticated with " + accountName);
-                                                handler.onAuthenticated(authToken, accountName);
-                                            } else {
-                                                if (askUser) {
-                                                    // Ask the user for permissions.
-                                                    Log.d(LOG_TAG, "Asking for the user ...");
-                                                    context.startActivity(intent);
-                                                } else {
-                                                    // We could not be authenticated then.
-                                                    Log.d(LOG_TAG, "The user should be asked but was not.");
-                                                    handler.onAuthenticated(null, null);
-                                                }
-                                            }
-                                        } catch (Exception e) {
-                                            throw new RuntimeException("Failed to obtain new token.", e);
-                                        } finally {
-                                            // Anyway, hide the dialog.
-                                            if (getAuthTokenProgressDialog != null) {
-                                                getAuthTokenProgressDialog.hide();
-                                            }
-                                        }
-                                    }
-                                },
-                                null
-                        );
                     }
                 },
                 null);
+    }
+
+    /**
+     * Gets the authentication progress dialog.
+     */
+    private static ProgressDialog getProgressDialog(final Context context, final boolean showAuthDialog) {
+        if (showAuthDialog) {
+            final ProgressDialog progressDialog = ProgressDialog.show(
+                    context,
+                    context.getString(R.string.dialog_get_auth_token_title),
+                    context.getString(R.string.dialog_get_auth_token_message),
+                    true);
+            progressDialog.setCancelable(true);
+            progressDialog.setCanceledOnTouchOutside(true);
+            return progressDialog;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Handles the account manager exception.
+     */
+    private static void handleAuthenticationException(
+            final Context context,
+            final Exception e,
+            final ProgressDialog progressDialog,
+            final boolean notifyIoException) {
+        Log.w(LOG_TAG, "Authentication has failed.", e);
+        // Anyway hide the dialog.
+        hideDialog(progressDialog);
+        // Authentication can fail in IOException (usually because of network trouble).
+        if (e instanceof IOException) {
+            if (notifyIoException) {
+                Toast.makeText(context, R.string.toast_authentication_io_exception, Toast.LENGTH_LONG).show();
+            }
+        } else if (e instanceof AuthenticatorException) {
+            Log.w(LOG_TAG, "Authentication has failed.", e);
+        } else {
+            throw new RuntimeException("Authentication has failed unexpectedly.", e);
+        }
+    }
+
+    /**
+     * Hides the dialog if it is showing.
+     */
+    private static void hideDialog(final ProgressDialog progressDialog) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+        }
     }
 }

@@ -7,6 +7,7 @@ import android.view.*;
 import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.helpers.ui.*;
@@ -85,18 +86,30 @@ public class HelpActivity extends Activity {
         });
 
         // Handle "Log in with Google".
-        final Button logInButton = (Button) helpFinishView.findViewById(R.id.button_help_log_in);
+        final Button logInButton = (Button)helpFinishView.findViewById(R.id.button_help_log_in);
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Authenticator.authenticate(HelpActivity.this, true, false, true, new Authenticator.AuthenticatedHandler() {
+                Authenticator.authenticate(HelpActivity.this, true, false, true, true, true, new Authenticator.AuthenticatedHandler() {
                     @Override
-                    public void onAuthenticated(final String authToken, final String accountName) {
-                        if (authToken != null) {
+                    public void onAuthenticated(
+                            final AuthenticationStatus status,
+                            final String authToken,
+                            final String accountName) {
+                        if (status == AuthenticationStatus.AUTHENTICATED) {
                             logInButton.setText(R.string.help_finish_logged_in);
                         }
                     }
                 });
+            }
+        });
+
+        // Handle "Close help".
+        final Button closeButton = (Button)helpFinishView.findViewById(R.id.button_help_close);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                HelpActivity.this.onBackPressed();
             }
         });
     }
@@ -125,7 +138,8 @@ public class HelpActivity extends Activity {
 
         // Run first-time syncing.
         final Settings settings = Settings.with(this);
-        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
+        if (settings.syncStatus() == SyncIntentServiceStatus.NOT_SYNCING &&
+                settings.lastSyncTime() == 0L) {
             android.util.Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
             SyncIntentService.start(this, true);
         }

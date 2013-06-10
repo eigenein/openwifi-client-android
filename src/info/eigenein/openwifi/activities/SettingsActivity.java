@@ -8,6 +8,7 @@ import android.support.v4.content.*;
 import android.view.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.services.*;
@@ -22,16 +23,21 @@ public class SettingsActivity extends PreferenceActivity
     private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {
         @SuppressWarnings("deprecation")
         @Override
-        public void onAuthenticated(final String authToken, final String accountName) {
+        public void onAuthenticated(
+                final AuthenticationStatus status,
+                final String authToken,
+                final String accountName) {
             assert(authToken == null || accountName != null);
 
             final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
 
             EasyTracker.getInstance().setContext(SettingsActivity.this);
-            if (authToken != null) {
+            if (status == AuthenticationStatus.AUTHENTICATED) {
                 logInPreference.setTitle(R.string.preference_sign_in_again);
                 logInPreference.setSummary(accountName);
                 EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "success", 1L);
+            } else if (status == AuthenticationStatus.ERROR) {
+                logInPreference.setSummary(R.string.preference_sign_in_error);
             } else {
                 logInPreference.setTitle(R.string.preference_sign_in);
                 EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "null", 0L);
@@ -71,7 +77,7 @@ public class SettingsActivity extends PreferenceActivity
                 return true;
             }
         });
-        updateSyncNowPreference(false);
+        updateSyncNowPreference();
 
         // The log in option.
         final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
@@ -79,7 +85,7 @@ public class SettingsActivity extends PreferenceActivity
             @Override
             public boolean onPreferenceClick(final Preference preference) {
                 // Authenticate.
-                Authenticator.authenticate(SettingsActivity.this, true, false, true, authenticatedHandler);
+                Authenticator.authenticate(SettingsActivity.this, true, false, true, true, true, authenticatedHandler);
                 return true;
             }
         });
@@ -90,10 +96,9 @@ public class SettingsActivity extends PreferenceActivity
                     @Override
                     public void onReceive(final Context context, final Intent intent) {
                         // Update the preference when the sync service status has changed.
-                        final int statusCode = intent.getIntExtra(
-                                SyncIntentService.STATUS_CODE_EXTRA_KEY,
-                                SyncIntentService.RESULT_CODE_NOT_SYNCING);
-                        updateSyncNowPreference(statusCode == SyncIntentService.RESULT_CODE_SYNCING);
+                        final SyncIntentServiceStatus status = (SyncIntentServiceStatus)intent.getSerializableExtra(
+                                SyncIntentService.STATUS_EXTRA_KEY);
+                        updateSyncNowPreference(status);
                     }
                 },
                 new IntentFilter(SyncIntentService.SERVICE_NAME));
@@ -146,10 +151,10 @@ public class SettingsActivity extends PreferenceActivity
         // Update UI.
         updatePeriodPreference();
         updateMaxScanResultsForBssidPreference();
-        updateSyncNowPreference(false);
+        updateSyncNowPreference();
 
         // Update the authentication state.
-        Authenticator.authenticate(this, false, false, false, authenticatedHandler);
+        Authenticator.authenticate(this, false, false, false, false, false, authenticatedHandler);
 
         // Listen to changes.
         getPreferenceManager().getSharedPreferences()
@@ -206,25 +211,34 @@ public class SettingsActivity extends PreferenceActivity
         maxScanResultsForBssidPreference.setSummary(maxScanResultsForBssidPreference.getEntry());
     }
 
+    private void updateSyncNowPreference() {
+        updateSyncNowPreference(Settings.with(this).syncStatus());
+    }
+
     @SuppressWarnings("deprecation")
-    private void updateSyncNowPreference(boolean forceSyncingNow) {
+    private void updateSyncNowPreference(final SyncIntentServiceStatus status) {
         final Preference syncNowPreference = findPreference(Settings.SYNC_NOW_KEY);
         final Settings settings = Settings.with(this);
 
-        if (forceSyncingNow || settings.isSyncingNow()) {
-            // Syncing right now.
-            syncNowPreference.setSummary(getString(R.string.preference_sync_now_syncing_summary));
-        } else {
-            final long lastSyncTime = settings.lastSyncTime();
-            if (lastSyncTime != 0) {
-                // Synced at the lastSyncTime.
-                syncNowPreference.setSummary(String.format(
-                        getString(R.string.preference_sync_now_synced_at_summary),
-                        DateFormat.getDateTimeInstance().format(new Date(lastSyncTime))));
-            } else {
-                // Never synced.
-                syncNowPreference.setSummary(getString(R.string.preference_sync_now_never_synced_summary));
-            }
+        switch (status) {
+            case NOT_SYNCING:
+                final long lastSyncTime = settings.lastSyncTime();
+                if (lastSyncTime != 0) {
+                    // Synced at the lastSyncTime.
+                    syncNowPreference.setSummary(String.format(
+                            getString(R.string.preference_sync_now_synced_at_summary),
+                            DateFormat.getDateTimeInstance().format(new Date(lastSyncTime))));
+                } else {
+                    // Never synced.
+                    syncNowPreference.setSummary(getString(R.string.preference_sync_now_never_synced_summary));
+                }
+                break;
+            case AUTHENTICATING:
+                syncNowPreference.setSummary(getString(R.string.preference_sync_now_authenticating));
+                break;
+            case SYNCING:
+                syncNowPreference.setSummary(getString(R.string.preference_sync_now_syncing_summary));
+                break;
         }
     }
 }
