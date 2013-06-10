@@ -121,4 +121,5 @@
     </string>
     <string name="help_close">Close help</string>
     <string name="preference_sync_now_authenticating">Authenticating...</string>
+    <string name="preference_sign_in_error">Network is not available.</string>
 </resources>

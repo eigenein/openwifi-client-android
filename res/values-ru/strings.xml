@@ -100,4 +100,5 @@
         Закрыть справку
     </string>
     <string name="preference_sync_now_authenticating">Аутентификация...</string>
+    <string name="preference_sign_in_error">Сеть недоступна.</string>
 </resources>
