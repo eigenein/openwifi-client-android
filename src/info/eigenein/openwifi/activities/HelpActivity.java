@@ -92,8 +92,11 @@ public class HelpActivity extends Activity {
             public void onClick(View view) {
                 Authenticator.authenticate(HelpActivity.this, true, false, true, true, true, new Authenticator.AuthenticatedHandler() {
                     @Override
-                    public void onAuthenticated(final String authToken, final String accountName) {
-                        if (authToken != null) {
+                    public void onAuthenticated(
+                            final AuthenticationStatus status,
+                            final String authToken,
+                            final String accountName) {
+                        if (status == AuthenticationStatus.AUTHENTICATED) {
                             logInButton.setText(R.string.help_finish_logged_in);
                         }
                     }

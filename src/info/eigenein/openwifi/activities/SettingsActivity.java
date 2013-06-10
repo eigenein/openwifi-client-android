@@ -23,13 +23,16 @@ public class SettingsActivity extends PreferenceActivity
     private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {
         @SuppressWarnings("deprecation")
         @Override
-        public void onAuthenticated(final String authToken, final String accountName) {
+        public void onAuthenticated(
+                final AuthenticationStatus status,
+                final String authToken,
+                final String accountName) {
             assert(authToken == null || accountName != null);
 
             final Preference logInPreference = findPreference(Settings.LOG_IN_KEY);
 
             EasyTracker.getInstance().setContext(SettingsActivity.this);
-            if (authToken != null) {
+            if (status == AuthenticationStatus.AUTHENTICATED) {
                 logInPreference.setTitle(R.string.preference_sign_in_again);
                 logInPreference.setSummary(accountName);
                 EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "success", 1L);

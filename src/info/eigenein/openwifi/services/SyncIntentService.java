@@ -99,8 +99,11 @@ public class SyncIntentService extends IntentService {
             Log.i(SERVICE_NAME + ".onHandleIntent", "Authenticating ...");
             Authenticator.authenticate(this, true, silent, false, !silent, !silent, new Authenticator.AuthenticatedHandler() {
                 @Override
-                public void onAuthenticated(final String authToken, final String accountName) {
-                    if (authToken != null) {
+                public void onAuthenticated(
+                        final AuthenticationStatus status,
+                        final String authToken,
+                        final String accountName) {
+                    if (status == AuthenticationStatus.AUTHENTICATED) {
                         Log.d(SERVICE_NAME + ".onHandleIntent", "Authenticated.");
                         // Notify the user.
                         if (!silent) {

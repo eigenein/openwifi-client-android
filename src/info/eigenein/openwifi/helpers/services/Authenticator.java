@@ -8,6 +8,7 @@ import android.provider.*;
 import android.util.*;
 import android.widget.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
 
 import java.io.*;
 
@@ -18,7 +19,7 @@ public class Authenticator {
     private static final String GOOGLE_AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
 
     public interface AuthenticatedHandler {
-        void onAuthenticated(final String authToken, final String accountName);
+        void onAuthenticated(final AuthenticationStatus status, final String authToken, final String accountName);
     }
 
     @SuppressWarnings("deprecation")
@@ -43,7 +44,7 @@ public class Authenticator {
             // Notify the user.
             Toast.makeText(context, R.string.toast_no_google_account, Toast.LENGTH_SHORT).show();
             // Notify that we're not authenticated.
-            handler.onAuthenticated(null, null);
+            handler.onAuthenticated(AuthenticationStatus.NOT_AUTHENTICATED, null, null);
             // Choose whether to go to the account sync settings.
             if (showAuthIntent) {
                 // Go to the account settings.
@@ -74,10 +75,10 @@ public class Authenticator {
                         final String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
                         // Pass to the handler.
                         Log.d(LOG_TAG, "Authenticated with " + accountName);
-                        handler.onAuthenticated(authToken, accountName);
+                        handler.onAuthenticated(AuthenticationStatus.AUTHENTICATED, authToken, accountName);
                     } else {
                         // Notify that we're not authenticated.
-                        handler.onAuthenticated(null, null);
+                        handler.onAuthenticated(AuthenticationStatus.NOT_AUTHENTICATED, null, null);
                         if (showAuthIntent) {
                             Log.d(LOG_TAG, "Asking for the user ...");
                             context.startActivity(intent);
@@ -86,7 +87,7 @@ public class Authenticator {
                         }
                     }
                 } catch (Exception e) {
-                    handler.onAuthenticated(null, null);
+                    handler.onAuthenticated(AuthenticationStatus.ERROR, null, null);
                     handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                 } finally {
                     hideDialog(getAuthTokenProgressDialog);
@@ -112,7 +113,7 @@ public class Authenticator {
                                     accountManager.invalidateAuthToken(GOOGLE_ACCOUNT_TYPE, existingAuthToken);
                                 }
                             } catch (Exception e) {
-                                handler.onAuthenticated(null, null);
+                                handler.onAuthenticated(AuthenticationStatus.ERROR, null, null);
                                 handleAuthenticationException(context, e, getAuthTokenProgressDialog, notifyIoException);
                             }
                             // Request for a new authentication token.
@@ -161,6 +162,8 @@ public class Authenticator {
             if (notifyIoException) {
                 Toast.makeText(context, R.string.toast_authentication_io_exception, Toast.LENGTH_LONG).show();
             }
+        } else if (e instanceof AuthenticatorException) {
+            Log.w(LOG_TAG, "Authentication has failed.", e);
         } else {
             throw new RuntimeException("Authentication has failed unexpectedly.", e);
         }
