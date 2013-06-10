@@ -1,19 +1,23 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.*;
-import android.os.Bundle;
+import android.os.*;
 import android.support.v4.view.*;
 import android.view.*;
 import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.enums.*;
 import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.helpers.ui.*;
 import info.eigenein.openwifi.services.*;
 
 import java.util.*;
 
 public class HelpActivity extends Activity {
+    private static final String LOG_TAG = HelpActivity.class.getCanonicalName();
+
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -22,10 +26,11 @@ public class HelpActivity extends Activity {
         // Initialize the pages.
         final LayoutInflater inflater = LayoutInflater.from(this);
         final View helpScanView = inflater.inflate(R.layout.help_scan, null);
+        final View helpFinishView = inflater.inflate(R.layout.help_finish, null);
         final List<View> pages = Arrays.asList(
                 inflater.inflate(R.layout.help_welcome, null),
-                helpScanView // TODO: ,
-                // TODO: inflater.inflate(R.layout.help_finish, null)
+                helpScanView,
+                helpFinishView
         );
 
         // Initialize the pager.
@@ -58,7 +63,7 @@ public class HelpActivity extends Activity {
             // Add the tabs, specifying the tab's text and TabListener.
             actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_welcome).setTabListener(tabListener));
             actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_scan).setTabListener(tabListener));
-            // TODO: actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_finish).setTabListener(tabListener));
+            actionBar.addTab(actionBar.newTab().setText(R.string.tab_help_finish).setTabListener(tabListener));
             // Select the corresponding tab when the user swipes between pages with a touch gesture.
             viewPager.setOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {
@@ -77,6 +82,34 @@ public class HelpActivity extends Activity {
                 VibratorHelper.vibrate(HelpActivity.this);
                 ScanIntentService.restart(HelpActivity.this);
                 Toast.makeText(HelpActivity.this, R.string.toast_scan_started, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Handle "Log in with Google".
+        final Button logInButton = (Button)helpFinishView.findViewById(R.id.button_help_log_in);
+        logInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Authenticator.authenticate(HelpActivity.this, true, false, true, true, true, new Authenticator.AuthenticatedHandler() {
+                    @Override
+                    public void onAuthenticated(
+                            final AuthenticationStatus status,
+                            final String authToken,
+                            final String accountName) {
+                        if (status == AuthenticationStatus.AUTHENTICATED) {
+                            logInButton.setText(R.string.help_finish_logged_in);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Handle "Close help".
+        final Button closeButton = (Button)helpFinishView.findViewById(R.id.button_help_close);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                HelpActivity.this.onBackPressed();
             }
         });
     }
@@ -102,6 +135,14 @@ public class HelpActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
+
+        // Run first-time syncing.
+        final Settings settings = Settings.with(this);
+        if (settings.syncStatus() == SyncIntentServiceStatus.NOT_SYNCING &&
+                settings.lastSyncTime() == 0L) {
+            android.util.Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
+            SyncIntentService.start(this, true);
+        }
 
         EasyTracker.getInstance().activityStop(this);
     }

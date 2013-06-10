@@ -58,7 +58,6 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
             SyncIntentService.start(context, info.getSSID(), true);
         } else {
             Log.i(LOG_TAG + ".onSucceeded", "Will not sync now.");
-            return;
         }
     }
 

@@ -146,6 +146,13 @@ public class MainActivity extends MapActivity {
     public void onStart() {
         super.onStart();
 
+        // Show the help for the very first time.
+        final Settings settings = Settings.with(this);
+        if (!settings.isHelpShown()) {
+            settings.edit().helpShown(true).commit();
+            startActivity(new Intent(this, HelpActivity.class));
+        }
+
         // Initialize my location.
         if (myLocationOverlay != null) {
             // Enable my location.
@@ -154,12 +161,6 @@ public class MainActivity extends MapActivity {
         }
         // Update overlays.
         startRefreshingScanResultsOnMap();
-        // Run first-time syncing.
-        final Settings settings = Settings.with(this);
-        if (!settings.isSyncingNow() && settings.lastSyncTime() == 0L) {
-            Log.i(LOG_TAG + ".onStart", "Running first-time syncing.");
-            SyncIntentService.start(this, true);
-        }
 
         EasyTracker.getInstance().activityStart(this);
     }

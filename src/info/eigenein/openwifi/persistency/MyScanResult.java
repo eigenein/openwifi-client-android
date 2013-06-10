@@ -1,13 +1,11 @@
 package info.eigenein.openwifi.persistency;
 
-import android.location.Location;
-import android.net.wifi.ScanResult;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-import info.eigenein.openwifi.helpers.location.L;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.location.*;
+import android.net.wifi.*;
+import com.j256.ormlite.field.*;
+import com.j256.ormlite.table.*;
+import info.eigenein.openwifi.helpers.location.*;
+import org.json.*;
 
 /**
  * Represents a scan result record in the database.

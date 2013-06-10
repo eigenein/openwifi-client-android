@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import info.eigenein.openwifi.enums.*;
 import org.acra.ACRA;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -25,13 +26,15 @@ public class Settings {
 
     public static final String LAST_SYNC_ID_KEY = "last_sync_id";
 
+    public static final String SYNC_STATUS_KEY = "syncStatus";
+
     public static final String SYNC_NOW_KEY = "sync_now";
 
     public static final String LAST_SYNC_TIME = "last_sync_date";
 
-    public static final String SYNCING_NOW_KEY = "syncing_now";
-
     public static final String LOG_IN_KEY = "log_in";
+
+    public static final String IS_HELP_SHOWN_KEY = "is_help_shown";
 
     private final SharedPreferences preferences;
 
@@ -92,11 +95,13 @@ public class Settings {
         return preferences.getLong(LAST_SYNC_TIME, 0);
     }
 
-    /**
-     * Gets whether syncing is performed right now.
-     */
-    public boolean isSyncingNow() {
-        return preferences.getBoolean(SYNCING_NOW_KEY, false);
+    public SyncIntentServiceStatus syncStatus() {
+        return SyncIntentServiceStatus.valueOf(
+                preferences.getString(SYNC_STATUS_KEY, SyncIntentServiceStatus.NOT_SYNCING.toString()));
+    }
+
+    public boolean isHelpShown() {
+        return preferences.getBoolean(IS_HELP_SHOWN_KEY, false);
     }
 
     /**
@@ -137,8 +142,13 @@ public class Settings {
             return this;
         }
 
-        public SettingsEditor syncingNow(final boolean syncingNow) {
-            editor.putBoolean(SYNCING_NOW_KEY, syncingNow);
+        public SettingsEditor syncStatus(final SyncIntentServiceStatus status) {
+            editor.putString(SYNC_STATUS_KEY, status.toString());
+            return this;
+        }
+
+        public SettingsEditor helpShown(final boolean helpShown) {
+            editor.putBoolean(IS_HELP_SHOWN_KEY, helpShown);
             return this;
         }
     }

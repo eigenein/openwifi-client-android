@@ -4,17 +4,18 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:padding="14dip"
-              android:background="@color/screen_background_holo_light">
+              android:background="@drawable/help_background">
     <LinearLayout android:orientation="vertical"
                   android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
                   android:padding="14dip"
-                  android:background="@drawable/help_panel">
+                  android:background="@drawable/help_content">
         <ImageView android:layout_width="fill_parent"
                    android:layout_height="wrap_content"
                    android:layout_weight="1"
                    android:layout_marginBottom="14dip"
-                   android:src="@drawable/help_scan"/>
+                   android:src="@drawable/help_scan"
+                   android:textColor="@android:color/black"/>
         <TextView android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:layout_weight="0"
@@ -26,10 +27,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:gravity="center"
-                style="@style/OpenWiFi.Theme.Button"
-                android:paddingLeft="6dip"
-                android:drawableLeft="@drawable/ic_action_start"
+                android:drawableLeft="@drawable/ic_help_action_start"
                 android:text="@string/help_start_scan_now"/>
     </LinearLayout>
 </LinearLayout>
