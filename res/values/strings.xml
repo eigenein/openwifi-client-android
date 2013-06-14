@@ -122,4 +122,6 @@
     <string name="help_close">Close help</string>
     <string name="preference_sync_now_authenticating">Authenticating...</string>
     <string name="preference_sign_in_error">Network is not available.</string>
+    <string name="dialog_install_google_maps_message">Please install the Google Maps application.</string>
+    <string name="button_install">Install</string>
 </resources>

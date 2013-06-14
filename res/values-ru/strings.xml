@@ -76,9 +76,15 @@
         \n
         Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
     </string>
-    <string name="help_start_scan_now">Начать поиск сейчас</string>
-    <string name="tab_help_finish">Вход</string>
-    <string name="help_log_in">Войти с помощью Google</string>
+    <string name="help_start_scan_now">
+        Начать поиск сейчас
+    </string>
+    <string name="tab_help_finish">
+        Вход
+    </string>
+    <string name="help_log_in">
+        Войти с помощью Google
+    </string>
     <string name="help_finish">
         Выполните вход с помощью своего аккаунта Google, чтобы обмениваться информацией о сетях Wi-Fi.
         Это позволяет нам обеспечивать ее достоверность для вас.\n
@@ -88,8 +94,12 @@
         \n
         Карта будет обновляться всякий раз, когда устройство подключается к Wi-Fi.
     </string>
-    <string name="help_finish_logged_in">Вход успешно выполнен</string>
-    <string name="text_view_rating_is_not_implemented">Рейтинг сетей еще не реализован.</string>
+    <string name="help_finish_logged_in">
+        Вход успешно выполнен
+    </string>
+    <string name="text_view_rating_is_not_implemented">
+        Рейтинг сетей еще не реализован.
+    </string>
     <string name="toast_feature_is_not_implemented">
         Эта функция еще не реализована. Пожалуйста, следите за обновлениями.
     </string>
@@ -99,6 +109,16 @@
     <string name="help_close">
         Закрыть справку
     </string>
-    <string name="preference_sync_now_authenticating">Аутентификация...</string>
-    <string name="preference_sign_in_error">Сеть недоступна.</string>
+    <string name="preference_sync_now_authenticating">
+        Аутентификация...
+    </string>
+    <string name="preference_sign_in_error">
+        Сеть недоступна.
+    </string>
+    <string name="dialog_install_google_maps_message">
+        Установите, пожалуйста, приложение Google Maps, необходимое для работы данного приложения.
+    </string>
+    <string name="button_install">
+        Установить
+    </string>
 </resources>

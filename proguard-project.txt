@@ -32,3 +32,6 @@
 -keep class com.j256.** { *; }
 -keep class org.acra.** { *; }
 -keep class info.eigenein.openwifi.persistency.** { *; }
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}

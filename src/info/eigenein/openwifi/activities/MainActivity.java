@@ -1,6 +1,6 @@
 package info.eigenein.openwifi.activities;
 
-import android.app.AlertDialog;
+import android.app.*;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.*;
@@ -14,13 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.common.*;
 import com.google.android.maps.*;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.Area;
 import info.eigenein.openwifi.helpers.entities.Cluster;
 import info.eigenein.openwifi.helpers.entities.ClusterList;
 import info.eigenein.openwifi.helpers.entities.Network;
+import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.location.L;
 import info.eigenein.openwifi.helpers.location.LocationProcessor;
 import info.eigenein.openwifi.helpers.location.LocationTracker;
@@ -54,7 +55,7 @@ public class MainActivity extends MapActivity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Setup view.
-        setContentView(R.layout.main);
+        setContentView(R.layout.main_v7);
 
         // Setup map.
         mapView = (TrackableMapView)findViewById(R.id.map_view);
@@ -168,6 +169,13 @@ public class MainActivity extends MapActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (BuildHelper.isFroyo()) {
+            // Check for Google Play Services.
+            GooglePlayServicesHelper.check(this);
+            // Check for Google Maps.
+            GoogleMapsHelper.check(this);
+        }
 
         invalidateOptionsMenu();
     }

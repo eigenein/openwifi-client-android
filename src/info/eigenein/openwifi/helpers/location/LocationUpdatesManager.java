@@ -3,7 +3,7 @@ package info.eigenein.openwifi.helpers.location;
 import android.content.Context;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.internal.Settings;
 
 /**
  * Manages location update requests.

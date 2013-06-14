@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers;
+package info.eigenein.openwifi.helpers.internal;
 
 import android.content.Context;
 import android.content.SharedPreferences;
