@@ -3,9 +3,9 @@ package info.eigenein.openwifi.helpers.ui;
 import java.util.*;
 
 public class GridSizeHelper {
-    private static final int MIN_ZOOM = 3;
+    private static final long MIN_ZOOM = 3L;
 
-    private static final int MAX_ZOOM = 21;
+    private static final long MAX_ZOOM = 21L;
 
     private static final HashMap<Long, Double> LONGITUDE_STEP =
             new HashMap<Long, Double>();
