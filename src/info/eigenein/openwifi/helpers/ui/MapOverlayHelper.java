@@ -11,8 +11,16 @@ import info.eigenein.openwifi.helpers.formatters.*;
 import java.util.*;
 
 public class MapOverlayHelper {
-    private static final BitmapDescriptor MARKER_BITMAP_DESCRIPTOR =
+    private static final BitmapDescriptor DARK_MARKER_BITMAP_DESCRIPTOR =
             BitmapDescriptorFactory.fromResource(R.drawable.ic_cluster);
+    private static final BitmapDescriptor LIGHT_MARKER_BITMAP_DESCRIPTOR =
+            BitmapDescriptorFactory.fromResource(R.drawable.ic_cluster_light);
+
+    private static final int DARK_CIRCLE_COLOR = Color.argb(32, 0, 0, 0);
+    private static final int DARK_CIRCLE_STROKE = Color.argb(16, 0, 0, 0);
+
+    private static final int LIGHT_CIRCLE_COLOR = Color.argb(96, 255, 255, 255);
+    private static final int LIGHT_CIRCLE_STROKE = Color.argb(48, 255, 255, 255);
 
     private static final int MAX_SNIPPET_LENGTH = 24;
 
@@ -56,11 +64,13 @@ public class MapOverlayHelper {
                 break;
             }
         }
+
+        final boolean isDark = map.getMapType() == GoogleMap.MAP_TYPE_NORMAL;
         // Add the marker.
         final Marker marker = map.addMarker(new MarkerOptions()
                 .position(cluster.getArea().getLatLng())
                 .title(clusterTitle)
-                .icon(MARKER_BITMAP_DESCRIPTOR)
+                .icon(isDark ? DARK_MARKER_BITMAP_DESCRIPTOR : LIGHT_MARKER_BITMAP_DESCRIPTOR)
                 .anchor(0.5f, 0.5f)
                 .snippet(snippetBuilder.toString())
         );
@@ -68,8 +78,8 @@ public class MapOverlayHelper {
         map.addCircle(new CircleOptions()
                 .center(cluster.getArea().getLatLng())
                 .radius(cluster.getArea().getAccuracy())
-                .fillColor(Color.argb(32, 0, 0, 0))
-                .strokeColor(Color.argb(16, 0, 0, 0))
+                .fillColor(isDark ? DARK_CIRCLE_COLOR : LIGHT_CIRCLE_COLOR)
+                .strokeColor(isDark ? DARK_CIRCLE_STROKE : LIGHT_CIRCLE_STROKE)
                 .strokeWidth(1.0f)
                 .zIndex(-1.0f)
         );

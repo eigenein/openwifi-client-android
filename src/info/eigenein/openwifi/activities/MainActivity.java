@@ -197,15 +197,15 @@ public class MainActivity extends FragmentActivity {
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.dialog_title_map_view))
                         .setItems(items, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int item) {
+                            public void onClick(final DialogInterface dialog, final int item) {
                                 switch (item) {
                                     case 0:
                                         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                                        // TODO: startRefreshingScanResultsOnMap();
+                                        startRefreshingScanResultsOnMap(map.getCameraPosition());
                                         break;
                                     case 1:
                                         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                                        // TODO: startRefreshingScanResultsOnMap();
+                                        startRefreshingScanResultsOnMap(map.getCameraPosition());
                                         break;
                                 }
                             }
