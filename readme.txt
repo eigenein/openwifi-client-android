@@ -15,6 +15,7 @@ Open Wi-Fi networks map.
 – Android 2.1 is no longer supported due to switching to the newer Google Maps version.
 – Network counters are temporary removed – until the next update.
 – Fixed the network icon color for the Hybrid view.
+– Optimized APK size.
 
 0.1.4
 
@@ -65,6 +66,7 @@ Open WiFi Android Client Application (Russian)
 – Android 2.1 больше не поддерживается из-за перехода на новую версию Google Maps.
 – Возле иконок сетей убраны счетчики сетей – временно, до следующего обновления.
 – Исправлен цвет иконок сетей для вида "Спутник".
+– Уменьшен размер APK.
 
 0.1.4
 
