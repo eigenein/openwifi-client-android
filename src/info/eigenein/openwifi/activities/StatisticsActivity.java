@@ -6,7 +6,7 @@ import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 
 import java.util.ArrayList;

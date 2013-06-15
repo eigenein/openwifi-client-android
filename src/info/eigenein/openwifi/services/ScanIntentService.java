@@ -4,7 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.net.wifi.*;
 import android.os.*;
-import android.provider.*;
+import android.provider.Settings;
 import android.support.v4.app.*;
 import android.util.*;
 import info.eigenein.openwifi.*;
@@ -29,7 +29,7 @@ public class ScanIntentService extends IntentService {
         // Stop the scan service.
         stop(context);
         // Schedule the scan.
-        final long period = info.eigenein.openwifi.helpers.Settings.with(context).scanPeriod();
+        final long period = info.eigenein.openwifi.helpers.internal.Settings.with(context).scanPeriod();
         final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
@@ -38,7 +38,7 @@ public class ScanIntentService extends IntentService {
         getAlarmManager(context).setInexactRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + period,
-                info.eigenein.openwifi.helpers.Settings.with(context).scanPeriod(),
+                info.eigenein.openwifi.helpers.internal.Settings.with(context).scanPeriod(),
                 scanPendingIntent);
         // Start location tracking.
         LocationUpdatesManager.requestUpdates(context, DefaultLocationListener.getInstance());

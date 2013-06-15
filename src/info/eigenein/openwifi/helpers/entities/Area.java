@@ -1,5 +1,7 @@
 package info.eigenein.openwifi.helpers.entities;
 
+import com.google.android.gms.maps.model.*;
+
 /**
  * Represents an area.
  */
@@ -26,6 +28,10 @@ public class Area {
 
     public float getAccuracy() {
         return accuracy;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(latitude, longitude);
     }
 
     @Override

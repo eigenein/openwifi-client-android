@@ -8,7 +8,7 @@
     </string-array>
     <string-array name="map_views">
         <item>Карта</item>
-        <item>Спутник</item>
+        <item>Гибридный</item>
     </string-array>
     <string-array name="max_scan_results_for_bssid_entries">
         <item>3 записей</item>

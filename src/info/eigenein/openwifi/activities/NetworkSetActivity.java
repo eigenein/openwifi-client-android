@@ -11,13 +11,11 @@ import android.view.View;
 import android.widget.*;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.Network;
+import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.ui.VibratorHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class NetworkSetActivity extends ListActivity {
     private static final String LOG_TAG = NetworkSetActivity.class.getCanonicalName();
@@ -37,7 +35,7 @@ public class NetworkSetActivity extends ListActivity {
 
         final Bundle networkSetActivityBundle = getIntent().getExtras();
         if (networkSetActivityBundle != null) {
-            final HashSet<Network> networkSet = (HashSet<Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);
+            final ArrayList<Network> networkSet = (ArrayList<Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);
             setListAdapter(createAdapter(networkSet));
         } else {
             setListAdapter(createAdapter(null));
@@ -131,7 +129,7 @@ public class NetworkSetActivity extends ListActivity {
     /**
      * Creates the adapter for the list.
      */
-    private SimpleAdapter createAdapter(final HashSet<Network> networkSet) {
+    private SimpleAdapter createAdapter(final Collection<Network> networkSet) {
         final ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
         for (final Network network : networkSet) {

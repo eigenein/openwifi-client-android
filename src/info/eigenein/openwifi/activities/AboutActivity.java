@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.internal.*;
 
 public class AboutActivity extends Activity {
     private static final String LOG_TAG = AboutActivity.class.getCanonicalName();

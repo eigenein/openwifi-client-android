@@ -8,7 +8,7 @@ import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.enums.*;
-import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.helpers.ui.*;
 import info.eigenein.openwifi.services.*;

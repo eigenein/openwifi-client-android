@@ -1,7 +1,7 @@
 package info.eigenein.openwifi.sync;
 
 import android.content.Context;
-import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.internal.Settings;
 import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.persistency.MyScanResult;
 import org.apache.http.HttpResponse;

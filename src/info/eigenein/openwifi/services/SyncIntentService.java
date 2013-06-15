@@ -10,7 +10,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.enums.*;
-import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.internal.Settings;
 import info.eigenein.openwifi.helpers.io.SyncHttpClient;
 import info.eigenein.openwifi.helpers.services.*;
 import info.eigenein.openwifi.sync.ScanResultDownSyncer;
