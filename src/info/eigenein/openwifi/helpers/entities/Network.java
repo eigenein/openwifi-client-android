@@ -1,7 +1,7 @@
 package info.eigenein.openwifi.helpers.entities;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Represents a wireless network in a cluster.
@@ -9,9 +9,9 @@ import java.util.HashSet;
 public class Network implements Serializable {
     private final String ssid;
 
-    private final HashSet<String> bssids;
+    private final Collection<String> bssids;
 
-    public Network(final String ssid, final HashSet<String> bssids) {
+    public Network(final String ssid, final Collection<String> bssids) {
         this.ssid = ssid;
         this.bssids = bssids;
     }

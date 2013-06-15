@@ -19,7 +19,7 @@ public class GoogleMapsHelper {
                             Intent.ACTION_VIEW,
                             Uri.parse("market://details?id=com.google.android.apps.maps"));
                     activity.startActivity(intent);
-                    //Finish the activity so they can't circumvent the check
+                    // Finish the activity so they can't circumvent the check.
                     activity.finish();
                 }
             });
@@ -36,12 +36,10 @@ public class GoogleMapsHelper {
 
     private static boolean isInstalled(final Context context)
     {
-        try
-        {
+        try {
             context.getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0);
             return true;
-        }
-        catch (PackageManager.NameNotFoundException e)
+        } catch (PackageManager.NameNotFoundException e)
         {
             return false;
         }

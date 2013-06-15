@@ -1,12 +1,10 @@
 package info.eigenein.openwifi.helpers.internal;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.content.*;
+import android.preference.*;
+import android.util.*;
 import info.eigenein.openwifi.enums.*;
-import org.acra.ACRA;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.acra.*;
 
 /**
  * Wraps preference manager for convenience.
@@ -64,9 +62,9 @@ public class Settings {
         if (clientId == null) {
             clientId = String.format(
                     "%s-%s-%s",
-                    RandomStringUtils.randomNumeric(4),
-                    RandomStringUtils.randomNumeric(4),
-                    RandomStringUtils.randomNumeric(4));
+                    RandomHelper.randomNumeric(4),
+                    RandomHelper.randomNumeric(4),
+                    RandomHelper.randomNumeric(4));
             Log.i(LOG_TAG, "clientId: " + clientId);
             preferences.edit().putString(CLIENT_ID_KEY, clientId).commit();
         }

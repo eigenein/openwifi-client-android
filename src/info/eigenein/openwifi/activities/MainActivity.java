@@ -1,139 +1,107 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.*;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.location.*;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.*;
+import android.preference.*;
+import android.support.v4.app.*;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.android.gms.common.*;
-import com.google.android.maps.*;
-import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.entities.Area;
-import info.eigenein.openwifi.helpers.entities.Cluster;
-import info.eigenein.openwifi.helpers.entities.ClusterList;
-import info.eigenein.openwifi.helpers.entities.Network;
+import com.google.analytics.tracking.android.*;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+import com.google.common.collect.*;
+import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.helpers.entities.*;
 import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.location.L;
-import info.eigenein.openwifi.helpers.location.LocationProcessor;
-import info.eigenein.openwifi.helpers.location.LocationTracker;
-import info.eigenein.openwifi.helpers.map.*;
-import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.persistency.MyScanResult;
+import info.eigenein.openwifi.helpers.location.*;
+import info.eigenein.openwifi.helpers.scan.*;
+import info.eigenein.openwifi.persistency.*;
 import info.eigenein.openwifi.services.*;
-import org.apache.commons.collections.map.MultiKeyMap;
 
 import java.util.*;
 
 /**
  * Main application activity with the map.
  */
-public class MainActivity extends MapActivity {
+public class MainActivity extends FragmentActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
-    private final static int DEFAULT_ZOOM = 17;
-
-    private TrackableMapView mapView = null;
-    private MyLocationOverlay myLocationOverlay = null;
-    private ClusterListOverlay clusterListOverlay = null;
+    private GoogleMap map;
 
     private RefreshScanResultsAsyncTask refreshScanResultsAsyncTask = null;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Setup default values for the settings.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Setup view.
-        setContentView(R.layout.main_v7);
+        setContentView(R.layout.main);
 
-        // Setup map.
-        mapView = (TrackableMapView)findViewById(R.id.map_view);
-        mapView.setBuiltInZoomControls(false);
-        mapView.addMovedOrZoomedObserver(new MapViewListener() {
+        // Check for Google Play Services.
+        GooglePlayServicesHelper.check(this);
+        // Check for Google Maps.
+        GoogleMapsHelper.check(this);
+
+        // Initialize the map.
+        map = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        // Setup the map.
+        map.setMyLocationEnabled(true);
+        map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            /**
+             * Zoom that the map sets when the my location button is pressed.
+             */
+            private static final float FIRST_FIX_MAP_ZOOM = 15.0f;
+
+            /**
+             * A flag used to set up the camera for the first time.
+             */
+            private boolean firstFixReceived = false;
+
             @Override
-            public void onMovedOrZoomed() {
-                Log.d(LOG_TAG + ".onCreate", "onMovedOrZoomed");
-                updateZoomButtonsState();
+            public void onMyLocationChange(final Location location) {
+                if (!firstFixReceived) {
+                    firstFixReceived = true;
+                    // Animate camera.
+                    final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, FIRST_FIX_MAP_ZOOM));
+                }
+            }
+        });
+        map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            private final String LOG_TAG = this.getClass().getCanonicalName();
+
+            public void onCameraChange(final CameraPosition cameraPosition) {
+                Log.d(LOG_TAG + ".onCameraChange", cameraPosition.toString());
+
+                // Update overlays.
                 startRefreshingScanResultsOnMap();
             }
         });
-        mapView.invalidateMovedOrZoomed();
-        // Setup map controller.
-        final MapController mapController = mapView.getController();
-        // Setup current location.
-        myLocationOverlay = new TrackableMyLocationOverlay(this, mapView);
-        myLocationOverlay.runOnFirstFix(new Runnable() {
-            public void run() {
-                Log.d(LOG_TAG + ".onCreate", "runOnFirstFix");
-                // Zoom in to current location
-                mapController.setZoom(DEFAULT_ZOOM);
-                mapController.animateTo(myLocationOverlay.getMyLocation());
-                mapView.invalidateMovedOrZoomed();
-            }
-        });
-        // Setup my location button.
-        findViewById(R.id.button_my_location).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                GeoPoint myLocation = myLocationOverlay.getMyLocation();
-                if (myLocation == null) {
-                    // Try to obtain current location from the location tracker.
-                    final Location location = LocationTracker.getInstance().getLocation(MainActivity.this);
-                    if (location != null) {
-                        myLocation = L.toGeoPoint(location.getLatitude(), location.getLongitude());
-                    }
-                }
-                if (myLocation != null) {
-                    mapController.animateTo(myLocation);
-                    mapView.invalidateMovedOrZoomed();
-                } else {
-                    Toast.makeText(MainActivity.this, R.string.toast_my_location_is_unavailable, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        // Setup zoom buttons.
-        findViewById(R.id.button_zoom_out).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mapController.zoomOut();
-                mapView.invalidateMovedOrZoomed();
-            }
-        });
-        findViewById(R.id.button_zoom_in).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mapController.zoomIn();
-                mapView.invalidateMovedOrZoomed();
-            }
-        });
+        // Setup the map UI settings.
+        final UiSettings mapSettings = map.getUiSettings();
+        mapSettings.setAllGesturesEnabled(true);
+        mapSettings.setZoomControlsEnabled(true);
+        mapSettings.setMyLocationButtonEnabled(true);
+        mapSettings.setCompassEnabled(false);
         // Setup overlays.
-        final List<Overlay> overlays = mapView.getOverlays();
-        clusterListOverlay = new ClusterListOverlay();
-        overlays.add(clusterListOverlay);
-        overlays.add(myLocationOverlay);
+        // TODO.
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        final MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         boolean isServiceStarted = ScanIntentService.isStarted(this);
@@ -154,12 +122,6 @@ public class MainActivity extends MapActivity {
             startActivity(new Intent(this, HelpActivity.class));
         }
 
-        // Initialize my location.
-        if (myLocationOverlay != null) {
-            // Enable my location.
-            myLocationOverlay.enableMyLocation();
-            myLocationOverlay.enableCompass();
-        }
         // Update overlays.
         startRefreshingScanResultsOnMap();
 
@@ -170,13 +132,6 @@ public class MainActivity extends MapActivity {
     public void onResume() {
         super.onResume();
 
-        if (BuildHelper.isFroyo()) {
-            // Check for Google Play Services.
-            GooglePlayServicesHelper.check(this);
-            // Check for Google Maps.
-            GoogleMapsHelper.check(this);
-        }
-
         invalidateOptionsMenu();
     }
 
@@ -184,11 +139,6 @@ public class MainActivity extends MapActivity {
     public void onStop() {
         super.onStop();
 
-        if (myLocationOverlay != null) {
-            // Disable my location to avoid using of location services.
-            myLocationOverlay.disableCompass();
-            myLocationOverlay.disableMyLocation();
-        }
         // Cancel the scan results refresh task if any.
         cancelRefreshScanResultsAsyncTask();
 
@@ -219,11 +169,12 @@ public class MainActivity extends MapActivity {
                             public void onClick(DialogInterface dialog, int item) {
                                 switch (item) {
                                     case 0:
-                                        mapView.setSatellite(false);
-                                        startRefreshingScanResultsOnMap();
+                                        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                                        // TODO: startRefreshingScanResultsOnMap();
                                         break;
                                     case 1:
-                                        mapView.setSatellite(true);
+                                        map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                                        // TODO: startRefreshingScanResultsOnMap();
                                         break;
                                 }
                             }
@@ -249,21 +200,6 @@ public class MainActivity extends MapActivity {
         }
     }
 
-    @Override
-    protected boolean isRouteDisplayed() {
-        return false;
-    }
-
-    /**
-     * Updates zoom buttons enabled/disabled state for the current zoom level.
-     */
-    private void updateZoomButtonsState() {
-        final ImageButton zoomOutButton = (ImageButton)findViewById(R.id.button_zoom_out);
-        zoomOutButton.setEnabled(mapView.getZoomLevel() != 1);
-        final ImageButton zoomInButton = (ImageButton)findViewById(R.id.button_zoom_in);
-        zoomInButton.setEnabled(mapView.getZoomLevel() != mapView.getMaxZoomLevel());
-    }
-
     /**
      * Updates the refreshing scan results progress bar visibility.
      */
@@ -283,12 +219,12 @@ public class MainActivity extends MapActivity {
         cancelRefreshScanResultsAsyncTask();
 
         // Check map bounds.
-        if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
+        /* if (mapView.getLatitudeSpan() == 0 || mapView.getLongitudeSpan() == 0) {
             Log.w(LOG_TAG, "Zero mapView span.");
             return;
-        }
+        } */
         // Get map bounds.
-        final Projection mapViewProjection = mapView.getProjection();
+        /* final Projection mapViewProjection = mapView.getProjection();
         GeoPoint nwGeoPoint = mapViewProjection.fromPixels(0, 0);
         GeoPoint seGeoPoint = mapViewProjection.fromPixels(mapView.getWidth(), mapView.getHeight());
         // Run task to retrieve the scan results and process them into a cluster list.
@@ -299,7 +235,7 @@ public class MainActivity extends MapActivity {
                 L.fromE6(seGeoPoint.getLongitudeE6()),
                 0.0005 * Math.pow(2.0, 20.0 - mapView.getZoomLevel())
         );
-        refreshScanResultsAsyncTask.execute();
+        refreshScanResultsAsyncTask.execute(); */
     }
 
     private synchronized void cancelRefreshScanResultsAsyncTask() {
@@ -335,9 +271,8 @@ public class MainActivity extends MapActivity {
 
         /**
          * Groups scan results into the grid by their location.
-         * (int, int) -> StoredScanResult
          */
-        private final MultiKeyMap cellToScanResultCache = new MultiKeyMap();
+        private final Table<Integer, Integer, List<MyScanResult>> cellToScanResultCache = HashBasedTable.create();
 
         public RefreshScanResultsAsyncTask(
                 final double minLatitude,
@@ -394,9 +329,9 @@ public class MainActivity extends MapActivity {
             Log.d(LOG_TAG + ".onPostExecute", clusterList.toString());
 
             // Clear old overlays.
-            clusterListOverlay.clearClusterOverlays();
+            // TODO: clusterListOverlay.clearClusterOverlays();
             // Add the overlays for the clusters.
-            for (final Cluster cluster : clusterList) {
+            /* TODO: for (final Cluster cluster : clusterList) {
                 ClusterOverlay clusterOverlay = new ClusterOverlay(
                         MainActivity.this,
                         cluster
@@ -405,7 +340,7 @@ public class MainActivity extends MapActivity {
             }
 
             mapView.invalidate();
-            updateRefreshingScanResultsProgressBar(false);
+            updateRefreshingScanResultsProgressBar(false); */
         }
 
         @Override
@@ -417,7 +352,7 @@ public class MainActivity extends MapActivity {
             final int key1 = (int)Math.floor(scanResult.getLatitude() / gridSize);
             final int key2 = (int)Math.floor(scanResult.getLongitude() / gridSize);
 
-            List<MyScanResult> subCache = (List<MyScanResult>)cellToScanResultCache.get(key1, key2);
+            List<MyScanResult> subCache = cellToScanResultCache.get(key1, key2);
             if (subCache == null) {
                 subCache = new ArrayList<MyScanResult>();
                 cellToScanResultCache.put(key1, key2, subCache);
@@ -430,28 +365,22 @@ public class MainActivity extends MapActivity {
             final ClusterList clusterList = new ClusterList();
 
             // Iterate through grid cells.
-            for (final Object o : cellToScanResultCache.values()) {
+            for (final List<MyScanResult> cellResults : cellToScanResultCache.values()) {
                 // Check if we're cancelled.
                 if (isCancelled()) {
                     return null;
                 }
 
-                final List<MyScanResult> subCache = (List<MyScanResult>)o;
-                final HashMap<String, HashSet<String>> ssidToBssidCache = new HashMap<String, HashSet<String>>();
+                final Multimap<String, String> ssidToBssidCache = HashMultimap.create();
 
                 LocationProcessor locationProcessor = new LocationProcessor();
-                for (final MyScanResult scanResult : subCache) {
+                for (final MyScanResult scanResult : cellResults) {
                     // Check if we're cancelled.
                     if (isCancelled()) {
                         return null;
                     }
-                    // Combine BSSIDs from the same SSIDs.
-                    HashSet<String> bssids = ssidToBssidCache.get(scanResult.getSsid());
-                    if (bssids == null) {
-                        bssids = new HashSet<String>();
-                        ssidToBssidCache.put(scanResult.getSsid(), bssids);
-                    }
-                    bssids.add(scanResult.getBssid());
+                    // Union the scan results by SSID.
+                    ssidToBssidCache.put(scanResult.getSsid(), scanResult.getBssid());
                     // Track the location.
                     locationProcessor.add(scanResult);
                 }
@@ -460,7 +389,7 @@ public class MainActivity extends MapActivity {
                 final Area area = locationProcessor.getArea();
                 final Cluster cluster = new Cluster(area);
                 // And fill it with networks.
-                for (final Map.Entry<String, HashSet<String>> entry : ssidToBssidCache.entrySet()) {
+                for (final Map.Entry<String, Collection<String>> entry : ssidToBssidCache.asMap().entrySet()) {
                     // Check if we're cancelled.
                     if (isCancelled()) {
                         return null;

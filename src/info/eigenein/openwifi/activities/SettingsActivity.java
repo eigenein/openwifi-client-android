@@ -35,12 +35,12 @@ public class SettingsActivity extends PreferenceActivity
             if (status == AuthenticationStatus.AUTHENTICATED) {
                 logInPreference.setTitle(R.string.preference_sign_in_again);
                 logInPreference.setSummary(accountName);
-                EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "success", 1L);
+                EasyTracker.getTracker().sendEvent(LOG_TAG, "onAuthenticated", "success", 1L);
             } else if (status == AuthenticationStatus.ERROR) {
                 logInPreference.setSummary(R.string.preference_sign_in_error);
             } else {
                 logInPreference.setTitle(R.string.preference_sign_in);
-                EasyTracker.getTracker().trackEvent(LOG_TAG, "onAuthenticated", "null", 0L);
+                EasyTracker.getTracker().sendEvent(LOG_TAG, "onAuthenticated", "null", 0L);
             }
         }
     };
