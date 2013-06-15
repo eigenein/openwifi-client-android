@@ -1,36 +1,35 @@
 package info.eigenein.openwifi.helpers.entities;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * A cluster of several access points.
  */
 public class Cluster implements Iterable<Network> {
-    private final List<Network> networks = new ArrayList<Network>();
+    private final ArrayList<Network> networks;
 
     private final Area area;
 
-    public Cluster(final Area area) {
+    public Cluster(final Area area, final Collection<Network> networks) {
         this.area = area;
-    }
-
-    @Override
-    public Iterator<Network> iterator() {
-        return networks.iterator();
+        this.networks = new ArrayList<Network>(networks);
     }
 
     public Area getArea() {
         return area;
     }
 
-    public void add(final Network network) {
-        networks.add(network);
+    public ArrayList<Network> getNetworks() {
+        return networks;
     }
 
     public int size() {
         return networks.size();
+    }
+
+    @Override
+    public Iterator<Network> iterator() {
+        return networks.iterator();
     }
 
     @Override

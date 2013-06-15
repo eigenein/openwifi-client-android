@@ -13,7 +13,7 @@ public class Network implements Serializable {
 
     public Network(final String ssid, final Collection<String> bssids) {
         this.ssid = ssid;
-        this.bssids = bssids;
+        this.bssids = new ArrayList<String>(bssids);
     }
 
     /**

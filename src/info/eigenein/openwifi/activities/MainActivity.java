@@ -2,7 +2,6 @@ package info.eigenein.openwifi.activities;
 
 import android.app.*;
 import android.content.*;
-import android.graphics.*;
 import android.location.*;
 import android.os.*;
 import android.preference.*;
@@ -13,15 +12,11 @@ import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import com.google.common.collect.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.entities.*;
-import info.eigenein.openwifi.helpers.formatters.*;
 import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.location.*;
-import info.eigenein.openwifi.helpers.scan.*;
 import info.eigenein.openwifi.helpers.ui.*;
-import info.eigenein.openwifi.persistency.*;
 import info.eigenein.openwifi.services.*;
 import info.eigenein.openwifi.tasks.*;
 
@@ -32,6 +27,8 @@ import java.util.*;
  */
 public class MainActivity extends FragmentActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
+
+    private final HashMap<String, Cluster> markerToClusterCache = new HashMap<String, Cluster>();
 
     private GoogleMap map;
 
@@ -108,7 +105,21 @@ public class MainActivity extends FragmentActivity {
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(final Marker marker) {
-                // TODO.
+                final Cluster cluster = markerToClusterCache.get(marker.getId());
+                if (cluster != null) {
+                    VibratorHelper.vibrate(MainActivity.this);
+
+                    // Start network set activity with the selected networks.
+                    final Bundle networkSetActivityBundle = new Bundle();
+                    networkSetActivityBundle.putSerializable(
+                            NetworkSetActivity.NETWORK_SET_KEY,
+                            cluster.getNetworks());
+                    final Intent networkSetActivityIntent = new Intent(
+                            MainActivity.this,
+                            NetworkSetActivity.class);
+                    networkSetActivityIntent.putExtras(networkSetActivityBundle);
+                    startActivity(networkSetActivityIntent);
+                }
             }
         });
     }
@@ -252,6 +263,7 @@ public class MainActivity extends FragmentActivity {
         refreshScanResultsAsyncTask = new RefreshMapAsyncTask(
                 this,
                 map,
+                markerToClusterCache,
                 bounds.southwest.latitude,
                 bounds.southwest.longitude,
                 bounds.northeast.latitude,

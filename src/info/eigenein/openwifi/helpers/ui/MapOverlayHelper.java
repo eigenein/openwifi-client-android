@@ -8,9 +8,13 @@ import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.entities.*;
 import info.eigenein.openwifi.helpers.formatters.*;
 
+import java.util.*;
+
 public class MapOverlayHelper {
     private static final BitmapDescriptor MARKER_BITMAP_DESCRIPTOR =
             BitmapDescriptorFactory.fromResource(R.drawable.ic_cluster);
+
+    private static final int MAX_SNIPPET_LENGTH = 24;
 
     private final Context context;
 
@@ -25,7 +29,7 @@ public class MapOverlayHelper {
         map.clear();
     }
 
-    public void addCluster(final Cluster cluster) {
+    public Marker addCluster(final Cluster cluster) {
         // Cluster title.
         final int clusterSize = cluster.size();
         final String clusterTitle = clusterSize == 1 ?
@@ -38,13 +42,27 @@ public class MapOverlayHelper {
                                 R.string.overlay_networks_string_1,
                                 R.string.overlay_networks_string_2,
                                 R.string.overlay_networks_string_3)));
+        // Build the snippet.
+        final StringBuilder snippetBuilder = new StringBuilder();
+        Iterator<Network> networkIterator = cluster.iterator();
+        while (networkIterator.hasNext()) {
+            if (snippetBuilder.length() != 0) {
+                snippetBuilder.append(", ");
+            }
+            if (snippetBuilder.length() < MAX_SNIPPET_LENGTH) {
+                snippetBuilder.append(networkIterator.next().getSsid());
+            } else {
+                snippetBuilder.append("...");
+                break;
+            }
+        }
         // Add the marker.
-        map.addMarker(new MarkerOptions()
+        final Marker marker = map.addMarker(new MarkerOptions()
                 .position(cluster.getArea().getLatLng())
                 .title(clusterTitle)
                 .icon(MARKER_BITMAP_DESCRIPTOR)
                 .anchor(0.5f, 0.5f)
-                .snippet(clusterTitle)
+                .snippet(snippetBuilder.toString())
         );
         // Add the circle.
         map.addCircle(new CircleOptions()
@@ -53,7 +71,10 @@ public class MapOverlayHelper {
                 .fillColor(Color.argb(32, 0, 0, 0))
                 .strokeColor(Color.argb(16, 0, 0, 0))
                 .strokeWidth(1.0f)
+                .zIndex(-1.0f)
         );
+        // Return the marker.
+        return marker;
     }
 
     public void addGrid() {
