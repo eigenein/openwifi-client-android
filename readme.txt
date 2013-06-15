@@ -6,7 +6,15 @@ Open Wi-Fi networks map.
 – Displays the coverage of each Wi-Fi network.
 – The information is stored in a cloud – you will see networks that are found by other users.
 – Automatically downloads updates when connected to Wi-Fi.
+– Customizable map view: normal or hybrid.
 – Customizable Wi-Fi search interval.
+
+0.1.5
+
+– Switched to Google Maps Android API v2: more map features, faster map refreshing, less traffic for map data.
+– Android 2.1 is no longer supported due to switching to the newer Google Maps version.
+– Network counters are temporary removed – until the next update.
+– Fixed the network icon color for the Hybrid view.
 
 0.1.4
 
@@ -48,7 +56,15 @@ Open WiFi Android Client Application (Russian)
 – Отображение на карте области действия каждой сети.
 – Сведения о Wi-Fi сетях хранятся в облаке и кэшируются на вашем устройстве – вы будете видеть сети, найденные другими пользователями приложения.
 – Фоновое получение новых данных при подключении устройства к Wi-Fi.
+– Настраиваемый вид карты: схема или гибридный.
 – Настраиваемый интервал поиска.
+
+0.1.5
+
+– Выполнен переход на Google Maps Android API v2: больше возможностей для просмотра карты, более быстрая отрисовка карты, меньше используемого трафика для загрузки карты.
+– Android 2.1 больше не поддерживается из-за перехода на новую версию Google Maps.
+– Возле иконок сетей убраны счетчики сетей – временно, до следующего обновления.
+– Исправлен цвет иконок сетей для вида "Спутник".
 
 0.1.4
 
