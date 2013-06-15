@@ -38,7 +38,10 @@ public class LocationTracker {
 
         // Find the best location from the current location and last known locations.
         final Location bestLocation = getBestLocation(
-                location,
+                getBestLocation(
+                        location,
+                        locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
+                ),
                 getBestLocation(
                         locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
                         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)

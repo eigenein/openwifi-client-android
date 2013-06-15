@@ -12,7 +12,7 @@ public class LocationUpdatesManager {
     /**
      * Starts location tracking.
      */
-    public static void requestUpdates(Context context, LocationListener listener) {
+    public static void requestUpdates(final Context context, final LocationListener listener) {
         final LocationManager locationManager = getLocationManager(context);
 
         locationManager.requestLocationUpdates(
