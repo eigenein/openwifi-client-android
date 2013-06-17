@@ -44,10 +44,11 @@ public class MainActivity extends FragmentActivity {
         // Setup view.
         setContentView(R.layout.main);
 
-        // Check for Google Play Services.
-        GooglePlayServicesHelper.check(this);
-        // Check for Google Maps.
-        GoogleMapsHelper.check(this);
+        // Check for Google Play Services and Google Maps.
+        if (!GooglePlayServicesHelper.check(this) || !GoogleMapsHelper.check(this)) {
+            Log.e(LOG_TAG + ".onCreate", "Not initializing the map.");
+            return;
+        }
 
         // Initialize the map.
         map = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_map)).getMap();
@@ -154,7 +155,9 @@ public class MainActivity extends FragmentActivity {
         }
 
         // Update overlays.
-        startRefreshingScanResultsOnMap(map.getCameraPosition());
+        if (map != null) {
+            startRefreshingScanResultsOnMap(map.getCameraPosition());
+        }
 
         EasyTracker.getInstance().activityStart(this);
     }

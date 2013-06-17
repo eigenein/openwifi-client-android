@@ -7,7 +7,7 @@ import android.net.*;
 import info.eigenein.openwifi.*;
 
 public class GoogleMapsHelper {
-    public static void check(final Activity activity) {
+    public static boolean check(final Activity activity) {
         if (!isInstalled(activity)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setMessage(R.string.dialog_install_google_maps_message);
@@ -31,7 +31,13 @@ public class GoogleMapsHelper {
             });
             final AlertDialog dialog = builder.create();
             dialog.show();
+
+            // Google Maps is not available right now.
+            return false;
         }
+
+        // Google Maps is installed.
+        return true;
     }
 
     private static boolean isInstalled(final Context context)

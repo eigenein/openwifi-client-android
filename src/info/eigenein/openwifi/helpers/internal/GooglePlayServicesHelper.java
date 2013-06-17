@@ -2,12 +2,19 @@ package info.eigenein.openwifi.helpers.internal;
 
 import android.app.*;
 import android.content.*;
+import android.util.*;
 import com.google.android.gms.common.*;
 
 public class GooglePlayServicesHelper {
-    public static void check(final Activity activity) {
+    private static final String LOG_TAG = GooglePlayServicesHelper.class.getCanonicalName();
+
+    public static boolean check(final Activity activity) {
         final int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+        Log.d(LOG_TAG + ".check", String.format("Error code: %s.", errorCode));
+
         if (errorCode != ConnectionResult.SUCCESS) {
+            Log.i(LOG_TAG + ".check", "Initializing the error dialog ...");
+
             final Dialog dialog = GooglePlayServicesUtil.getErrorDialog(errorCode, activity, 0);
             dialog.setCancelable(true);
             dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -18,6 +25,12 @@ public class GooglePlayServicesHelper {
                 }
             });
             dialog.show();
+
+            // Google Play services are not available right now.
+            return false;
         }
+
+        // Google Play services are installed.
+        return true;
     }
 }
