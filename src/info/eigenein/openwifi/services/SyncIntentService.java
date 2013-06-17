@@ -105,21 +105,19 @@ public class SyncIntentService extends IntentService {
                         final String accountName) {
                     if (status == AuthenticationStatus.AUTHENTICATED) {
                         Log.d(SERVICE_NAME + ".onHandleIntent", "Authenticated.");
-                        // Notify the user.
-                        if (!silent) {
-                            Toast.makeText(
-                                    SyncIntentService.this,
-                                    R.string.toast_sync_now_started,
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                        // Re-start the service when authenticated.
+                        // Add the authentication token to the intent.
                         intent.putExtra(AUTH_TOKEN_EXTRA_KEY, authToken);
-                        startService(intent);
                     } else {
                         Log.w(SERVICE_NAME + ".onHandleIntent", "No authentication token.");
-                        setStatus(SyncIntentServiceStatus.NOT_SYNCING);
+                        // Add the empty authentication token.
+                        intent.putExtra(AUTH_TOKEN_EXTRA_KEY, (String)null);
                     }
+                    // Notify the user.
+                    if (!silent) {
+                        Toast.makeText(SyncIntentService.this, R.string.toast_sync_now_started, Toast.LENGTH_LONG).show();
+                    }
+                    // Start the service again.
+                    startService(intent);
                 }
             });
         }
@@ -145,11 +143,16 @@ public class SyncIntentService extends IntentService {
         // Start syncing.
         try {
             // Download the scan results.
-            final boolean downSyncSucceeded =
-                    sync(client, new ScanResultDownSyncer(settings), clientId, authToken);
+            final boolean downSyncSucceeded = sync(
+                    client, new ScanResultDownSyncer(settings), clientId, null);
             // Upload our scan results.
-            final boolean upSyncSucceeded =
-                    sync(client, new ScanResultUpSyncer(), clientId, authToken);
+            final boolean upSyncSucceeded;
+            if (authToken != null) {
+                upSyncSucceeded = sync(client, new ScanResultUpSyncer(), clientId, authToken);
+            } else {
+                // We're not authenticated. Do not perform the up syncing.
+                upSyncSucceeded = true;
+            }
             // Update last sync time.
             if (downSyncSucceeded && upSyncSucceeded) {
                 settings.edit().lastSyncTime(System.currentTimeMillis()).commit();
@@ -293,7 +296,10 @@ public class SyncIntentService extends IntentService {
         request.setHeader("Accept", "application/json");
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Connection", "Keep-Alive");
-        request.setHeader("X-Auth-Token", authToken);
         request.setHeader("X-Client-ID", clientId);
+        // Add the authentication token if exists.
+        if (authToken != null) {
+            request.setHeader("X-Auth-Token", authToken);
+        }
     }
 }

@@ -40,6 +40,7 @@ public class SettingsActivity extends PreferenceActivity
                 logInPreference.setSummary(R.string.preference_sign_in_error);
             } else {
                 logInPreference.setTitle(R.string.preference_sign_in);
+                logInPreference.setSummary(R.string.preference_sign_in_summary);
                 EasyTracker.getTracker().sendEvent(LOG_TAG, "onAuthenticated", "null", 0L);
             }
         }

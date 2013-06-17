@@ -83,7 +83,8 @@
     <string name="overlay_networks_string_3">networks</string>
     <string name="toast_no_networks_here">There is no known networks in this place.</string>
     <string name="preference_category_general">General</string>
-    <string name="preference_sign_in">Sign using your Google Account</string>
+    <string name="preference_sign_in">Sign in using your Google Account</string>
+    <string name="preference_sign_in_summary">Sign in to share the Wi-Fi networks with other users.</string>
     <string name="dialog_get_auth_token_title">Authenticating</string>
     <string name="dialog_get_auth_token_message">Please wait while you will be authenticated.</string>
     <string name="preference_sign_in_again">Sign in again</string>
@@ -116,9 +117,7 @@
     <string name="help_finish_logged_in">Successfully logged in</string>
     <string name="text_view_rating_is_not_implemented">Rating is not yet implemented.</string>
     <string name="toast_feature_is_not_implemented">The feature is not yet implemented. Please follow updates.</string>
-    <string name="toast_authentication_io_exception">Authentication has failed due to a network error. Please try again
-        later.
-    </string>
+    <string name="toast_authentication_io_exception">Authentication has failed due to a network error. Please try again later.</string>
     <string name="help_close">Close help</string>
     <string name="preference_sync_now_authenticating">Authenticating...</string>
     <string name="preference_sign_in_error">Network is not available.</string>
