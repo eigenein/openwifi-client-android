@@ -72,7 +72,6 @@ public class MapOverlayHelper {
      * Adds the cluster marker and circle to the map.
      */
     public Marker addCluster(final Cluster cluster) {
-        final String clusterTitle = getClusterTitle(cluster);
         // Add the marker.
         final Marker marker = map.addMarker(new MarkerOptions()
                 .position(cluster.getArea().getLatLng())
