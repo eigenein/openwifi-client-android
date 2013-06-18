@@ -2,8 +2,7 @@ package info.eigenein.openwifi.sync;
 
 import android.content.Context;
 import info.eigenein.openwifi.helpers.internal.Settings;
-import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.persistency.MyScanResult;
+import info.eigenein.openwifi.persistence.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
@@ -65,7 +64,8 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             }
         }
         // Store the entities.
-        ScanResultTracker.add(context, scanResults);
+        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        dao.insert(scanResults);
         // Update lastSyncId setting.
         if (lastSyncId != null) {
             settings.edit().lastSyncId(lastSyncId).commit();

@@ -1,17 +1,16 @@
 package info.eigenein.openwifi.sync;
 
-import android.content.Context;
-import android.util.Log;
-import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
-import info.eigenein.openwifi.persistency.MyScanResult;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
+import android.content.*;
+import android.util.*;
+import info.eigenein.openwifi.persistence.*;
+import org.apache.http.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.*;
+import org.apache.http.protocol.*;
+import org.json.*;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 public class ScanResultUpSyncer extends ScanResultSyncer {
     private static final String LOG_TAG = ScanResultUpSyncer.class.getCanonicalName();
@@ -21,8 +20,8 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
     public TaggedRequest getNextRequest(final Context context) {
         // Prepare the page.
         Log.d(LOG_TAG + ".getNextRequest", "Querying for the page ...");
-        final List<MyScanResult> scanResults =
-                ScanResultTracker.getUnsyncedScanResults(context, PAGE_SIZE);
+        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        final List<MyScanResult> scanResults = dao.queryUnsynced(PAGE_SIZE);
         Log.d(LOG_TAG + ".getNextRequest", "scanResults: " + scanResults.size());
         if (scanResults.isEmpty()) {
             // Finished.
@@ -50,7 +49,8 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
             final HttpResponse response) {
         Log.d(LOG_TAG + ".processResponse", "Marking the results as synced ...");
         final List<MyScanResult> scanResults = (List<MyScanResult>)request.getTag();
-        ScanResultTracker.markAsSynced(context, scanResults);
+        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        dao.setSynced(scanResults);
         syncedEntitiesCount += scanResults.size();
         return scanResults.size() != 0;
     }
