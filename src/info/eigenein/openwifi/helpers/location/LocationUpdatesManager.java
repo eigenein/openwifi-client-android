@@ -15,8 +15,7 @@ public class LocationUpdatesManager {
     public static void requestUpdates(final Context context, final LocationListener listener) {
         final LocationManager locationManager = getLocationManager(context);
 
-        locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, 0, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
 
         if (Settings.with(context).isNetworkProviderEnabled()) {
             locationManager.requestLocationUpdates(
@@ -28,7 +27,9 @@ public class LocationUpdatesManager {
      * Stops location tracking.
      */
     public static void removeUpdates(final Context context, final LocationListener listener) {
-        getLocationManager(context).removeUpdates(listener);
+        final LocationManager locationManager = getLocationManager(context);
+        // Remove the listener.
+        locationManager.removeUpdates(listener);
     }
 
     private static LocationManager getLocationManager(final Context context) {
