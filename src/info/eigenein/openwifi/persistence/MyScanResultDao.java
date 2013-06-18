@@ -1,6 +1,5 @@
 package info.eigenein.openwifi.persistence;
 
-import android.content.*;
 import android.database.*;
 import android.database.sqlite.*;
 import android.location.*;
@@ -95,22 +94,38 @@ public class MyScanResultDao extends BaseDao {
         if (results.isEmpty()) {
             return;
         }
-        // Insert the results.
         final long startTimeMillis = System.currentTimeMillis();
-        for (final MyScanResult result : results) {
-            final ContentValues values = new ContentValues();
-            // Put the values.
-            values.put("accuracy", result.getAccuracy());
-            values.put("latitude", result.getLatitudeE6());
-            values.put("longitude", result.getLongitudeE6());
-            values.put("timestamp", result.getTimestamp());
-            values.put("synced", result.isSynced());
-            values.put("own", result.isOwn());
-            values.put("bssid", result.getBssid());
-            values.put("ssid", result.getSsid());
-            // Insert the result.
-            database.insert("my_scan_results", null, values);
+        // Initialize the helper.
+        final DatabaseUtils.InsertHelper insertHelper =
+                new DatabaseUtils.InsertHelper(database, "my_scan_results");
+        final int accuracyIndex = insertHelper.getColumnIndex("accuracy");
+        final int latitudeIndex = insertHelper.getColumnIndex("latitude");
+        final int longitudeIndex = insertHelper.getColumnIndex("longitude");
+        final int timestampIndex = insertHelper.getColumnIndex("timestamp");
+        final int syncedIndex = insertHelper.getColumnIndex("synced");
+        final int ownIndex = insertHelper.getColumnIndex("own");
+        final int bssidIndex = insertHelper.getColumnIndex("bssid");
+        final int ssidIndex = insertHelper.getColumnIndex("ssid");
+        // Perform inserting.
+        try {
+            for (final MyScanResult result : results) {
+                insertHelper.prepareForInsert();
+                // Put the values.
+                insertHelper.bind(accuracyIndex, result.getAccuracy());
+                insertHelper.bind(latitudeIndex, result.getLatitudeE6());
+                insertHelper.bind(longitudeIndex, result.getLongitudeE6());
+                insertHelper.bind(timestampIndex, result.getTimestamp());
+                insertHelper.bind(syncedIndex, result.isSynced());
+                insertHelper.bind(ownIndex, result.isOwn());
+                insertHelper.bind(bssidIndex, result.getBssid());
+                insertHelper.bind(ssidIndex, result.getSsid());
+                // Insert the result.
+                insertHelper.execute();
+            }
+        } finally {
+            insertHelper.close();
         }
+        // Done.
         Log.d(LOG_TAG + ".insert(results)", String.format(
                 "Inserted %d results in %sms.",
                 results.size(),
