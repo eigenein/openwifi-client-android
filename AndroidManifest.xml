@@ -35,6 +35,7 @@
                  android:label="@string/application_name"
                  android:icon="@drawable/ic_launcher"
                  android:theme="@style/OpenWiFi.Theme">
+        <!-- Activities. -->
         <activity android:name=".activities.MainActivity"
                   android:label="@string/application_name">
             <intent-filter>
@@ -62,6 +63,8 @@
                   android:launchMode="singleInstance"
                   android:excludeFromRecents="true"
                   android:finishOnTaskLaunch="true" />
+        <!-- /Activities. -->
+        <!-- Receivers. -->
         <receiver
             android:name=".receivers.ScanIntentBroadcastReceiver"
             android:enabled="true">
@@ -83,12 +86,15 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+        <!-- /Receivers. -->
+        <!-- Services. -->
         <service
             android:name=".services.ScanIntentService"
             android:exported="false"/>
         <service
             android:name=".services.SyncIntentService"
             android:exported="false"/>
+        <!-- /Services. -->
         <uses-library android:name="com.google.android.maps"/>
         <!-- Google Maps Android API v2. -->
         <meta-data
