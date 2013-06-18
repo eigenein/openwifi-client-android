@@ -1,5 +1,3 @@
-Open WiFi Android Client Application (English)
-
 Open Wi-Fi networks map.
 
 – Makes the map of Wi-Fi networks as you walk around even if the application is minimized.
