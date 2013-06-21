@@ -279,7 +279,7 @@ public class MainActivity extends FragmentActivity {
     private synchronized void cancelRefreshScanResultsAsyncTask() {
         if (refreshScanResultsAsyncTask != null) {
             // Cancel old task.
-            refreshScanResultsAsyncTask.cancel(true);
+            refreshScanResultsAsyncTask.cancel();
             refreshScanResultsAsyncTask = null;
         }
     }

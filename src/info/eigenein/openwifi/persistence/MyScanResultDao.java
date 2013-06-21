@@ -12,6 +12,8 @@ import java.util.*;
 public class MyScanResultDao extends BaseDao {
     private static final String LOG_TAG = MyScanResultDao.class.getCanonicalName();
 
+    private static final int PAGE_SIZE = 4096;
+
     public MyScanResultDao(final SQLiteDatabase database) {
         super(database);
     }
@@ -33,6 +35,7 @@ public class MyScanResultDao extends BaseDao {
     }
 
     public Collection<MyScanResult> queryByLocation(
+                final CancellationToken cancellationToken,
                 final double minLatitude,
                 final double minLongitude,
                 final double maxLatitude,
@@ -44,29 +47,46 @@ public class MyScanResultDao extends BaseDao {
                 maxLatitude,
                 maxLongitude));
         final long startTimeMillis = System.currentTimeMillis();
-        // Run query.
-        final Cursor cursor = database.rawQuery(
-                "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
-                "FROM my_scan_results " +
-                "WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ?);",
-                new String[] {
-                        Integer.toString(L.toE6(minLatitude)),
-                        Integer.toString(L.toE6(maxLatitude)),
-                        Integer.toString(L.toE6(minLongitude)),
-                        Integer.toString(L.toE6(maxLongitude))
-                }
-        );
-        Log.d(LOG_TAG + ".queryByLocation", String.format("cursor.getCount() = %s", cursor.getCount()));
-        final Collection<MyScanResult> results;
-        try {
-            // Initialize the collection.
-            results = new ArrayList<MyScanResult>();
-            // Read results.
-            while (cursor.moveToNext()) {
-                results.add(read(cursor));
+        // Initialize the collection.
+        final Collection<MyScanResult> results = new ArrayList<MyScanResult>();
+        // Paging.
+        int offset = 0;
+        while (true) {
+            // Test the cancellation token.
+            if (cancellationToken.isCancelled()) {
+                Log.d(LOG_TAG + ".queryByLocation", "Cancelled.");
+                return null;
             }
-        } finally {
-            cursor.close();
+            // Run query.
+            Log.d(LOG_TAG + ".queryByLocation", String.format("Reading page at %s ...", offset));
+            final Cursor cursor = database.rawQuery(
+                    "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
+                            "FROM my_scan_results " +
+                            "WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ?) " +
+                            "LIMIT ? OFFSET ?;",
+                    new String[] {
+                            Integer.toString(L.toE6(minLatitude)),
+                            Integer.toString(L.toE6(maxLatitude)),
+                            Integer.toString(L.toE6(minLongitude)),
+                            Integer.toString(L.toE6(maxLongitude)),
+                            Integer.toString(PAGE_SIZE),
+                            Integer.toString(offset)
+                    }
+            );
+            if (cursor.getCount() == 0) {
+                break;
+            }
+            // Read results.
+            Log.d(LOG_TAG + ".queryByLocation", String.format("Read page: %s rows.", cursor.getCount()));
+            try {
+                while (cursor.moveToNext()) {
+                    results.add(read(cursor));
+                }
+            } finally {
+                cursor.close();
+            }
+            // Move.
+            offset += PAGE_SIZE;
         }
         Log.d(LOG_TAG + ".queryByLocation", String.format(
                 "Got %d results in %sms.",

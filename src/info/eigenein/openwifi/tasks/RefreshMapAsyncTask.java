@@ -31,6 +31,8 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
 
     private final GridSize gridSize;
 
+    private final CancellationToken cancellationToken = new CancellationToken();
+
     /**
      * Groups scan results into the grid by their location.
      */
@@ -62,11 +64,20 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         this.gridSize = gridSize;
     }
 
+    /**
+     * Cancels the task.
+     */
+    public void cancel() {
+        cancellationToken.cancel();
+        this.cancel(true);
+    }
+
     @Override
     protected ClusterList doInBackground(final Void... params) {
         // Retrieve scan results.
         final MyScanResultDao dao = CacheOpenHelper.getInstance(activity).getMyScanResultDao();
-        final Collection<MyScanResult> scanResults = dao.queryByLocation(minLatitude, minLongitude, maxLatitude, maxLongitude);
+        final Collection<MyScanResult> scanResults = dao.queryByLocation(
+                cancellationToken, minLatitude, minLongitude, maxLatitude, maxLongitude);
         // Process them if we're still not cancelled.
         if (isCancelled()) {
             return null;
@@ -96,11 +107,6 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         }
 
         activity.updateRefreshingScanResultsProgressBar(false);
-    }
-
-    @Override
-    protected void onCancelled(final ClusterList result) {
-        Log.d(LOG_TAG + ".onCancelled", "cancelled");
     }
 
     private void addScanResult(final MyScanResult scanResult) {
