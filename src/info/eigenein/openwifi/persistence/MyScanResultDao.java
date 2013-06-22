@@ -5,6 +5,7 @@ import android.database.*;
 import android.database.sqlite.*;
 import android.location.*;
 import android.net.wifi.*;
+import android.text.*;
 import android.util.*;
 import info.eigenein.openwifi.helpers.location.*;
 
@@ -123,8 +124,20 @@ public class MyScanResultDao extends BaseDao {
         return results;
     }
 
-    public List<MyScanResult> queryByBssid(final String bssid) {
-        return new ArrayList<MyScanResult>();
+    /**
+     * Gets the scan results by the specified BSSID from the newest to the oldest.
+     */
+    public List<MyScanResult> queryNewestByBssid(final String bssid) {
+        final List<MyScanResult> results = new ArrayList<MyScanResult>();
+        final Cursor cursor = database.rawQuery(
+                "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
+                        "FROM my_scan_results " +
+                        "WHERE bssid = ? " +
+                        "ORDER BY timestamp DESC;",
+                new String[] { bssid }
+        );
+        read(cursor, results);
+        return results;
     }
 
     /**
@@ -229,8 +242,13 @@ public class MyScanResultDao extends BaseDao {
         return getUniqueCount("ssid");
     }
 
+    /**
+     * Deletes the scan results with specified IDs.
+     */
     public void delete(final Collection<Long> ids) {
-        // TODO.
+        database.execSQL(String.format(
+                "DELETE FROM my_scan_results WHERE id in (%s);",
+                TextUtils.join(", ", ids)));
     }
 
     private long getUniqueCount(final String columnName) {
