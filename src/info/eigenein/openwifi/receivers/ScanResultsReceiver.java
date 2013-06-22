@@ -65,7 +65,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
         if (openScanResults.size() != 0) {
             // Add all these scan results.
             final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
-            dao.insert(location, openScanResults, true);
+            dao.insert(location, openScanResults);
         } else {
             Log.d(LOG_TAG, "No open access points here.");
         }

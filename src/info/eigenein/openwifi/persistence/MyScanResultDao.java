@@ -1,5 +1,6 @@
 package info.eigenein.openwifi.persistence;
 
+import android.content.*;
 import android.database.*;
 import android.database.sqlite.*;
 import android.location.*;
@@ -22,18 +23,30 @@ public class MyScanResultDao extends BaseDao {
     public void onCreate(final SQLiteDatabase database) {
         database.execSQL(
                 "CREATE TABLE `my_scan_results` (" +
-                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "`accuracy` FLOAT NOT NULL, " +
-                "`latitude` INTEGER NOT NULL, " +
-                "`longitude` INTEGER NOT NULL, " +
-                "`timestamp` BIGINT NOT NULL, " +
-                "`synced` SMALLINT NOT NULL, " +
-                "`own` SMALLINT NOT NULL, " +
-                "`bssid` VARCHAR NOT NULL, " +
-                "`ssid` VARCHAR NOT NULL);"
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "`accuracy` FLOAT NOT NULL, " +
+                        "`latitude` INTEGER NOT NULL, " +
+                        "`longitude` INTEGER NOT NULL, " +
+                        "`timestamp` BIGINT NOT NULL, " +
+                        "`synced` SMALLINT NOT NULL, " +
+                        "`own` SMALLINT NOT NULL, " +
+                        "`bssid` VARCHAR NOT NULL, " +
+                        "`ssid` VARCHAR NOT NULL);"
         );
+        database.execSQL(
+                "CREATE INDEX `idx_my_scan_results_latitude` " +
+                        "ON `my_scan_results` (`latitude`);");
+        database.execSQL(
+                "CREATE INDEX `idx_my_scan_results_synced` " +
+                        "ON `my_scan_results` (`synced`);");
+        database.execSQL(
+                "CREATE INDEX `idx_my_scan_results_bssid` " +
+                        "ON `my_scan_results` (`bssid`);");
     }
 
+    /**
+     * Gets the results within the specified area.
+     */
     public Collection<MyScanResult> queryByLocation(
                 final CancellationToken cancellationToken,
                 final double minLatitude,
@@ -77,14 +90,7 @@ public class MyScanResultDao extends BaseDao {
                 break;
             }
             // Read results.
-            Log.d(LOG_TAG + ".queryByLocation", String.format("Read page: %s rows.", cursor.getCount()));
-            try {
-                while (cursor.moveToNext()) {
-                    results.add(read(cursor));
-                }
-            } finally {
-                cursor.close();
-            }
+            read(cursor, results);
             // Move.
             offset += PAGE_SIZE;
         }
@@ -97,18 +103,55 @@ public class MyScanResultDao extends BaseDao {
         return results;
     }
 
+    /**
+     * Gets the unsynced results.
+     */
     public List<MyScanResult> queryUnsynced(final int limit) {
+        // Initialize the collection.
+        final List<MyScanResult> results = new ArrayList<MyScanResult>();
+        // Run the query.
+        final Cursor cursor = database.rawQuery(
+                "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
+                        "FROM my_scan_results " +
+                        "WHERE NOT synced " +
+                        "LIMIT ?;",
+                new String[] { Integer.toString(L.toE6(limit)) }
+        );
+        // Read results.
+        read(cursor, results);
+        // Return the results.
+        return results;
+    }
+
+    public List<MyScanResult> queryByBssid(final String bssid) {
         return new ArrayList<MyScanResult>();
     }
 
-    public List<MyScanResult> queryByBssid(final String bssid, final int limit) {
-        return new ArrayList<MyScanResult>();
+    /**
+     * Inserts the results.
+     */
+    public void insert(final Location location, final Collection<ScanResult> results) {
+        if (results.isEmpty()) {
+            return;
+        }
+        for (final ScanResult scanResult : results) {
+            final ContentValues values = new ContentValues();
+            values.put("accuracy", location.getAccuracy());
+            values.put("latitude", location.getLatitude());
+            values.put("longitude", location.getLongitude());
+            values.put("timestamp", location.getTime());
+            values.put("synced", false);
+            values.put("own", true);
+            values.put("bssid", scanResult.BSSID);
+            values.put("ssid", scanResult.SSID);
+            database.insert("my_scan_results", null, values);
+        }
+        Log.d(LOG_TAG + ".insert(location, results)", String.format("Inserted %s results.", results.size()));
     }
 
-    public void insert(final Location location, final Collection<ScanResult> results, final boolean own) {
-        // TODO.
-    }
-
+    /**
+     * Inserts the results.
+     */
     public void insert(final Collection<MyScanResult> results) {
         // Check the parameters.
         if (results.isEmpty()) {
@@ -153,26 +196,72 @@ public class MyScanResultDao extends BaseDao {
         ));
     }
 
+    /**
+     * Sets the synced flag on the specified results.
+     */
     public void setSynced(final Collection<MyScanResult> results) {
-        // TODO.
+        final StringBuilder idsStringBuilder = new StringBuilder();
+        for (final MyScanResult result : results) {
+            if (idsStringBuilder.length() != 0) {
+                idsStringBuilder.append(", ");
+            }
+            idsStringBuilder.append(result.getId());
+        }
+        if (idsStringBuilder.length() != 0) {
+            final String ids = idsStringBuilder.toString();
+            Log.d(LOG_TAG + ".setSynced", ids);
+            database.execSQL(String.format("UPDATE my_scan_results SET synced = 1 WHERE id IN (%s);", ids));
+        }
     }
 
+    /**
+     * Gets the total scan result count.
+     */
     public long getCount() {
-        return 0L;
+        return DatabaseUtils.queryNumEntries(database, "my_scan_results");
     }
 
     public long getUniqueBssidCount() {
-        return 0L;
+        return getUniqueCount("bssid");
     }
 
     public long getUniqueSsidCount() {
-        return 0L;
+        return getUniqueCount("ssid");
     }
 
-    public void deleteOlderThan(final String bssid, final long timestamp) {
+    public void delete(final Collection<Long> ids) {
         // TODO.
     }
 
+    private long getUniqueCount(final String columnName) {
+        final Cursor cursor = database.rawQuery(
+                String.format("SELECT COUNT(DISTINCT %s) FROM my_scan_results;", columnName),
+                new String[0]);
+        try {
+            cursor.moveToFirst();
+            return cursor.getLong(0);
+        } finally {
+            cursor.close();
+        }
+    }
+
+    /**
+     * Reads the results from the cursor.
+     */
+    private static void read(final Cursor cursor, final Collection<MyScanResult> results) {
+        Log.d(LOG_TAG + ".read", String.format("Read %s rows.", cursor.getCount()));
+        try {
+            while (cursor.moveToNext()) {
+                results.add(read(cursor));
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
+    /**
+     * Reads the result from the cursor.
+     */
     private static MyScanResult read(final Cursor cursor) {
         final MyScanResult result = new MyScanResult();
         result.setId(cursor.getLong(0));
