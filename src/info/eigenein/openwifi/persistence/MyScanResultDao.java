@@ -150,8 +150,8 @@ public class MyScanResultDao extends BaseDao {
         for (final ScanResult scanResult : results) {
             final ContentValues values = new ContentValues();
             values.put("accuracy", location.getAccuracy());
-            values.put("latitude", location.getLatitude());
-            values.put("longitude", location.getLongitude());
+            values.put("latitude", L.toE6(location.getLatitude()));
+            values.put("longitude", L.toE6(location.getLongitude()));
             values.put("timestamp", location.getTime());
             values.put("synced", false);
             values.put("own", true);
