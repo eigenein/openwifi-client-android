@@ -66,6 +66,8 @@ public class ScanResultsReceiver extends BroadcastReceiver {
             // Add all these scan results.
             final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
             dao.insert(location, openScanResults);
+            // Start the cleanup service.
+            CleanupIntentService.queueNativeScanResults(context, openScanResults);
         } else {
             Log.d(LOG_TAG, "No open access points here.");
         }

@@ -21,7 +21,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
         return instance;
     }
 
-    public CacheOpenHelper(final Context context) {
+    private CacheOpenHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

@@ -34,12 +34,15 @@ public class MyScanResultDao extends BaseDao {
                         "`bssid` VARCHAR NOT NULL, " +
                         "`ssid` VARCHAR NOT NULL);"
         );
+        // Used to query by location.
         database.execSQL(
                 "CREATE INDEX `idx_my_scan_results_latitude` " +
                         "ON `my_scan_results` (`latitude`);");
+        // Used to query unsynced results while syncing.
         database.execSQL(
                 "CREATE INDEX `idx_my_scan_results_synced` " +
                         "ON `my_scan_results` (`synced`);");
+        // Used to query by BSSID when cleaning up the database.
         database.execSQL(
                 "CREATE INDEX `idx_my_scan_results_bssid` " +
                         "ON `my_scan_results` (`bssid`);");
@@ -128,6 +131,8 @@ public class MyScanResultDao extends BaseDao {
      * Gets the scan results by the specified BSSID from the newest to the oldest.
      */
     public List<MyScanResult> queryNewestByBssid(final String bssid) {
+        Log.d(LOG_TAG + ".queryNewestByBssid", bssid);
+
         final List<MyScanResult> results = new ArrayList<MyScanResult>();
         final Cursor cursor = database.rawQuery(
                 "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
@@ -246,9 +251,14 @@ public class MyScanResultDao extends BaseDao {
      * Deletes the scan results with specified IDs.
      */
     public void delete(final Collection<Long> ids) {
-        database.execSQL(String.format(
-                "DELETE FROM my_scan_results WHERE id in (%s);",
-                TextUtils.join(", ", ids)));
+        Log.d(LOG_TAG + ".delete", String.format("Delete %s results.", ids.size()));
+        if (!ids.isEmpty()) {
+            final long startTimeMillis = System.currentTimeMillis();
+            database.execSQL(String.format(
+                    "DELETE FROM my_scan_results WHERE id in (%s);",
+                    TextUtils.join(", ", ids)));
+            Log.d(LOG_TAG + ".delete", String.format("Done in %sms.", System.currentTimeMillis() - startTimeMillis));
+        }
     }
 
     private long getUniqueCount(final String columnName) {
@@ -267,7 +277,7 @@ public class MyScanResultDao extends BaseDao {
      * Reads the results from the cursor.
      */
     private static void read(final Cursor cursor, final Collection<MyScanResult> results) {
-        Log.d(LOG_TAG + ".read", String.format("Read %s rows.", cursor.getCount()));
+        Log.d(LOG_TAG + ".read", String.format("Reading %s rows ...", cursor.getCount()));
         try {
             while (cursor.moveToNext()) {
                 results.add(read(cursor));
