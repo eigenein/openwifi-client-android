@@ -136,33 +136,6 @@ public class HelpActivity extends Activity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.menu_item_goto_facebook:
-                // Initialize the intent.
-                Intent facebookIntent;
-                try {
-                    getPackageManager().getPackageInfo("com.facebook.katana", 0);
-                    facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "fb://group/113471102159744"));
-                } catch (Exception e) {
-                    facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://www.facebook.com/groups/openwifi.project/"));
-                }
-                // Go to the Open WiFi page on Facebook.
-                startActivity(facebookIntent);
-                return true;
-            case R.id.menu_item_goto_vk:
-                // Initialize the intent.
-                Intent vkIntent;
-                try {
-                    getPackageManager().getPackageInfo("com.vkontakte.android", 0);
-                    vkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "fb://group/113471102159744"));
-                } catch (Exception e) {
-                    vkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://vk.com/owifi"));
-                }
-                // Go to the Open WiFi page on VKontakte.
-                startActivity(vkIntent);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -122,5 +122,10 @@
     <string name="button_install">
         Установить
     </string>
-    <string name="menu_item_goto_facebook">Open WiFi on Facebook</string>
+    <string name="button_goto_twitter">
+        Твиттер
+    </string>
+    <string name="button_goto_vkontakte">
+        ВКонтакте
+    </string>
 </resources>
