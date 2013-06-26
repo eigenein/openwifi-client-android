@@ -123,4 +123,6 @@
     <string name="preference_sign_in_error">Network is not available.</string>
     <string name="dialog_install_google_maps_message">Please install the Google Maps application.</string>
     <string name="button_install">Install</string>
+    <string name="menu_item_goto_vk">Open WiFi ВКонтакте</string>
+    <string name="menu_item_goto_facebook">Open WiFi на Facebook</string>
 </resources>

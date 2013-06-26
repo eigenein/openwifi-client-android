@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_item_goto_vk"
+          android:title="@string/menu_item_goto_vk"
+          android:icon="@drawable/ic_action_vk"
+          android:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_item_goto_facebook"
+          android:title="@string/menu_item_goto_facebook"
+          android:icon="@drawable/ic_action_facebook"
+          android:showAsAction="ifRoom"/>
+</menu>
