@@ -14,7 +14,7 @@ Open Wi-Fi networks map.
 – It is now possible to sync from server to client without authenticating.
 – Fixed a crash in the case if Google Maps or Google Play services are not installed.
 – Action Bar buttons are now highlighted when pressed.
-– Reduced APK size on 100kB.
+– Reduced APK size by 100kB.
 
 0.1.5
 
