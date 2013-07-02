@@ -2,7 +2,7 @@ package info.eigenein.openwifi.helpers.location;
 
 import android.location.Location;
 import info.eigenein.openwifi.helpers.entities.Area;
-import info.eigenein.openwifi.persistency.MyScanResult;
+import info.eigenein.openwifi.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;

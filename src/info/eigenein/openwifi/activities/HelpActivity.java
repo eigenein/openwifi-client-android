@@ -1,6 +1,8 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.*;
+import android.content.*;
+import android.net.*;
 import android.os.*;
 import android.support.v4.view.*;
 import android.view.*;
@@ -119,6 +121,13 @@ public class HelpActivity extends Activity {
         super.onStart();
 
         EasyTracker.getInstance().activityStart(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.help, menu);
+
+        return true;
     }
 
     @Override

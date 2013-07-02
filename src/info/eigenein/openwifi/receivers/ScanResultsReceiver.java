@@ -7,9 +7,9 @@ import android.location.Location;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
 import info.eigenein.openwifi.helpers.parsers.ScanResultCapabilities;
 import info.eigenein.openwifi.helpers.location.LocationTracker;
+import info.eigenein.openwifi.persistence.*;
 import info.eigenein.openwifi.services.*;
 
 import java.util.ArrayList;
@@ -63,8 +63,11 @@ public class ScanResultsReceiver extends BroadcastReceiver {
         }
 
         if (openScanResults.size() != 0) {
-            // Finally, add all these scan results.
-            ScanResultTracker.add(context, location, openScanResults, true);
+            // Add all these scan results.
+            final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+            dao.insert(location, openScanResults);
+            // Start the cleanup service.
+            CleanupIntentService.queueNativeScanResults(context, openScanResults);
         } else {
             Log.d(LOG_TAG, "No open access points here.");
         }

@@ -4,9 +4,10 @@ import android.app.*;
 import android.content.*;
 import android.net.wifi.*;
 import android.os.*;
-import android.provider.Settings;
+import android.provider.*;
 import android.support.v4.app.*;
-import android.util.*;
+import android.util.Log;
+import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.location.*;
 
@@ -42,6 +43,9 @@ public class ScanIntentService extends IntentService {
                 scanPendingIntent);
         // Start location tracking.
         LocationUpdatesManager.requestUpdates(context, DefaultLocationListener.getInstance());
+        // Google Analytics.
+        EasyTracker.getInstance().setContext(context);
+        EasyTracker.getTracker().sendEvent(SERVICE_NAME, "service", "restart", 0L);
     }
 
     /**
@@ -52,6 +56,9 @@ public class ScanIntentService extends IntentService {
             Log.i(SERVICE_NAME, "restartIfStarted");
             restart(context);
         }
+        // Google Analytics.
+        EasyTracker.getInstance().setContext(context);
+        EasyTracker.getTracker().sendEvent(SERVICE_NAME, "service", "restartIfStarted", 0L);
     }
 
     /**
@@ -70,6 +77,9 @@ public class ScanIntentService extends IntentService {
             getAlarmManager(context).cancel(scanPendingIntent);
             scanPendingIntent.cancel();
         }
+        // Google Analytics.
+        EasyTracker.getInstance().setContext(context);
+        EasyTracker.getTracker().sendEvent(SERVICE_NAME, "service", "stop", 0L);
     }
 
     /**

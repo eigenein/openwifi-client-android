@@ -1,16 +1,18 @@
 package info.eigenein.openwifi.activities;
 
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.app.*;
+import android.content.pm.*;
+import android.content.res.*;
+import android.os.*;
+import android.text.*;
+import android.text.method.*;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.TextView;
-import com.google.analytics.tracking.android.EasyTracker;
-import info.eigenein.openwifi.R;
+import android.view.*;
+import android.widget.*;
+import com.google.analytics.tracking.android.*;
+import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.internal.*;
+import info.eigenein.openwifi.helpers.ui.*;
 
 public class AboutActivity extends Activity {
     private static final String LOG_TAG = AboutActivity.class.getCanonicalName();
@@ -24,6 +26,11 @@ public class AboutActivity extends Activity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        // Hide the logo in landscape orientation.
+        if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
+            findViewById(R.id.logo_image_view).setVisibility(View.GONE);
+        }
+
         // Update version name text view.
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -34,25 +41,51 @@ public class AboutActivity extends Activity {
         }
 
         // Linkify copyright.
-        TextView copyrightTextView = (TextView)findViewById(R.id.about_copyright_text_view);
+        final TextView copyrightTextView = (TextView)findViewById(R.id.about_copyright_text_view);
         copyrightTextView.setText(Html.fromHtml(getString(R.string.text_view_about_copyright)));
         copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Linkify project link.
-        TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
+        final TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
         projectLinkTextView.setText(Html.fromHtml(getString(R.string.text_view_about_project_link)));
         projectLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Linkify feedback link.
-        TextView feedbackLinkTextView = (TextView)findViewById(R.id.feedback_link_text_view);
+        final TextView feedbackLinkTextView = (TextView)findViewById(R.id.feedback_link_text_view);
         feedbackLinkTextView.setText(Html.fromHtml(getString(R.string.text_view_feedback)));
         feedbackLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Client ID.
-        TextView clientIdTextView = (TextView)findViewById(R.id.client_id_text_view);
+        final TextView clientIdTextView = (TextView)findViewById(R.id.client_id_text_view);
         clientIdTextView.setText(String.format(
                 getString(R.string.client_id),
                 Settings.with(this).clientId()));
+
+        // Social network links.
+        findViewById(R.id.goto_vkontakte_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                SocialNetworksHelper.gotoVKontakte(AboutActivity.this);
+            }
+        });
+        findViewById(R.id.goto_facebook_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                SocialNetworksHelper.gotoFacebook(AboutActivity.this);
+            }
+        });
+        findViewById(R.id.goto_twitter_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                SocialNetworksHelper.gotoTwitter(AboutActivity.this);
+            }
+        });
+        findViewById(R.id.goto_google_plus_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                SocialNetworksHelper.gotoGooglePlus(AboutActivity.this);
+            }
+        });
     }
 
     @Override

@@ -59,6 +59,7 @@
     <string name="toast_no_networks_here">В этом месте нет известных сетей.</string>
     <string name="preference_category_general">Общие</string>
     <string name="preference_sign_in">Войти с помощью Аккаунта Google</string>
+    <string name="preference_sign_in_summary">Войдите, чтобы делиться Wi-Fi сетями с другими пользователями.</string>
     <string name="dialog_get_auth_token_title">Вход</string>
     <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
     <string name="preference_sign_in_again">Войти заново</string>
@@ -120,5 +121,11 @@
     </string>
     <string name="button_install">
         Установить
+    </string>
+    <string name="button_goto_twitter">
+        Твиттер
+    </string>
+    <string name="button_goto_vkontakte">
+        ВКонтакте
     </string>
 </resources>

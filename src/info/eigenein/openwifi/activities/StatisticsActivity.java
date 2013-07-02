@@ -7,7 +7,7 @@ import android.widget.SimpleAdapter;
 import com.google.analytics.tracking.android.EasyTracker;
 import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.scan.ScanResultTracker;
+import info.eigenein.openwifi.persistence.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,17 +55,18 @@ public class StatisticsActivity extends ListActivity {
     private SimpleAdapter createAdapter() {
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
+        final MyScanResultDao dao = CacheOpenHelper.getInstance(this).getMyScanResultDao();
         items.add(createItem(
                 R.string.statistics_unique_bssid_count,
-                Long.toString(ScanResultTracker.getUniqueBssidCount(this))
+                Long.toString(dao.getUniqueBssidCount())
         ));
         items.add(createItem(
                 R.string.statistics_unique_ssid_count,
-                Long.toString(ScanResultTracker.getUniqueSsidCount(this))
+                Long.toString(dao.getUniqueSsidCount())
         ));
         items.add(createItem(
                 R.string.statistics_scan_result_count,
-                Long.toString(ScanResultTracker.getScanResultCount(this))
+                Long.toString(dao.getCount())
         ));
 
         return new SimpleAdapter(

@@ -8,9 +8,8 @@ import com.google.common.collect.*;
 import info.eigenein.openwifi.activities.*;
 import info.eigenein.openwifi.helpers.entities.*;
 import info.eigenein.openwifi.helpers.location.*;
-import info.eigenein.openwifi.helpers.scan.*;
 import info.eigenein.openwifi.helpers.ui.*;
-import info.eigenein.openwifi.persistency.*;
+import info.eigenein.openwifi.persistence.*;
 
 import java.util.*;
 
@@ -31,6 +30,8 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
     private final double maxLongitude;
 
     private final GridSize gridSize;
+
+    private final CancellationToken cancellationToken = new CancellationToken();
 
     /**
      * Groups scan results into the grid by their location.
@@ -63,22 +64,20 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         this.gridSize = gridSize;
     }
 
+    /**
+     * Cancels the task.
+     */
+    public void cancel() {
+        cancellationToken.cancel();
+        this.cancel(true);
+    }
+
     @Override
     protected ClusterList doInBackground(final Void... params) {
         // Retrieve scan results.
-        final long getScanResultsStartTime = System.currentTimeMillis();
-        final List<MyScanResult> scanResults = ScanResultTracker.getScanResults(
-                activity,
-                minLatitude,
-                minLongitude,
-                maxLatitude,
-                maxLongitude
-        );
-        Log.d(LOG_TAG + ".doInBackground", String.format(
-                "fetched %d results in %sms.",
-                scanResults.size(),
-                System.currentTimeMillis() - getScanResultsStartTime
-        ));
+        final MyScanResultDao dao = CacheOpenHelper.getInstance(activity).getMyScanResultDao();
+        final Collection<MyScanResult> scanResults = dao.queryByLocation(
+                cancellationToken, minLatitude, minLongitude, maxLatitude, maxLongitude);
         // Process them if we're still not cancelled.
         if (isCancelled()) {
             return null;
@@ -108,11 +107,6 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
         }
 
         activity.updateRefreshingScanResultsProgressBar(false);
-    }
-
-    @Override
-    protected void onCancelled(final ClusterList result) {
-        Log.d(LOG_TAG + ".onCancelled", "cancelled");
     }
 
     private void addScanResult(final MyScanResult scanResult) {
@@ -163,10 +157,10 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
                 }
                 networks.add(new Network(entry.getKey(), entry.getValue()));
             }
-            // Finally, add the cluster to the cluster list.
+            // Finally, insert the cluster to the cluster list.
             final Cluster cluster = new Cluster(area, networks);
             clusterList.add(cluster);
-            Log.d(LOG_TAG, "clusterList.add " + cluster);
+            Log.d(LOG_TAG, "clusterList.insert " + cluster);
         }
 
         return clusterList;

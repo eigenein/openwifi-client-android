@@ -1,100 +1,36 @@
-package info.eigenein.openwifi.persistency;
+package info.eigenein.openwifi.persistence;
 
 import android.location.*;
 import android.net.wifi.*;
-import com.j256.ormlite.field.*;
-import com.j256.ormlite.table.*;
 import info.eigenein.openwifi.helpers.location.*;
 import org.json.*;
 
 /**
- * Represents a scan result record in the database.
+ * Represents a scan result.
  */
-@DatabaseTable(tableName = "my_scan_results")
-public class MyScanResult {
-    public static final String ID = "id";
-    public static final String ACCURACY = "accuracy";
-    public static final String LATITUDE = "latitude";
-    public static final String LONGITUDE = "longitude";
-    public static final String TIMESTAMP = "timestamp";
-    public static final String SYNCED = "synced";
-    public static final String OWN = "own";
-    public static final String BSSID = "bssid";
-    public static final String SSID = "ssid";
-
-    public static final int BSSID_LENGTH = 17;
-    public static final int MAX_SSID_LENGTH = 32;
-
-    @DatabaseField(
-            columnName = ID,
-            canBeNull = false,
-            generatedId = true,
-            index = true)
+public final class MyScanResult {
     private long id;
 
-    @DatabaseField(
-            columnName = ACCURACY,
-            canBeNull = false
-    )
     private float accuracy;
 
     /**
      * Latitude * 10e6.
      */
-    @DatabaseField(
-            columnName = LATITUDE,
-            canBeNull = false,
-            index = true,
-            indexName = "my_scan_results_latitude_longitude_idx"
-    )
     private int latitude;
 
     /**
      * Longitude * 10e6.
      */
-    @DatabaseField(
-            columnName = LONGITUDE,
-            canBeNull = false,
-            index = true,
-            indexName = "my_scan_results_latitude_longitude_idx"
-    )
     private int longitude;
 
-    @DatabaseField(
-            columnName = TIMESTAMP,
-            canBeNull = false,
-            index = true,
-            indexName = "my_scan_results_bssid_timestamp_idx"
-    )
     private long timestamp;
 
-    @DatabaseField(
-            columnName = SYNCED,
-            canBeNull = false
-    )
     private boolean synced;
 
-    @DatabaseField(
-            columnName = OWN,
-            canBeNull = false
-    )
     private boolean own;
 
-    @DatabaseField(
-            columnName = BSSID,
-            canBeNull = false,
-            width = BSSID_LENGTH,
-            index = true,
-            indexName = "my_scan_results_bssid_timestamp_idx"
-    )
     private String bssid;
 
-    @DatabaseField(
-            columnName = SSID,
-            canBeNull = false,
-            width = MAX_SSID_LENGTH,
-            index = true
-    )
     private String ssid;
 
     public static MyScanResult fromJsonObject(final JSONObject object) {
@@ -113,14 +49,11 @@ public class MyScanResult {
         return scanResult;
     }
 
-    /**
-     * Parameterless constructor for ORMLite.
-     */
     public MyScanResult() {
         // Do nothing.
     }
 
-    public MyScanResult(ScanResult scanResult, Location location) {
+    public MyScanResult(final ScanResult scanResult, final Location location) {
         this.accuracy = location.getAccuracy();
         this.bssid = scanResult.BSSID;
         this.ssid = scanResult.SSID;
@@ -128,6 +61,10 @@ public class MyScanResult {
         // These need 10e6 fix.
         this.setLatitude(location.getLatitude());
         this.setLongitude(location.getLongitude());
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getSsid() {
@@ -146,8 +83,16 @@ public class MyScanResult {
         return L.fromE6(latitude);
     }
 
+    public int getLatitudeE6() {
+        return latitude;
+    }
+
     public double getLongitude() {
         return L.fromE6(longitude);
+    }
+
+    public int getLongitudeE6() {
+        return longitude;
     }
 
     public float getAccuracy() {
@@ -158,20 +103,52 @@ public class MyScanResult {
         return own;
     }
 
-    public void setSynced(boolean synced) {
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
+    }
+
+    public void setAccuracy(final float accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public void setSynced(final boolean synced) {
         this.synced = synced;
     }
 
-    public void setOwn(boolean own) {
+    public void setOwn(final boolean own) {
         this.own = own;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(final double latitude) {
         this.latitude = L.toE6(latitude);
     }
 
-    public void setLongitude(double longitude) {
+    public void setLatitudeE6(final int latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(final double longitude) {
         this.longitude = L.toE6(longitude);
+    }
+
+    public void setLongitudeE6(final int longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setTimestamp(final long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setSsid(final String ssid) {
+        this.ssid = ssid;
+    }
+
+    public void setBssid(final String bssid) {
+        this.bssid = bssid;
     }
 
     public JSONObject toJsonObject() {
