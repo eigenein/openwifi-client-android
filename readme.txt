@@ -9,7 +9,7 @@ Open Wi-Fi networks map.
 
 0.1.6-beta
 
-– Significantly increased the speed of the displaying networks on the map.
+– Significantly increased the speed of displaying networks on the map.
 – The icons of networks have been returned.
 – It is now possible to sync from server to client without authenticating.
 – Fixed a crash in the case if Google Maps or Google Play services are not installed.
