@@ -7,6 +7,15 @@ Open Wi-Fi networks map.
 – Customizable map view: normal or hybrid.
 – Customizable Wi-Fi search interval.
 
+0.1.6-beta
+
+– Significantly increased the speed of the displaying networks on the map.
+– The icons of networks have been returned.
+– It is now possible to sync from server to client without authenticating.
+– Fixed a crash in the case if Google Maps or Google Play services are not installed.
+– Action Bar buttons are now highlighted when pressed.
+– Reduced APK size on 100kB.
+
 0.1.5
 
 – Switched to Google Maps Android API v2: more map features, faster map refreshing, less traffic for map data.
