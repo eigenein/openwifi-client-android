@@ -6,13 +6,12 @@ import android.net.*;
 public class SocialNetworksHelper {
     public static void gotoVKontakte(final Context context) {
         Intent intent;
-        // try {
-        //     getPackageManager().getPackageInfo("com.vkontakte.android", 0);
-        //     vkIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-        //             "fb://group/113471102159744"));
-        // } catch (Exception e) {
-        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://vk.com/owifi"));
-        // }
+        try {
+            context.getPackageManager().getPackageInfo("com.vkontakte.android", 0);
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vkontakte://vk.com/owifi"));
+        } catch (Exception e) {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://vk.com/owifi"));
+        }
         context.startActivity(intent);
     }
 
@@ -20,8 +19,7 @@ public class SocialNetworksHelper {
         Intent intent;
         try {
             context.getPackageManager().getPackageInfo("com.facebook.katana", 0);
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    "fb://group/113471102159744"));
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://group/113471102159744"));
         } catch (Exception e) {
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
                     "https://www.facebook.com/groups/openwifi.project/"));
