@@ -119,13 +119,9 @@
     <string name="dialog_install_google_maps_message">
         Установите, пожалуйста, приложение Google Maps, необходимое для работы данного приложения.
     </string>
-    <string name="button_install">
-        Установить
-    </string>
-    <string name="button_goto_twitter">
-        Твиттер
-    </string>
-    <string name="button_goto_vkontakte">
-        ВКонтакте
-    </string>
+    <string name="button_install">Установить</string>
+    <string name="image_button_twitter">Open WiFi в Твиттере</string>
+    <string name="image_button_vkontakte">Open WiFi на ВКонтакте</string>
+    <string name="image_button_facebook">Open WiFi на Facebook</string>
+    <string name="image_button_google">Open WiFi на Google+</string>
 </resources>

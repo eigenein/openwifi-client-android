@@ -69,32 +69,36 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="3dip">
-            <Button
+            <ImageButton
                 android:id="@+id/goto_vkontakte_button"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_marginRight="3dip"
-                android:text="@string/button_goto_vkontakte"/>
-            <Button
+                android:contentDescription="@string/image_button_vkontakte"
+                android:background="@drawable/ic_action_vkontakte"/>
+            <ImageButton
                 android:id="@+id/goto_facebook_button"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_marginLeft="3dip"
                 android:layout_marginRight="3dip"
-                android:text="@string/button_goto_facebook"/>
-            <Button
+                android:contentDescription="@string/image_button_facebook"
+                android:background="@drawable/ic_action_facebook"/>
+            <ImageButton
                 android:id="@+id/goto_twitter_button"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_marginLeft="3dip"
                 android:layout_marginRight="3dip"
-                android:text="@string/button_goto_twitter"/>
-            <Button
+                android:contentDescription="@string/image_button_twitter"
+                android:background="@drawable/ic_action_twitter"/>
+            <ImageButton
                 android:id="@+id/goto_google_plus_button"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_marginLeft="3dip"
-                android:text="@string/button_goto_google_plus"/>
+                android:contentDescription="@string/image_button_google"
+                android:background="@drawable/ic_action_google"/>
         </LinearLayout>
         <TextView
             android:id="@+id/about_copyright_text_view"
