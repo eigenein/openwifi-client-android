@@ -65,24 +65,28 @@ public class AboutActivity extends Activity {
         findViewById(R.id.goto_vkontakte_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoVKontakte(AboutActivity.this);
             }
         });
         findViewById(R.id.goto_facebook_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoFacebook(AboutActivity.this);
             }
         });
         findViewById(R.id.goto_twitter_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoTwitter(AboutActivity.this);
             }
         });
         findViewById(R.id.goto_google_plus_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoGooglePlus(AboutActivity.this);
             }
         });
@@ -96,7 +100,7 @@ public class AboutActivity extends Activity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
