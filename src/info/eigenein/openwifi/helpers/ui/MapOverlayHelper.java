@@ -2,6 +2,7 @@ package info.eigenein.openwifi.helpers.ui;
 
 import android.content.*;
 import android.graphics.*;
+import android.util.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import info.eigenein.openwifi.*;
@@ -34,7 +35,7 @@ public class MapOverlayHelper {
     /**
      * Stores a bitmap for each cluster size.
      */
-    private final HashMap<Integer, BitmapDescriptor> descriptorCache = new HashMap<Integer, BitmapDescriptor>();
+    private final SparseArray<BitmapDescriptor> descriptorCache = new SparseArray<BitmapDescriptor>();
     private final float density;
 
     static {
