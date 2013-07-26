@@ -15,7 +15,7 @@ import java.io.*;
 public class Authenticator {
     private static final String LOG_TAG = Authenticator.class.getCanonicalName();
 
-    public static final String GOOGLE_ACCOUNT_TYPE = "com.google";
+    private static final String GOOGLE_ACCOUNT_TYPE = "com.google";
     private static final String GOOGLE_AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
 
     public interface AuthenticatedHandler {

@@ -128,7 +128,6 @@ public class SyncIntentService extends IntentService {
 
     /**
      * Runs the syncing service with the specified authentication token.
-     * @param authToken
      */
     private void syncAll(final String authToken) {
         final Settings settings = Settings.with(this);

@@ -39,7 +39,6 @@
     <string name="statistics_unique_bssid_count">Access Point Count</string>
     <string name="statistics_unique_ssid_count">Network Count</string>
     <string name="statistics_scan_result_count">Database Record Count</string>
-    <string name="button_show_my_location">Show My Location</string>
     <string name="dialog_title_map_view">Map View</string>
     <string name="preferences_category_advanced">Advanced</string>
     <string name="preference_max_scan_results_for_bssid">Remember for a single access point</string>
@@ -47,7 +46,6 @@
     <string name="menu_item_show_details">Show details</string>
     <string name="menu_item_ignore_network_name">Ignore %s</string>
     <string name="menu_item_ignore_similar_networks">Ignore similar networks</string>
-    <string name="toast_my_location_is_unavailable">Try again later. Your location is not available now.</string>
     <string name="preference_statistics_summary">View collected data summary</string>
     <string name="activity_title_about">About Application</string>
     <string name="text_view_version">Version %s</string>
@@ -76,12 +74,9 @@
     <string name="preference_acra_enable_summary">Helps to improve the application quality.</string>
     <string name="preference_acra_syslog_summary">Helps to find a cause of a problem.</string>
     <string name="preference_acra_deviceid_summary">Whether to include Android device ID.</string>
-    <string name="button_zoom_in">Zoom In</string>
-    <string name="button_zoom_out">Zoom Out</string>
     <string name="overlay_networks_string_1">network</string>
     <string name="overlay_networks_string_2">networks</string>
     <string name="overlay_networks_string_3">networks</string>
-    <string name="toast_no_networks_here">There is no known networks in this place.</string>
     <string name="preference_category_general">General</string>
     <string name="preference_sign_in">Sign in using your Google Account</string>
     <string name="preference_sign_in_summary">Sign in to share the Wi-Fi networks with other users.</string>

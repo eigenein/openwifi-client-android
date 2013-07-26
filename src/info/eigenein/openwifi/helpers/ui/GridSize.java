@@ -9,7 +9,7 @@ public class GridSize {
         return new GridSize(longitudeStep / 2.0, longitudeStep);
     }
 
-    public GridSize(final double latitideStep, final double longitudeStep) {
+    private GridSize(final double latitideStep, final double longitudeStep) {
         this.latitideStep = latitideStep;
         this.longitudeStep = longitudeStep;
     }

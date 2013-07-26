@@ -18,14 +18,6 @@ public class Area {
         this.accuracy = accuracy;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
     public float getAccuracy() {
         return accuracy;
     }

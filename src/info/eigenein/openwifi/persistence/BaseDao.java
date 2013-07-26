@@ -10,8 +10,4 @@ public abstract class BaseDao {
     }
 
     public abstract void onCreate(final SQLiteDatabase database);
-
-    public void close() {
-        database.close();
-    }
 }

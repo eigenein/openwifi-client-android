@@ -17,7 +17,6 @@
     <string name="statistics_unique_bssid_count">Точки доступа</string>
     <string name="statistics_unique_ssid_count">Сети</string>
     <string name="statistics_scan_result_count">Записей в базе данных</string>
-    <string name="button_show_my_location">Мое местоположение</string>
     <string name="dialog_title_map_view">Вид</string>
     <string name="preferences_category_advanced">Расширенные</string>
     <string name="preference_max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
@@ -25,7 +24,6 @@
     <string name="menu_item_show_details">Показать сведения</string>
     <string name="menu_item_ignore_network_name">Скрыть %s</string>
     <string name="menu_item_ignore_similar_networks">Скрыть похожие сети</string>
-    <string name="toast_my_location_is_unavailable">Попробуйте позже. Текущее местоположение недоступно.</string>
     <string name="preference_statistics_summary">Просмотреть сведения о количестве собранных данных</string>
     <string name="activity_title_about">О приложении</string>
     <string name="text_view_version">Версия %s</string>
@@ -51,12 +49,9 @@
     <string name="preference_acra_enable_summary">Отчеты помогают улучшить качество приложения.</string>
     <string name="preference_acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
     <string name="preference_acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
-    <string name="button_zoom_in">Увеличить масштаб</string>
-    <string name="button_zoom_out">Уменьшить масштаб</string>
     <string name="overlay_networks_string_1">сеть</string>
     <string name="overlay_networks_string_2">сети</string>
     <string name="overlay_networks_string_3">сетей</string>
-    <string name="toast_no_networks_here">В этом месте нет известных сетей.</string>
     <string name="preference_category_general">Общие</string>
     <string name="preference_sign_in">Войти с помощью Аккаунта Google</string>
     <string name="preference_sign_in_summary">Войдите, чтобы делиться Wi-Fi сетями с другими пользователями.</string>

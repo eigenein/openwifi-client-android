@@ -15,8 +15,4 @@ public class L {
     public static int toE6(final double value) {
         return (int)(value * TO_E6_FIX);
     }
-
-    public static GeoPoint toGeoPoint(final double latitude, final double longitude) {
-        return new GeoPoint(toE6(latitude), toE6(longitude));
-    }
 }

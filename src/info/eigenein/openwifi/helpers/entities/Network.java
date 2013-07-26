@@ -23,13 +23,6 @@ public class Network implements Serializable {
         return ssid;
     }
 
-    /**
-     * Gets the networks size (different BSSID count).
-     */
-    public int size() {
-        return bssids.size();
-    }
-
     @Override
     public int hashCode() {
         return ssid.hashCode();
