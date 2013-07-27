@@ -17,6 +17,7 @@ import java.util.*;
  * Used to aggregate the scan results from the application database.
  */
 public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
+
     private final String LOG_TAG = RefreshMapAsyncTask.class.getCanonicalName();
 
     private final MainActivity activity;

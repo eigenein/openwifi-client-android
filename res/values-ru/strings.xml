@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="help_finish">
+        Выполните вход с помощью своего аккаунта Google, чтобы обмениваться информацией о сетях Wi-Fi.
+        Это позволяет нам обеспечивать ее достоверность для вас.\n
+        \n
+        В первый раз может пройти несколько минут, прежде чем данные будут получены с сервера,
+        и на карте появятся обозначения сетей.\n
+        \n
+        Карта будет обновляться всякий раз, когда устройство подключается к Wi-Fi.
+    </string>
+    <string name="help_scan">
+        Просто запустите поиск сетей, и пока вы будете передвигаться – приложение запомнит и отобразит на карте
+        найденные сети и зону их действия.\n
+        \n
+        Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
+    </string>
     <string name="activity_title_about">О приложении</string>
     <string name="activity_title_help">Справка</string>
     <string name="activity_title_network_set">Доступные сети в этом месте</string>
@@ -7,11 +22,13 @@
     <string name="button_install">Установить</string>
     <string name="crash_dialog_comment_prompt">Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:</string>
     <string name="crash_dialog_text">В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке, чтобы помочь исправить ее?</string>
-    <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
-    <string name="dialog_get_auth_token_title">Вход</string>
     <string name="dialog_install_google_maps_message">Установите, пожалуйста, приложение Google Maps, необходимое для работы данного приложения.</string>
+    <string name="dialog_message_get_auth_token">Подождите, пожалуйста. Осуществляется вход&#8230;</string>
+    <string name="dialog_message_refresh_statistics">Подождите, пожалуйста. Обновляется статистика&#8230;</string>
+    <string name="dialog_title_get_auth_token">Вход</string>
     <string name="dialog_title_map_view">Вид</string>
     <string name="dialog_title_open_source_licenses">Лицензии открытого ПО</string>
+    <string name="dialog_title_refresh_statistics">Обновление статистики</string>
     <string name="help_close">Закрыть справку</string>
     <string name="help_finish_logged_in">Вход успешно выполнен</string>
     <string name="help_log_in">Войти с помощью Google</string>
@@ -76,19 +93,4 @@
     <string name="toast_scan_started">Начинается поиск беспроводных сетей.</string>
     <string name="toast_sync_now_started">Начинается синхронизация.</string>
     <string name="toats_scan_paused">Поиск остановлен.</string>
-    <string name="help_finish">
-        Выполните вход с помощью своего аккаунта Google, чтобы обмениваться информацией о сетях Wi-Fi.
-        Это позволяет нам обеспечивать ее достоверность для вас.\n
-        \n
-        В первый раз может пройти несколько минут, прежде чем данные будут получены с сервера,
-        и на карте появятся обозначения сетей.\n
-        \n
-        Карта будет обновляться всякий раз, когда устройство подключается к Wi-Fi.
-    </string>
-    <string name="help_scan">
-        Просто запустите поиск сетей, и пока вы будете передвигаться – приложение запомнит и отобразит на карте
-        найденные сети и зону их действия.\n
-        \n
-        Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
-    </string>
 </resources>

@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="help_scan">
+        Just run a search, and as long as you move around – the application will remember and
+        display networks on the map.\n
+        \n
+        You\'d be surprised how many open networks you have on your usual way!
+    </string>
+    <string name="help_finish">
+        Log in with your account Google, to share information about Wi-Fi networks.
+        This allows us to ensure its authenticity for you.\n
+        \n
+        The first time, it may take several minutes before the data is received from the server
+        and networks are shown on the map.\n
+        \n
+        The map will be updated every time the device is connected to Wi-Fi.
+    </string>
     <string name="activity_title_about">About Application</string>
     <string name="activity_title_help">Help</string>
     <string name="activity_title_network_set">Networks available in this place</string>
@@ -8,11 +23,13 @@
     <string name="client_id">Support ID: %s</string>
     <string name="crash_dialog_comment_prompt">Please describe what was you are doing right before the error has occurred:</string>
     <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK.</string>
-    <string name="dialog_get_auth_token_message">Please wait while you will be authenticated.</string>
-    <string name="dialog_get_auth_token_title">Authenticating</string>
     <string name="dialog_install_google_maps_message">Please install the Google Maps application.</string>
+    <string name="dialog_message_get_auth_token">Please wait while you will be authenticated.</string>
+    <string name="dialog_message_refresh_statistics">Please wait while statistics are being refreshed&#8230;</string>
+    <string name="dialog_title_get_auth_token">Authenticating</string>
     <string name="dialog_title_map_view">Map View</string>
     <string name="dialog_title_open_source_licenses">Open source licenses</string>
+    <string name="dialog_title_refresh_statistics">Refreshing Statistics</string>
     <string name="help_close">Close help</string>
     <string name="help_finish_logged_in">Successfully logged in</string>
     <string name="help_log_in">Log in with Google</string>
@@ -77,19 +94,4 @@
     <string name="toast_scan_started">Started to scan for Wi-Fi networks.</string>
     <string name="toast_sync_now_started">Started to synchronize.</string>
     <string name="toats_scan_paused">Paused to search.</string>
-    <string name="help_scan">
-        Just run a search, and as long as you move around – the application will remember and
-        display networks on the map.\n
-        \n
-        You\'d be surprised how many open networks you have on your usual way!
-    </string>
-    <string name="help_finish">
-        Log in with your account Google, to share information about Wi-Fi networks.
-        This allows us to ensure its authenticity for you.\n
-        \n
-        The first time, it may take several minutes before the data is received from the server
-        and networks are shown on the map.\n
-        \n
-        The map will be updated every time the device is connected to Wi-Fi.
-    </string>
 </resources>

@@ -135,8 +135,8 @@ public class Authenticator {
         if (showAuthDialog) {
             final ProgressDialog progressDialog = ProgressDialog.show(
                     context,
-                    context.getString(R.string.dialog_get_auth_token_title),
-                    context.getString(R.string.dialog_get_auth_token_message),
+                    context.getString(R.string.dialog_title_get_auth_token),
+                    context.getString(R.string.dialog_message_get_auth_token),
                     true);
             progressDialog.setCancelable(true);
             progressDialog.setCanceledOnTouchOutside(true);

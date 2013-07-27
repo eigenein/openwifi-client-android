@@ -63,6 +63,7 @@ public class AboutActivity extends Activity {
                         })
                         .setCancelable(true)
                         .create();
+                dialog.setCanceledOnTouchOutside(true);
                 dialog.show();
             }
         });
