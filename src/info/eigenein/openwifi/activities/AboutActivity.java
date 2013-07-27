@@ -1,6 +1,5 @@
 package info.eigenein.openwifi.activities;
 
-import android.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
@@ -14,7 +13,6 @@ import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import com.google.android.gms.common.*;
 import info.eigenein.openwifi.*;
-import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.ui.*;
 
