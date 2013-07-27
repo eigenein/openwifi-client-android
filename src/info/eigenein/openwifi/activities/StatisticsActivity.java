@@ -15,9 +15,9 @@ import java.util.HashMap;
 public class StatisticsActivity extends ListActivity {
     private static final String[] adapterFrom = { "title" , "text" };
 
-    private static final int[] adapterTo = {android.R.id.text1, android.R.id.text2};
+    private static final int[] adapterTo = { android.R.id.text1, android.R.id.text2 };
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setListAdapter(createAdapter());
@@ -35,7 +35,7 @@ public class StatisticsActivity extends ListActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -77,7 +77,7 @@ public class StatisticsActivity extends ListActivity {
                 adapterTo);
     }
 
-    private HashMap<String, String> createItem(int titleResourceId, String text) {
+    private HashMap<String, String> createItem(final int titleResourceId, final String text) {
         HashMap<String, String> item = new HashMap<String, String>();
         item.put("title", getString(titleResourceId));
         item.put("text", text);
