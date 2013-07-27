@@ -86,7 +86,10 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
         @Override
         protected Void doInBackground(final Void... voids) {
             if (Internet.check()) {
-                onSucceeded(context, getInfo(context));
+                final WifiInfo info = getInfo(context);
+                if (info != null) {
+                    onSucceeded(context, info);
+                }
             } else {
                 onFailed(getInfo(context));
             }
