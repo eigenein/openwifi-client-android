@@ -1,6 +1,8 @@
 package info.eigenein.openwifi.activities;
 
+import android.*;
 import android.app.*;
+import android.content.*;
 import android.content.pm.*;
 import android.content.res.*;
 import android.os.*;
@@ -10,7 +12,9 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.google.analytics.tracking.android.*;
+import com.google.android.gms.common.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.R;
 import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.ui.*;
 
@@ -44,6 +48,26 @@ public class AboutActivity extends Activity {
         final TextView copyrightTextView = (TextView)findViewById(R.id.about_copyright_text_view);
         copyrightTextView.setText(Html.fromHtml(getString(R.string.text_view_about_copyright)));
         copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        // Open source licenses link.
+        final View openSourceLicensesView = findViewById(R.id.text_view_open_source_licenses);
+        openSourceLicensesView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                final Dialog dialog = new AlertDialog.Builder(AboutActivity.this)
+                        .setTitle(R.string.dialog_title_open_source_licenses)
+                        .setMessage(GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(AboutActivity.this))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialogInterface, final int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setCancelable(true)
+                        .create();
+                dialog.show();
+            }
+        });
 
         // Linkify project link.
         final TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);

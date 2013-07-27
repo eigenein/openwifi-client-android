@@ -1,86 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="application_name">Open WiFi</string>
-    <string name="menu_item_help">Справка</string>
-    <string name="menu_item_settings">Настройки</string>
-    <string name="menu_item_start_scan">Начать поиск сетей</string>
-    <string name="menu_item_pause_scan">Остановить поиск</string>
-    <string name="toast_scan_started">Начинается поиск беспроводных сетей.</string>
-    <string name="toats_scan_paused">Поиск остановлен.</string>
-    <string name="preferences_category_scan">Поиск сетей</string>
-    <string name="preference_scan_period">Интервал</string>
-    <string name="notification_wifi_is_disabled_title">WiFi отключен</string>
-    <string name="notification_wifi_is_disabled_text">Чтобы возобновить поиск сетей, включите WiFi.</string>
-    <string name="preference_is_network_provider_enabled">По координатам сети</string>
-    <string name="preference_is_network_provider_enabled_summary">Позволяет обнаружить больше точек доступа, но использует существующее подключение к Интернету</string>
-    <string name="preference_statistics">Статистика</string>
-    <string name="statistics_unique_bssid_count">Точки доступа</string>
-    <string name="statistics_unique_ssid_count">Сети</string>
-    <string name="statistics_scan_result_count">Записей в базе данных</string>
-    <string name="dialog_title_map_view">Вид</string>
-    <string name="preferences_category_advanced">Расширенные</string>
-    <string name="preference_max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
+    <string name="activity_title_about">О приложении</string>
+    <string name="activity_title_help">Справка</string>
     <string name="activity_title_network_set">Доступные сети в этом месте</string>
-    <string name="menu_item_show_details">Показать сведения</string>
+    <string name="application_name">Open WiFi</string>
+    <string name="button_install">Установить</string>
+    <string name="crash_dialog_comment_prompt">Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:</string>
+    <string name="crash_dialog_text">В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке, чтобы помочь исправить ее?</string>
+    <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
+    <string name="dialog_get_auth_token_title">Вход</string>
+    <string name="dialog_install_google_maps_message">Установите, пожалуйста, приложение Google Maps, необходимое для работы данного приложения.</string>
+    <string name="dialog_title_map_view">Вид</string>
+    <string name="dialog_title_open_source_licenses">Лицензии открытого ПО</string>
+    <string name="help_close">Закрыть справку</string>
+    <string name="help_finish_logged_in">Вход успешно выполнен</string>
+    <string name="help_log_in">Войти с помощью Google</string>
+    <string name="help_start_scan_now">Начать поиск сейчас</string>
+    <string name="help_welcome">Open WiFi регулярно, в фоновом режиме, обновляет данные о доступных открытых сетях Wi-Fi по всему миру и отображает их на карте.</string>
+    <string name="image_button_facebook">Open WiFi на Facebook</string>
+    <string name="image_button_google">Open WiFi на Google+</string>
+    <string name="image_button_twitter">Open WiFi в Твиттере</string>
+    <string name="image_button_vkontakte">Open WiFi на ВКонтакте</string>
+    <string name="menu_item_help">Справка</string>
     <string name="menu_item_ignore_network_name">Скрыть %s</string>
     <string name="menu_item_ignore_similar_networks">Скрыть похожие сети</string>
-    <string name="preference_statistics_summary">Просмотреть сведения о количестве собранных данных</string>
-    <string name="activity_title_about">О приложении</string>
-    <string name="text_view_version">Версия %s</string>
-    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
-    <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
-    <string name="preference_sync_now">Синхронизировать сейчас</string>
-    <string name="preference_sync_now_synced_at_summary">Последняя синхронизация: %1$s</string>
-    <string name="preference_sync_now_never_synced_summary">Синхронизация не выполнялась</string>
-    <string name="preference_sync_now_syncing_summary">Синхронизация&#8230;</string>
-    <string name="toast_sync_now_started">Начинается синхронизация.</string>
-    <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Отправить отзыв&lt;/a&gt;</string>
-    <string name="crash_dialog_text">
-        В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке,
-        чтобы помочь исправить ее?
-    </string>
-    <string name="crash_dialog_comment_prompt">
-        Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:
-    </string>
-    <string name="preference_category_support">Техническая поддержка</string>
-    <string name="preference_acra_enable">Отправлять отчеты об ошибках</string>
-    <string name="preference_acra_syslog">Системные отчеты</string>
-    <string name="preference_acra_deviceid">Идентификатор устройства</string>
-    <string name="preference_acra_enable_summary">Отчеты помогают улучшить качество приложения.</string>
-    <string name="preference_acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
-    <string name="preference_acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
+    <string name="menu_item_pause_scan">Остановить поиск</string>
+    <string name="menu_item_settings">Настройки</string>
+    <string name="menu_item_show_details">Показать сведения</string>
+    <string name="menu_item_start_scan">Начать поиск сетей</string>
+    <string name="notification_wifi_is_disabled_text">Чтобы возобновить поиск сетей, включите WiFi.</string>
+    <string name="notification_wifi_is_disabled_title">WiFi отключен</string>
     <string name="overlay_networks_string_1">сеть</string>
     <string name="overlay_networks_string_2">сети</string>
     <string name="overlay_networks_string_3">сетей</string>
+    <string name="preference_acra_deviceid">Идентификатор устройства</string>
+    <string name="preference_acra_deviceid_summary">Передавать идентификатор устройства вместе с отчетом об ошибке.</string>
+    <string name="preference_acra_enable">Отправлять отчеты об ошибках</string>
+    <string name="preference_acra_enable_summary">Отчеты помогают улучшить качество приложения.</string>
+    <string name="preference_acra_syslog">Системные отчеты</string>
+    <string name="preference_acra_syslog_summary">Помогают разработчикам найти причину ошибки.</string>
     <string name="preference_category_general">Общие</string>
+    <string name="preference_category_support">Техническая поддержка</string>
+    <string name="preference_is_network_provider_enabled">По координатам сети</string>
+    <string name="preference_is_network_provider_enabled_summary">Позволяет обнаружить больше точек доступа, но использует существующее подключение к Интернету</string>
+    <string name="preference_max_scan_results_for_bssid">Запоминать для каждой точки доступа</string>
+    <string name="preference_scan_period">Интервал</string>
     <string name="preference_sign_in">Войти с помощью Аккаунта Google</string>
-    <string name="preference_sign_in_summary">Войдите, чтобы делиться Wi-Fi сетями с другими пользователями.</string>
-    <string name="dialog_get_auth_token_title">Вход</string>
-    <string name="dialog_get_auth_token_message">Подождите, пожалуйста. Осуществляется вход.</string>
     <string name="preference_sign_in_again">Войти заново</string>
-    <string name="toast_no_google_account">Настройте аккаунт Google.</string>
-    <string name="activity_title_help">Справка</string>
-    <string name="tab_help_welcome">Знакомство</string>
+    <string name="preference_sign_in_error">Сеть недоступна.</string>
+    <string name="preference_sign_in_summary">Войдите, чтобы делиться Wi-Fi сетями с другими пользователями.</string>
+    <string name="preference_statistics">Статистика</string>
+    <string name="preference_statistics_summary">Просмотреть сведения о количестве собранных данных</string>
+    <string name="preference_sync_now">Синхронизировать сейчас</string>
+    <string name="preference_sync_now_authenticating">Аутентификация&#8230;</string>
+    <string name="preference_sync_now_never_synced_summary">Синхронизация не выполнялась</string>
+    <string name="preference_sync_now_synced_at_summary">Последняя синхронизация: %1$s</string>
+    <string name="preference_sync_now_syncing_summary">Синхронизация&#8230;</string>
+    <string name="preferences_category_advanced">Расширенные</string>
+    <string name="preferences_category_scan">Поиск сетей</string>
+    <string name="statistics_scan_result_count">Записей в базе данных</string>
+    <string name="statistics_unique_bssid_count">Точки доступа</string>
+    <string name="statistics_unique_ssid_count">Сети</string>
+    <string name="tab_help_finish">Вход</string>
     <string name="tab_help_scan">Поиск сетей</string>
-    <string name="help_welcome">
-        Open WiFi регулярно, в фоновом режиме, обновляет данные о доступных открытых сетях Wi-Fi по всему миру
-        и отображает их на карте.
-    </string>
-    <string name="help_scan">
-        Просто запустите поиск сетей, и пока вы будете передвигаться – приложение запомнит и отобразит на карте
-        найденные сети и зону их действия.\n
-        \n
-        Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
-    </string>
-    <string name="help_start_scan_now">
-        Начать поиск сейчас
-    </string>
-    <string name="tab_help_finish">
-        Вход
-    </string>
-    <string name="help_log_in">
-        Войти с помощью Google
-    </string>
+    <string name="tab_help_welcome">Знакомство</string>
+    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Павел Пересторонин&lt;/a&gt;</string>
+    <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Сайт проекта&lt;/a&gt;</string>
+    <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Отправить отзыв&lt;/a&gt;</string>
+    <string name="text_view_open_source_licenses"><u>Лицензии открытого ПО</u></string>
+    <string name="text_view_rating_is_not_implemented">Рейтинг сетей еще не реализован.</string>
+    <string name="text_view_version">Версия %s</string>
+    <string name="toast_authentication_io_exception">Не удалось выполнить вход. Вероятно, сеть недоступна. Попробуйте позже.</string>
+    <string name="toast_feature_is_not_implemented">Эта функция еще не реализована. Пожалуйста, следите за обновлениями.</string>
+    <string name="toast_no_google_account">Настройте аккаунт Google.</string>
+    <string name="toast_scan_started">Начинается поиск беспроводных сетей.</string>
+    <string name="toast_sync_now_started">Начинается синхронизация.</string>
+    <string name="toats_scan_paused">Поиск остановлен.</string>
     <string name="help_finish">
         Выполните вход с помощью своего аккаунта Google, чтобы обмениваться информацией о сетях Wi-Fi.
         Это позволяет нам обеспечивать ее достоверность для вас.\n
@@ -90,33 +85,10 @@
         \n
         Карта будет обновляться всякий раз, когда устройство подключается к Wi-Fi.
     </string>
-    <string name="help_finish_logged_in">
-        Вход успешно выполнен
+    <string name="help_scan">
+        Просто запустите поиск сетей, и пока вы будете передвигаться – приложение запомнит и отобразит на карте
+        найденные сети и зону их действия.\n
+        \n
+        Вы удивитесь, сколько открытых сетей есть на вашем привычном пути!
     </string>
-    <string name="text_view_rating_is_not_implemented">
-        Рейтинг сетей еще не реализован.
-    </string>
-    <string name="toast_feature_is_not_implemented">
-        Эта функция еще не реализована. Пожалуйста, следите за обновлениями.
-    </string>
-    <string name="toast_authentication_io_exception">
-        Не удалось выполнить вход. Вероятно, сеть недоступна. Попробуйте позже.
-    </string>
-    <string name="help_close">
-        Закрыть справку
-    </string>
-    <string name="preference_sync_now_authenticating">
-        Аутентификация&#8230;
-    </string>
-    <string name="preference_sign_in_error">
-        Сеть недоступна.
-    </string>
-    <string name="dialog_install_google_maps_message">
-        Установите, пожалуйста, приложение Google Maps, необходимое для работы данного приложения.
-    </string>
-    <string name="button_install">Установить</string>
-    <string name="image_button_twitter">Open WiFi в Твиттере</string>
-    <string name="image_button_vkontakte">Open WiFi на ВКонтакте</string>
-    <string name="image_button_facebook">Open WiFi на Facebook</string>
-    <string name="image_button_google">Open WiFi на Google+</string>
 </resources>
