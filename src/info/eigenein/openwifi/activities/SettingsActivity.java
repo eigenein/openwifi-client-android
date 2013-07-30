@@ -18,6 +18,7 @@ import java.util.*;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
+
     private static final String LOG_TAG = SettingsActivity.class.getCanonicalName();
 
     private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {

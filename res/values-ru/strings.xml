@@ -91,6 +91,9 @@
     <string name="toast_feature_is_not_implemented">Эта функция еще не реализована. Пожалуйста, следите за обновлениями.</string>
     <string name="toast_no_google_account">Настройте аккаунт Google.</string>
     <string name="toast_scan_started">Начинается поиск беспроводных сетей.</string>
-    <string name="toast_sync_now_started">Начинается синхронизация.</string>
+    <string name="toast_sync_now_started">Начинается синхронизация карты сетей.</string>
     <string name="toats_scan_paused">Поиск остановлен.</string>
+    <string name="notification_text_syncing">Синхронизируется карта сетей Wi-Fi</string>
+    <string name="notification_title_syncing">Open WiFi</string>
+    <string name="notification_ticker_syncing">Open WiFi\nСинхронизируется карта сетей Wi-Fi</string>
 </resources>
