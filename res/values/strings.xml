@@ -46,8 +46,8 @@
     <string name="menu_item_settings">Settings</string>
     <string name="menu_item_show_details">Show details</string>
     <string name="menu_item_start_scan">Start Searching for Wi-Fi</string>
-    <string name="notification_wifi_is_disabled_text">To resume searching please enable WiFi.</string>
-    <string name="notification_wifi_is_disabled_title">Wi-Fi is disabled</string>
+    <string name="notification_text_wifi_is_disabled">To resume searching please enable WiFi.</string>
+    <string name="notification_title_wifi_is_disabled">Wi-Fi is disabled</string>
     <string name="overlay_networks_string_1">network</string>
     <string name="overlay_networks_string_2">networks</string>
     <string name="overlay_networks_string_3">networks</string>

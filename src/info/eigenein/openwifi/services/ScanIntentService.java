@@ -6,6 +6,7 @@ import android.net.wifi.*;
 import android.os.*;
 import android.util.Log;
 import com.google.analytics.tracking.android.*;
+import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.location.*;
 import info.eigenein.openwifi.helpers.ui.*;
 
@@ -16,7 +17,7 @@ public class ScanIntentService extends IntentService {
 
     private static final String SERVICE_NAME = ScanIntentService.class.getCanonicalName();
 
-    private static final Intent scanServiceIntent = new Intent("info.eigenein.intents.SCAN_INTENT");
+    private static final Intent SCAN_SERVICE_INTENT = new Intent("info.eigenein.intents.SCAN_INTENT");
 
     public ScanIntentService() {
         super(SERVICE_NAME);
@@ -28,17 +29,21 @@ public class ScanIntentService extends IntentService {
     public static void restart(Context context) {
         // Stop the scan service.
         stop(context);
+        // Check if Wi-Fi is enabled.
+        if (!getWiFiManager(context).isWifiEnabled()) {
+            NotificationHelper.notifyWiFiIsNotEnabled(context);
+        }
         // Schedule the scan.
-        final long period = info.eigenein.openwifi.helpers.internal.Settings.with(context).scanPeriod();
+        final long period = Settings.with(context).scanPeriod();
         final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
-                scanServiceIntent,
+                SCAN_SERVICE_INTENT,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         getAlarmManager(context).setInexactRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + period,
-                info.eigenein.openwifi.helpers.internal.Settings.with(context).scanPeriod(),
+                period,
                 scanPendingIntent);
         // Start location tracking.
         LocationUpdatesManager.requestUpdates(context, DefaultLocationListener.getInstance());
@@ -70,7 +75,7 @@ public class ScanIntentService extends IntentService {
         final PendingIntent scanPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
-                scanServiceIntent,
+                SCAN_SERVICE_INTENT,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         if (scanPendingIntent != null) {
             getAlarmManager(context).cancel(scanPendingIntent);
@@ -88,16 +93,16 @@ public class ScanIntentService extends IntentService {
         return PendingIntent.getBroadcast(
                 context,
                 0,
-                scanServiceIntent,
+                SCAN_SERVICE_INTENT,
                 PendingIntent.FLAG_NO_CREATE) != null;
     }
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-        final WifiManager wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        final WifiManager wifiManager = getWiFiManager(this);
 
         if (!wifiManager.isWifiEnabled()) {
-            Log.i(SERVICE_NAME, "WiFi is not enabled.");
+            Log.i(SERVICE_NAME, "Wi-Fi is not enabled.");
             NotificationHelper.notifyWiFiIsNotEnabled(this);
             return;
         }
@@ -107,6 +112,10 @@ public class ScanIntentService extends IntentService {
         } else {
             Log.i(SERVICE_NAME, "The scan was initiated.");
         }
+    }
+
+    private static WifiManager getWiFiManager(final Context context) {
+        return (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
     }
 
     /**
