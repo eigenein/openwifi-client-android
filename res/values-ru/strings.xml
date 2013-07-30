@@ -46,7 +46,7 @@
     <string name="menu_item_show_details">Показать сведения</string>
     <string name="menu_item_start_scan">Начать поиск сетей</string>
     <string name="notification_wifi_is_disabled_text">Чтобы возобновить поиск сетей, включите WiFi.</string>
-    <string name="notification_wifi_is_disabled_title">WiFi отключен</string>
+    <string name="notification_wifi_is_disabled_title">Wi-Fi отключен</string>
     <string name="overlay_networks_string_1">сеть</string>
     <string name="overlay_networks_string_2">сети</string>
     <string name="overlay_networks_string_3">сетей</string>

@@ -4,17 +4,16 @@ import android.app.*;
 import android.content.*;
 import android.net.wifi.*;
 import android.os.*;
-import android.provider.*;
-import android.support.v4.app.*;
 import android.util.Log;
 import com.google.analytics.tracking.android.*;
-import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.location.*;
+import info.eigenein.openwifi.helpers.ui.*;
 
 /**
  * Background service that runs a WiFi access point scan.
  */
 public class ScanIntentService extends IntentService {
+
     private static final String SERVICE_NAME = ScanIntentService.class.getCanonicalName();
 
     private static final Intent scanServiceIntent = new Intent("info.eigenein.intents.SCAN_INTENT");
@@ -99,7 +98,7 @@ public class ScanIntentService extends IntentService {
 
         if (!wifiManager.isWifiEnabled()) {
             Log.i(SERVICE_NAME, "WiFi is not enabled.");
-            notifyWiFiIsNotEnabled();
+            NotificationHelper.notifyWiFiIsNotEnabled(this);
             return;
         }
 
@@ -115,37 +114,5 @@ public class ScanIntentService extends IntentService {
      */
     private static AlarmManager getAlarmManager(final Context context) {
         return (AlarmManager)context.getSystemService(ALARM_SERVICE);
-    }
-
-    /**
-     * Shows notification that Wi-Fi is disabled and allows the user
-     * to enable Wi-Fi through WiFi settings intent.
-     */
-    private void notifyWiFiIsNotEnabled() {
-        final NotificationManager notificationManager = (NotificationManager)getSystemService(
-                NOTIFICATION_SERVICE);
-        PendingIntent wifiSettingsPendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                new Intent(Settings.ACTION_WIFI_SETTINGS),
-                0
-        );
-
-        final String wifi_is_disabled_title = getString(R.string.notification_wifi_is_disabled_title);
-        final String wifi_is_disabled_text = getString(R.string.notification_wifi_is_disabled_text);
-        final Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setAutoCancel(true)
-                .setTicker(wifi_is_disabled_title +
-                                System.getProperty("line.separator") +
-                                wifi_is_disabled_text)
-                .setContentText(wifi_is_disabled_text)
-                .setContentIntent(wifiSettingsPendingIntent)
-                .setContentTitle(wifi_is_disabled_title)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setOnlyAlertOnce(true)
-                .build();
-
-        notificationManager.notify(0, notification);
     }
 }
