@@ -1,7 +1,5 @@
 package info.eigenein.openwifi.helpers.location;
 
-import com.google.android.maps.*;
-
 /**
  * Converts location from degrees into MapView format and vice versa.
  */

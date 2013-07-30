@@ -45,8 +45,7 @@ public class GoogleMapsHelper {
         try {
             context.getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0);
             return true;
-        } catch (PackageManager.NameNotFoundException e)
-        {
+        } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
     }
