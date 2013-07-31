@@ -166,6 +166,7 @@ public class MyScanResultDao extends BaseDao {
             return;
         }
         for (final ScanResult scanResult : results) {
+            // TODO: #138: Avoid own result duplicating.
             final ContentValues values = new ContentValues();
             values.put("accuracy", location.getAccuracy());
             final int latitudeE6 = L.toE6(location.getLatitude());
