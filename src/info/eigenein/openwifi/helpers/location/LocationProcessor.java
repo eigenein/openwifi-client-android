@@ -7,10 +7,8 @@ import info.eigenein.openwifi.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Processes locations into an area.
- */
 public class LocationProcessor {
+
     private static final float MIN_AREA_ACCURACY = 30.0f;
 
     private final List<MyScanResult> scanResults = new ArrayList<MyScanResult>();
