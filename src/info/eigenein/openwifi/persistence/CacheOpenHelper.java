@@ -2,9 +2,13 @@ package info.eigenein.openwifi.persistence;
 
 import android.content.*;
 import android.database.sqlite.*;
+import android.util.*;
 
 public final class CacheOpenHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+
+    private static final String LOG_TAG = CacheOpenHelper.class.getCanonicalName();
+
+    private static final int DATABASE_VERSION = 2;
 
     private static final String DATABASE_NAME = "cache.db";
 
@@ -35,7 +39,16 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
             final SQLiteDatabase database,
             final int oldVersion,
             final int newVersion) {
-        // TODO.
+        Log.i(LOG_TAG + ".onUpgrade", String.format("%s, %s", oldVersion, newVersion));
+        new MyScanResultDao(database).onUpgrade(database, oldVersion, newVersion);
+    }
+
+    @Override
+    public void onDowngrade(
+            final SQLiteDatabase database,
+            final int oldVersion,
+            final int newVersion) {
+        onUpgrade(database, oldVersion, newVersion);
     }
 
     public MyScanResultDao getMyScanResultDao() {

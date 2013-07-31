@@ -9,6 +9,7 @@ import org.json.*;
  * Represents a scan result.
  */
 public final class MyScanResult {
+
     private long id;
 
     private float accuracy;
@@ -33,6 +34,8 @@ public final class MyScanResult {
 
     private String ssid;
 
+    private long index;
+
     public static MyScanResult fromJsonObject(final JSONObject object) {
         final MyScanResult scanResult = new MyScanResult();
         try {
@@ -43,6 +46,8 @@ public final class MyScanResult {
             final JSONObject locationObject = object.getJSONObject("loc");
             scanResult.setLatitude(locationObject.getDouble("lat"));
             scanResult.setLongitude(locationObject.getDouble("lon"));
+            scanResult.setIndex(LocationIndexer.getIndex(
+                    scanResult.getLatitudeE6(), scanResult.getLongitudeE6()));
         } catch (JSONException e) {
             throw new RuntimeException("Error while converting from JSON object.", e);
         }
@@ -107,6 +112,10 @@ public final class MyScanResult {
         return synced;
     }
 
+    public long getIndex() {
+        return index;
+    }
+
     public void setId(final long id) {
         this.id = id;
     }
@@ -149,6 +158,10 @@ public final class MyScanResult {
 
     public void setBssid(final String bssid) {
         this.bssid = bssid;
+    }
+
+    public void setIndex(final long index) {
+        this.index = index;
     }
 
     public JSONObject toJsonObject() {

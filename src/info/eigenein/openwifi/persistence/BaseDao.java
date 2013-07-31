@@ -10,4 +10,9 @@ public abstract class BaseDao {
     }
 
     public abstract void onCreate(final SQLiteDatabase database);
+
+    public abstract void onUpgrade(
+            final SQLiteDatabase database,
+            final int oldVersion,
+            final int newVersion);
 }
