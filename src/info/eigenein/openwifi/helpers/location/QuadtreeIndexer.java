@@ -1,7 +1,7 @@
 package info.eigenein.openwifi.helpers.location;
 
 
-public class LocationIndexer {
+public class QuadtreeIndexer {
 
     private static class MapBoundsE6 {
         /**

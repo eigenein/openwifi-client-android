@@ -34,7 +34,7 @@ public final class MyScanResult {
 
     private String ssid;
 
-    private long index;
+    private long quadtreeIndex;
 
     public static MyScanResult fromJsonObject(final JSONObject object) {
         final MyScanResult scanResult = new MyScanResult();
@@ -46,8 +46,6 @@ public final class MyScanResult {
             final JSONObject locationObject = object.getJSONObject("loc");
             scanResult.setLatitude(locationObject.getDouble("lat"));
             scanResult.setLongitude(locationObject.getDouble("lon"));
-            scanResult.setIndex(LocationIndexer.getIndex(
-                    scanResult.getLatitudeE6(), scanResult.getLongitudeE6()));
         } catch (JSONException e) {
             throw new RuntimeException("Error while converting from JSON object.", e);
         }
@@ -112,8 +110,8 @@ public final class MyScanResult {
         return synced;
     }
 
-    public long getIndex() {
-        return index;
+    public long getQuadtreeIndex() {
+        return quadtreeIndex;
     }
 
     public void setId(final long id) {
@@ -160,8 +158,8 @@ public final class MyScanResult {
         this.bssid = bssid;
     }
 
-    public void setIndex(final long index) {
-        this.index = index;
+    public void setQuadtreeIndex(final long index) {
+        this.quadtreeIndex = index;
     }
 
     public JSONObject toJsonObject() {

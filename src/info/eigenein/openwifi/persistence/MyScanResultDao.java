@@ -34,12 +34,12 @@ public class MyScanResultDao extends BaseDao {
                         "`own` SMALLINT NOT NULL, " +
                         "`bssid` VARCHAR NOT NULL, " +
                         "`ssid` VARCHAR NOT NULL, " +
-                        "`index` BIGINT NOT NULL);"
+                        "`quadtree_index` BIGINT NOT NULL);"
         );
         // Used to query by location.
         database.execSQL(
-                "CREATE INDEX `idx_my_scan_results_index` " +
-                        "ON `my_scan_results` (`index`);");
+                "CREATE INDEX `idx_my_scan_results_quadtree_index` " +
+                        "ON `my_scan_results` (`quadtree_index`);");
         // Used to query unsynced results while syncing.
         database.execSQL(
                 "CREATE INDEX `idx_my_scan_results_synced` " +
@@ -166,22 +166,32 @@ public class MyScanResultDao extends BaseDao {
             return;
         }
         for (final ScanResult scanResult : results) {
-            // TODO: #138: Avoid own result duplicating.
-            final ContentValues values = new ContentValues();
-            values.put("accuracy", location.getAccuracy());
-            final int latitudeE6 = L.toE6(location.getLatitude());
-            values.put("latitude", latitudeE6);
-            final int longitudeE6 = L.toE6(location.getLongitude());
-            values.put("longitude", longitudeE6);
-            values.put("timestamp", location.getTime());
-            values.put("synced", false);
-            values.put("own", true);
-            values.put("bssid", scanResult.BSSID);
-            values.put("ssid", scanResult.SSID);
-            values.put("index", LocationIndexer.getIndex(latitudeE6, longitudeE6));
-            database.insert("my_scan_results", null, values);
+            // Avoid duplicates.
+            final long duplicatesCount = DatabaseUtils.longForQuery(
+                    database,
+                    "SELECT COUNT(*) FROM my_scan_results WHERE bssid = ? AND timestamp = ? AND own;",
+                    new String[] { scanResult.BSSID, Long.toString(location.getTime()) });
+            if (duplicatesCount == 0L) {
+                final ContentValues values = new ContentValues();
+                values.put("accuracy", location.getAccuracy());
+                final int latitudeE6 = L.toE6(location.getLatitude());
+                values.put("latitude", latitudeE6);
+                final int longitudeE6 = L.toE6(location.getLongitude());
+                values.put("longitude", longitudeE6);
+                values.put("timestamp", location.getTime());
+                values.put("synced", false);
+                values.put("own", true);
+                values.put("bssid", scanResult.BSSID);
+                values.put("ssid", scanResult.SSID);
+                values.put("quadtree_index", QuadtreeIndexer.getIndex(latitudeE6, longitudeE6));
+                final long rowId = database.insert("my_scan_results", null, values);
+                Log.d(LOG_TAG + ".insert(location, results)", String.format(
+                        "Inserted #%s (%s).", rowId, scanResult.SSID));
+            } else {
+                Log.d(LOG_TAG + ".insert(location, results)", String.format(
+                        "Skipped %s (%s)", scanResult.BSSID, scanResult.SSID));
+            }
         }
-        Log.d(LOG_TAG + ".insert(location, results)", String.format("Inserted %s results.", results.size()));
     }
 
     /**
@@ -204,7 +214,7 @@ public class MyScanResultDao extends BaseDao {
         final int ownIndex = insertHelper.getColumnIndex("own");
         final int bssidIndex = insertHelper.getColumnIndex("bssid");
         final int ssidIndex = insertHelper.getColumnIndex("ssid");
-        final int indexIndex = insertHelper.getColumnIndex("index");
+        final int quadtreeIndexIndex = insertHelper.getColumnIndex("quadtree_index");
         // Perform inserting.
         try {
             for (final MyScanResult result : results) {
@@ -218,7 +228,7 @@ public class MyScanResultDao extends BaseDao {
                 insertHelper.bind(ownIndex, result.isOwn());
                 insertHelper.bind(bssidIndex, result.getBssid());
                 insertHelper.bind(ssidIndex, result.getSsid());
-                insertHelper.bind(indexIndex, result.getIndex());
+                insertHelper.bind(quadtreeIndexIndex, result.getQuadtreeIndex());
                 // Insert the result.
                 insertHelper.execute();
             }
@@ -281,15 +291,10 @@ public class MyScanResultDao extends BaseDao {
     }
 
     private long getUniqueCount(final String columnName) {
-        final Cursor cursor = database.rawQuery(
+        return DatabaseUtils.longForQuery(
+                database,
                 String.format("SELECT COUNT(DISTINCT %s) FROM my_scan_results;", columnName),
-                new String[0]);
-        try {
-            cursor.moveToFirst();
-            return cursor.getLong(0);
-        } finally {
-            cursor.close();
-        }
+                null);
     }
 
     /**

@@ -2,6 +2,7 @@ package info.eigenein.openwifi.sync;
 
 import android.content.Context;
 import info.eigenein.openwifi.helpers.internal.Settings;
+import info.eigenein.openwifi.helpers.location.*;
 import info.eigenein.openwifi.persistence.*;
 import info.eigenein.openwifi.services.*;
 import org.apache.http.HttpResponse;
@@ -55,6 +56,8 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             } catch (JSONException e) {
                 throw new RuntimeException("Could not parse the response item.", e);
             }
+            scanResult.setQuadtreeIndex(QuadtreeIndexer.getIndex(
+                    scanResult.getLatitudeE6(), scanResult.getLongitudeE6()));
             scanResult.setOwn(false);
             scanResult.setSynced(true);
             // Add to the list.
