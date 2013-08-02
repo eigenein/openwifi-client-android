@@ -7,7 +7,7 @@ import android.location.*;
 import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
-import info.eigenein.openwifi.helpers.location.*;
+import info.eigenein.openwifi.helpers.*;
 
 import java.util.*;
 

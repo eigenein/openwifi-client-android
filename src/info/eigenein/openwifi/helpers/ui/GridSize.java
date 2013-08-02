@@ -1,5 +1,6 @@
 package info.eigenein.openwifi.helpers.ui;
 
+@Deprecated
 public class GridSize {
     private final double latitideStep;
 

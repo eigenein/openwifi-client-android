@@ -2,7 +2,7 @@ package info.eigenein.openwifi.persistence;
 
 import android.location.*;
 import android.net.wifi.*;
-import info.eigenein.openwifi.helpers.location.*;
+import info.eigenein.openwifi.helpers.*;
 import org.json.*;
 
 /**

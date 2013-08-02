@@ -9,8 +9,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import info.eigenein.openwifi.helpers.internal.Settings;
-import info.eigenein.openwifi.helpers.io.Internet;
+import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.Internet;
 import info.eigenein.openwifi.services.SyncIntentService;
 
 import java.util.Date;

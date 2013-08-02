@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.ui;
+package info.eigenein.openwifi.helpers;
 
 import android.content.Context;
 import android.os.Vibrator;

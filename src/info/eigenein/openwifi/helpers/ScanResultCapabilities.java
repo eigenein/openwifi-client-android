@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.parsers;
+package info.eigenein.openwifi.helpers;
 
 /**
  * Represents an access point capabilities.

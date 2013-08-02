@@ -7,8 +7,8 @@ import android.location.Location;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-import info.eigenein.openwifi.helpers.parsers.ScanResultCapabilities;
-import info.eigenein.openwifi.helpers.location.CurrentLocationTracker;
+import info.eigenein.openwifi.helpers.ScanResultCapabilities;
+import info.eigenein.openwifi.helpers.CurrentLocationTracker;
 import info.eigenein.openwifi.persistence.*;
 import info.eigenein.openwifi.services.*;
 

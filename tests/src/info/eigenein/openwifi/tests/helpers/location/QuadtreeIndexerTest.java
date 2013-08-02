@@ -1,6 +1,6 @@
 package info.eigenein.openwifi.tests.helpers.location;
 
-import info.eigenein.openwifi.helpers.location.*;
+import info.eigenein.openwifi.helpers.*;
 import junit.framework.*;
 
 public class QuadtreeIndexerTest extends TestCase {

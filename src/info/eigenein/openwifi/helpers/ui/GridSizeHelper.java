@@ -2,7 +2,9 @@ package info.eigenein.openwifi.helpers.ui;
 
 import java.util.*;
 
+@Deprecated
 public class GridSizeHelper {
+
     private static final long MIN_ZOOM = 3L;
 
     private static final long MAX_ZOOM = 21L;

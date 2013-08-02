@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.formatters;
+package info.eigenein.openwifi.helpers;
 
 /**
  * Formats the count.

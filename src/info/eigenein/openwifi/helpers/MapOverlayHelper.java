@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.ui;
+package info.eigenein.openwifi.helpers;
 
 import android.content.*;
 import android.graphics.*;
@@ -6,8 +6,9 @@ import android.util.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.*;
-import info.eigenein.openwifi.helpers.formatters.*;
+import info.eigenein.openwifi.helpers.ui.*;
 
 import java.util.*;
 

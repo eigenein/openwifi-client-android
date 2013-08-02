@@ -1,6 +1,6 @@
 package info.eigenein.openwifi.tests.helpers.internal;
 
-import info.eigenein.openwifi.helpers.internal.*;
+import info.eigenein.openwifi.helpers.*;
 import junit.framework.*;
 
 public class RandomHelperTest extends TestCase {

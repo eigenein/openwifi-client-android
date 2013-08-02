@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.io;
+package info.eigenein.openwifi.helpers;
 
 import android.util.Log;
 

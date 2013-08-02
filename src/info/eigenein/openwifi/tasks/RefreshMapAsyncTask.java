@@ -6,6 +6,7 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.google.common.collect.*;
 import info.eigenein.openwifi.activities.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.helpers.entities.*;
 import info.eigenein.openwifi.helpers.location.*;
 import info.eigenein.openwifi.helpers.ui.*;

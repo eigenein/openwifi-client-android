@@ -1,8 +1,7 @@
 package info.eigenein.openwifi.sync;
 
 import android.content.Context;
-import info.eigenein.openwifi.helpers.internal.Settings;
-import info.eigenein.openwifi.helpers.location.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
 import info.eigenein.openwifi.services.*;
 import org.apache.http.HttpResponse;

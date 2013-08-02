@@ -1,6 +1,6 @@
 package info.eigenein.openwifi.tests.helpers.io;
 
-import info.eigenein.openwifi.helpers.io.*;
+import info.eigenein.openwifi.helpers.*;
 import junit.framework.*;
 
 public class InternetTest extends TestCase {

@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.location;
+package info.eigenein.openwifi.helpers;
 
 /**
  * Converts location from degrees into MapView format and vice versa.

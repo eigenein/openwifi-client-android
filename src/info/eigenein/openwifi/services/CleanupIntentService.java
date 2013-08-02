@@ -5,7 +5,7 @@ import android.content.*;
 import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
-import info.eigenein.openwifi.helpers.internal.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
 
 import java.util.*;

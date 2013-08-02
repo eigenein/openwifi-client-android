@@ -1,9 +1,10 @@
-package info.eigenein.openwifi.helpers.ui;
+package info.eigenein.openwifi.helpers;
 
 import android.*;
 import android.app.*;
 import android.content.*;
 import android.provider.*;
+import android.provider.Settings;
 import android.support.v4.app.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.R;

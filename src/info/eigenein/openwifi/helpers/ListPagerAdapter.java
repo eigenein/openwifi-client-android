@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.ui;
+package info.eigenein.openwifi.helpers;
 
 import android.support.v4.view.*;
 import android.view.*;

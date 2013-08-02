@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.io;
+package info.eigenein.openwifi.helpers;
 
 import org.apache.http.*;
 import org.apache.http.entity.*;

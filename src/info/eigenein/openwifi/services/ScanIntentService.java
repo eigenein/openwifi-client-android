@@ -6,9 +6,7 @@ import android.net.wifi.*;
 import android.os.*;
 import android.util.Log;
 import com.google.analytics.tracking.android.*;
-import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.location.*;
-import info.eigenein.openwifi.helpers.ui.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.listeners.*;
 
 /**

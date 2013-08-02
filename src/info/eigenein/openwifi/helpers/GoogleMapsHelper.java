@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.helpers.internal;
+package info.eigenein.openwifi.helpers;
 
 import android.app.*;
 import android.content.*;

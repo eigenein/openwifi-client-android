@@ -1,10 +1,9 @@
-package info.eigenein.openwifi.helpers.location;
+package info.eigenein.openwifi.helpers;
 
 import android.content.Context;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import com.google.analytics.tracking.android.*;
-import info.eigenein.openwifi.helpers.internal.Settings;
 
 /**
  * Manages location update requests.
