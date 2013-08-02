@@ -1,13 +1,15 @@
-package info.eigenein.openwifi.helpers.location;
+package info.eigenein.openwifi.listeners;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import info.eigenein.openwifi.helpers.location.*;
 
 /**
  * Notifies the location tracker with location updates.
  */
 public class DefaultLocationListener implements LocationListener {
+
     private static final DefaultLocationListener instance = new DefaultLocationListener();
 
     public static DefaultLocationListener getInstance() {

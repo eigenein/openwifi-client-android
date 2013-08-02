@@ -9,6 +9,7 @@ import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.helpers.internal.*;
 import info.eigenein.openwifi.helpers.location.*;
 import info.eigenein.openwifi.helpers.ui.*;
+import info.eigenein.openwifi.listeners.*;
 
 /**
  * Background service that runs a WiFi access point scan.
