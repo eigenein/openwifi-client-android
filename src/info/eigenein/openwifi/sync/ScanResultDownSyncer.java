@@ -58,8 +58,6 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             }
             scanResult.setQuadtreeIndex(QuadtreeIndexer.getIndex(
                     scanResult.getLatitudeE6(), scanResult.getLongitudeE6()));
-            scanResult.setOwn(false);
-            scanResult.setSynced(true);
             // Add to the list.
             scanResults.add(scanResult);
             // Update lastSyncId.
@@ -69,7 +67,7 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
         }
         // Store the entities.
         final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
-        dao.insert(scanResults);
+        dao.insert(scanResults, true, false);
         // Start the cleanup service.
         CleanupIntentService.queueMyScanResults(context, scanResults);
         // Update lastSyncId setting.

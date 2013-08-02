@@ -26,7 +26,7 @@ public class MyScanResultDao extends BaseDao {
         database.execSQL(
                 "CREATE TABLE `my_scan_results` (" +
                         "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "`accuracy` FLOAT NOT NULL, " +
+                        "`accuracy` INTEGER NOT NULL, " +
                         "`latitude` INTEGER NOT NULL, " +
                         "`longitude` INTEGER NOT NULL, " +
                         "`timestamp` BIGINT NOT NULL, " +
@@ -90,7 +90,7 @@ public class MyScanResultDao extends BaseDao {
             // Run query.
             Log.d(LOG_TAG + ".queryByLocation", String.format("Reading page at %s ...", offset));
             final Cursor cursor = database.rawQuery(
-                    "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
+                    "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid " +
                             "FROM my_scan_results " +
                             "WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ?) " +
                             "LIMIT ? OFFSET ?;",
@@ -128,7 +128,7 @@ public class MyScanResultDao extends BaseDao {
         final List<MyScanResult> results = new ArrayList<MyScanResult>();
         // Run the query.
         final Cursor cursor = database.rawQuery(
-                "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
+                "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid " +
                         "FROM my_scan_results " +
                         "WHERE NOT synced " +
                         "LIMIT ?;",
@@ -148,7 +148,7 @@ public class MyScanResultDao extends BaseDao {
 
         final List<MyScanResult> results = new ArrayList<MyScanResult>();
         final Cursor cursor = database.rawQuery(
-                "SELECT id, accuracy, latitude, longitude, timestamp, synced, own, bssid, ssid " +
+                "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid " +
                         "FROM my_scan_results " +
                         "WHERE bssid = ? " +
                         "ORDER BY timestamp DESC;",
@@ -161,7 +161,11 @@ public class MyScanResultDao extends BaseDao {
     /**
      * Inserts the results.
      */
-    public void insert(final Location location, final Collection<ScanResult> results) {
+    public void insert(
+            final Location location,
+            final Collection<ScanResult> results,
+            final boolean synced,
+            final boolean own) {
         if (results.isEmpty()) {
             return;
         }
@@ -179,8 +183,8 @@ public class MyScanResultDao extends BaseDao {
                 final int longitudeE6 = L.toE6(location.getLongitude());
                 values.put("longitude", longitudeE6);
                 values.put("timestamp", location.getTime());
-                values.put("synced", false);
-                values.put("own", true);
+                values.put("synced", synced);
+                values.put("own", own);
                 values.put("bssid", scanResult.BSSID);
                 values.put("ssid", scanResult.SSID);
                 values.put("quadtree_index", QuadtreeIndexer.getIndex(latitudeE6, longitudeE6));
@@ -197,7 +201,10 @@ public class MyScanResultDao extends BaseDao {
     /**
      * Inserts the results.
      */
-    public void insert(final Collection<MyScanResult> results) {
+    public void insert(
+            final Collection<MyScanResult> results,
+            final boolean synced,
+            final boolean own) {
         // Check the parameters.
         if (results.isEmpty()) {
             return;
@@ -224,8 +231,8 @@ public class MyScanResultDao extends BaseDao {
                 insertHelper.bind(latitudeIndex, result.getLatitudeE6());
                 insertHelper.bind(longitudeIndex, result.getLongitudeE6());
                 insertHelper.bind(timestampIndex, result.getTimestamp());
-                insertHelper.bind(syncedIndex, result.isSynced());
-                insertHelper.bind(ownIndex, result.isOwn());
+                insertHelper.bind(syncedIndex, synced);
+                insertHelper.bind(ownIndex, own);
                 insertHelper.bind(bssidIndex, result.getBssid());
                 insertHelper.bind(ssidIndex, result.getSsid());
                 insertHelper.bind(quadtreeIndexIndex, result.getQuadtreeIndex());
@@ -321,10 +328,8 @@ public class MyScanResultDao extends BaseDao {
         result.setLatitudeE6(cursor.getInt(2));
         result.setLongitudeE6(cursor.getInt(3));
         result.setTimestamp(cursor.getLong(4));
-        result.setSynced(cursor.getInt(5) != 0);
-        result.setOwn(cursor.getInt(6) != 0);
-        result.setBssid(cursor.getString(7));
-        result.setSsid(cursor.getString(8));
+        result.setBssid(cursor.getString(5));
+        result.setSsid(cursor.getString(6));
         return result;
     }
 }

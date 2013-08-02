@@ -26,10 +26,6 @@ public final class MyScanResult {
 
     private long timestamp;
 
-    private boolean synced;
-
-    private boolean own;
-
     private String bssid;
 
     private String ssid;
@@ -102,14 +98,6 @@ public final class MyScanResult {
         return accuracy;
     }
 
-    public boolean isOwn() {
-        return own;
-    }
-
-    public boolean isSynced() {
-        return synced;
-    }
-
     public long getQuadtreeIndex() {
         return quadtreeIndex;
     }
@@ -120,14 +108,6 @@ public final class MyScanResult {
 
     public void setAccuracy(final float accuracy) {
         this.accuracy = accuracy;
-    }
-
-    public void setSynced(final boolean synced) {
-        this.synced = synced;
-    }
-
-    public void setOwn(final boolean own) {
-        this.own = own;
     }
 
     public void setLatitude(final double latitude) {
@@ -186,11 +166,9 @@ public final class MyScanResult {
     @Override
     public String toString() {
         return String.format(
-                "%s[ssid=%s, bssid=%s, synced=%s, own=%s]",
+                "%s[ssid=%s, bssid=%s]",
                 MyScanResult.class.getSimpleName(),
                 bssid,
-                ssid,
-                synced,
-                own);
+                ssid);
     }
 }
