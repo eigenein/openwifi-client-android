@@ -78,7 +78,7 @@ public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
     @Override
     protected ClusterList doInBackground(final Void... params) {
         // Retrieve scan results.
-        final MyScanResultDao dao = CacheOpenHelper.getInstance(activity).getMyScanResultDao();
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(activity).getMyScanResultDao();
         final Collection<MyScanResult> scanResults = dao.queryByLocation(
                 cancellationToken, minLatitude, minLongitude, maxLatitude, maxLongitude);
         // Process them if we're still not cancelled.

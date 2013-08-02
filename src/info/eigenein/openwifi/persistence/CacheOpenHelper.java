@@ -31,7 +31,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(final SQLiteDatabase database) {
-        new MyScanResultDao(database).onCreate(database);
+        new MyScanResult.Dao(database).onCreate(database);
     }
 
     @Override
@@ -40,7 +40,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
             final int oldVersion,
             final int newVersion) {
         Log.i(LOG_TAG + ".onUpgrade", String.format("%s, %s", oldVersion, newVersion));
-        new MyScanResultDao(database).onUpgrade(database, oldVersion, newVersion);
+        new MyScanResult.Dao(database).onUpgrade(database, oldVersion, newVersion);
     }
 
     @Override
@@ -51,7 +51,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
         onUpgrade(database, oldVersion, newVersion);
     }
 
-    public MyScanResultDao getMyScanResultDao() {
-        return new MyScanResultDao(getWritableDatabase());
+    public MyScanResult.Dao getMyScanResultDao() {
+        return new MyScanResult.Dao(getWritableDatabase());
     }
 }

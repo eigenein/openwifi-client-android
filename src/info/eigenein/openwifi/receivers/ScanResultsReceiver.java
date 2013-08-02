@@ -64,7 +64,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
 
         if (openScanResults.size() != 0) {
             // Add all these scan results.
-            final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+            final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
             dao.insert(location, openScanResults, false, true);
             // Start the cleanup service.
             CleanupIntentService.queueNativeScanResults(context, openScanResults);

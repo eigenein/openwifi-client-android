@@ -65,7 +65,7 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             }
         }
         // Store the entities.
-        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
         dao.insert(scanResults, true, false);
         // Start the cleanup service.
         CleanupIntentService.queueMyScanResults(context, scanResults);

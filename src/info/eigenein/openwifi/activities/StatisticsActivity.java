@@ -128,7 +128,7 @@ public class StatisticsActivity extends ListActivity {
 
         @Override
         protected Void doInBackground(final Void... voids) {
-            final MyScanResultDao dao = CacheOpenHelper.getInstance(StatisticsActivity.this).getMyScanResultDao();
+            final MyScanResult.Dao dao = CacheOpenHelper.getInstance(StatisticsActivity.this).getMyScanResultDao();
             // Query the data.
             if (!isCancelled()) {
                 Log.d(LOG_TAG + ".doInBackground", "dao.getUniqueBssidCount()");
