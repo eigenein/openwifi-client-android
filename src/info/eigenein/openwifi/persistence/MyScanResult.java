@@ -230,65 +230,6 @@ public final class MyScanResult {
         }
 
         /**
-         * Gets the results within the specified area.
-         */
-        public Collection<MyScanResult> queryByLocation(
-                final CancellationToken cancellationToken,
-                final double minLatitude,
-                final double minLongitude,
-                final double maxLatitude,
-                final double maxLongitude) {
-            Log.d(LOG_TAG + ".queryByLocation", String.format(
-                    "[minLat=%s, minLon=%s, maxLat=%s, maxLon=%s]",
-                    minLatitude,
-                    minLongitude,
-                    maxLatitude,
-                    maxLongitude));
-            final long startTimeMillis = System.currentTimeMillis();
-            // Initialize the collection.
-            final Collection<MyScanResult> results = new ArrayList<MyScanResult>();
-            // Paging.
-            int offset = 0;
-            while (true) {
-                // Test the cancellation token.
-                if (cancellationToken.isCancelled()) {
-                    Log.d(LOG_TAG + ".queryByLocation", "Cancelled.");
-                    return null;
-                }
-                // Run query.
-                Log.d(LOG_TAG + ".queryByLocation", String.format("Reading page at %s ...", offset));
-                final Cursor cursor = database.rawQuery(
-                        "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid " +
-                                "FROM my_scan_results " +
-                                "WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ?) " +
-                                "LIMIT ? OFFSET ?;",
-                        new String[] {
-                                Integer.toString(L.toE6(minLatitude)),
-                                Integer.toString(L.toE6(maxLatitude)),
-                                Integer.toString(L.toE6(minLongitude)),
-                                Integer.toString(L.toE6(maxLongitude)),
-                                Integer.toString(PAGE_SIZE),
-                                Integer.toString(offset)
-                        }
-                );
-                if (cursor.getCount() == 0) {
-                    break;
-                }
-                // Read results.
-                read(cursor, results);
-                // Move.
-                offset += PAGE_SIZE;
-            }
-            Log.d(LOG_TAG + ".queryByLocation", String.format(
-                    "Got %d results in %sms.",
-                    results.size(),
-                    System.currentTimeMillis() - startTimeMillis
-            ));
-            // Return the results.
-            return results;
-        }
-
-        /**
          * Gets the unsynced results.
          */
         public List<MyScanResult> queryUnsynced(final int limit) {
