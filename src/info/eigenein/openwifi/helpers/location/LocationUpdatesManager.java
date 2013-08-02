@@ -10,6 +10,7 @@ import info.eigenein.openwifi.helpers.internal.Settings;
  * Manages location update requests.
  */
 public class LocationUpdatesManager {
+
     private static final String LOG_TAG = LocationUpdatesManager.class.getCanonicalName();
 
     /**

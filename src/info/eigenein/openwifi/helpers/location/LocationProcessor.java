@@ -7,6 +7,7 @@ import info.eigenein.openwifi.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class LocationProcessor {
 
     private static final float MIN_AREA_ACCURACY = 30.0f;

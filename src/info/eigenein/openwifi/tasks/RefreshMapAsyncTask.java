@@ -16,6 +16,7 @@ import java.util.*;
 /**
  * Used to aggregate the scan results from the application database.
  */
+@Deprecated
 public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
 
     private final String LOG_TAG = RefreshMapAsyncTask.class.getCanonicalName();

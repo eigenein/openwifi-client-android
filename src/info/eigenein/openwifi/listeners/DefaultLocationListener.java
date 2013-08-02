@@ -18,7 +18,7 @@ public class DefaultLocationListener implements LocationListener {
 
     @Override
     public void onLocationChanged(final Location location) {
-        LocationTracker.getInstance().notifyLocationChanged(location);
+        CurrentLocationTracker.getInstance().notifyLocationChanged(location);
     }
 
     @Override

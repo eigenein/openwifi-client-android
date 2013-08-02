@@ -75,7 +75,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onMyLocationChange(final Location location) {
                 // Track the location.
-                LocationTracker.getInstance().notifyLocationChanged(location);
+                CurrentLocationTracker.getInstance().notifyLocationChanged(location);
                 // Animate to the current location for the first time.
                 if (!firstFixReceived) {
                     firstFixReceived = true;

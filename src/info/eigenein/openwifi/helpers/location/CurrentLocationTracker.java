@@ -8,15 +8,15 @@ import android.util.Log;
 /**
  * Tracks the best known location.
  */
-public class LocationTracker {
-    private static final String LOG_TAG = LocationTracker.class.getCanonicalName();
+public class CurrentLocationTracker {
+    private static final String LOG_TAG = CurrentLocationTracker.class.getCanonicalName();
 
     /**
      * Time delta to treat a location outdated.
      */
     private static final long OUTDATED_TIME_DELTA = 1000 * 10 * 2;
 
-    private static final LocationTracker instance = new LocationTracker();
+    private static final CurrentLocationTracker instance = new CurrentLocationTracker();
 
     /**
      * Tracked location.
@@ -26,7 +26,7 @@ public class LocationTracker {
     /**
      * Gets the location tracker.
      */
-    public static LocationTracker getInstance() {
+    public static CurrentLocationTracker getInstance() {
         return instance;
     }
 
@@ -65,10 +65,10 @@ public class LocationTracker {
         Log.d(LOG_TAG, "notifyLocationChanged " + formatLocation(location));
 
         // Choose the best location.
-        LocationTracker.location = getBestLocation(
-                LocationTracker.location, location);
+        CurrentLocationTracker.location = getBestLocation(
+                CurrentLocationTracker.location, location);
 
-        Log.d(LOG_TAG, "LocationTracker.location " + formatLocation(LocationTracker.location));
+        Log.d(LOG_TAG, "CurrentLocationTracker.location " + formatLocation(CurrentLocationTracker.location));
     }
 
     private static LocationManager getLocationManager(final Context context) {
