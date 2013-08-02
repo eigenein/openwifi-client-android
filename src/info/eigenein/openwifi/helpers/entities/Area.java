@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.*;
 /**
  * Represents an area.
  */
+@Deprecated
 public class Area {
     private final double latitude;
 

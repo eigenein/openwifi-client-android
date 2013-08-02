@@ -5,6 +5,7 @@ import java.util.*;
 /**
  * A cluster of several access points.
  */
+@Deprecated
 public class Cluster implements Iterable<Network> {
     private final ArrayList<Network> networks;
 

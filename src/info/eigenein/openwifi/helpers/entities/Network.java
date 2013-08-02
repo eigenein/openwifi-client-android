@@ -6,6 +6,7 @@ import java.util.*;
 /**
  * Represents a wireless network in a cluster.
  */
+@Deprecated
 public class Network implements Serializable {
     private final String ssid;
 

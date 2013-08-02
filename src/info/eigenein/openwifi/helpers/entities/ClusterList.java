@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * Represents a list of clusters.
  */
+@Deprecated
 public class ClusterList implements Iterable<Cluster> {
     private final List<Cluster> clusters = new ArrayList<Cluster>();
 
