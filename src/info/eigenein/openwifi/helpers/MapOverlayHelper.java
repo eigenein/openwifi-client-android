@@ -6,11 +6,7 @@ import android.util.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import info.eigenein.openwifi.*;
-import info.eigenein.openwifi.helpers.*;
-import info.eigenein.openwifi.helpers.entities.*;
-import info.eigenein.openwifi.helpers.ui.*;
-
-import java.util.*;
+import info.eigenein.openwifi.tasks.*;
 
 public class MapOverlayHelper {
     private static final int MAX_SNIPPET_LENGTH = 24;
@@ -73,24 +69,24 @@ public class MapOverlayHelper {
     /**
      * Adds the cluster marker and circle to the map.
      */
-    public Marker addCluster(final Cluster cluster) {
+    public Marker addCluster(final RefreshMapAsyncTask.Network.Cluster cluster) {
         // Add the marker.
         final Marker marker = map.addMarker(new MarkerOptions()
-                .position(cluster.getArea().getLatLng())
+                .position(cluster.getLatLng())
                 .title(getClusterTitle(cluster))
                 .icon(getClusterIcon(cluster))
                 .anchor(0.5f, 0.5f)
                 .snippet(getClusterSnippet(cluster))
         );
         // Add the circle.
-        map.addCircle(new CircleOptions()
+        /* TODO: map.addCircle(new CircleOptions()
                 .center(cluster.getArea().getLatLng())
                 .radius(cluster.getArea().getAccuracy())
                 .fillColor(isDark ? DARK_CIRCLE_COLOR : LIGHT_CIRCLE_COLOR)
                 .strokeColor(isDark ? DARK_CIRCLE_STROKE : LIGHT_CIRCLE_STROKE)
                 .strokeWidth(1.0f)
                 .zIndex(-1.0f)
-        );
+        ); */
         // Return the marker.
         return marker;
     }
@@ -98,9 +94,9 @@ public class MapOverlayHelper {
     /**
      * Gets the cluster marker title.
      */
-    private String getClusterTitle(final Cluster cluster) {
+    private String getClusterTitle(final RefreshMapAsyncTask.Network.Cluster cluster) {
         final int clusterSize = cluster.size();
-        return clusterSize == 1 ?
+        /* TODO: return clusterSize == 1 ?
                 cluster.iterator().next().getSsid() :
                 String.format(
                         "%d %s",
@@ -110,12 +106,21 @@ public class MapOverlayHelper {
                                 R.string.overlay_networks_string_1,
                                 R.string.overlay_networks_string_2,
                                 R.string.overlay_networks_string_3)));
+        */
+        return String.format(
+                "%d %s",
+                clusterSize,
+                context.getString(CountFormatter.format(
+                        clusterSize,
+                        R.string.overlay_networks_string_1,
+                        R.string.overlay_networks_string_2,
+                        R.string.overlay_networks_string_3)));
     }
 
     /**
      * Draws the cluster icon.
      */
-    private BitmapDescriptor getClusterIcon(final Cluster cluster) {
+    private BitmapDescriptor getClusterIcon(final RefreshMapAsyncTask.Network.Cluster cluster) {
         final int clusterSize = cluster.size();
         // Try to get the cached descriptor.
         final BitmapDescriptor cachedDescriptor = descriptorCache.get(clusterSize);
@@ -159,9 +164,9 @@ public class MapOverlayHelper {
     /**
      * Gets the cluster marker snippet.
      */
-    private static String getClusterSnippet(final Cluster cluster) {
-        final StringBuilder snippetBuilder = new StringBuilder();
-        Iterator<Network> networkIterator = cluster.iterator();
+    private static String getClusterSnippet(final RefreshMapAsyncTask.Network.Cluster cluster) {
+        /*TODO: final StringBuilder snippetBuilder = new StringBuilder();
+        Iterator<RefreshMapAsyncTask.Network> networkIterator = cluster.iterator();
         //noinspection WhileLoopReplaceableByForEach
         while (networkIterator.hasNext()) {
             if (snippetBuilder.length() != 0) {
@@ -174,27 +179,7 @@ public class MapOverlayHelper {
                 break;
             }
         }
-        return snippetBuilder.toString();
-    }
-
-    private void addGrid() {
-        final GridSize gridSize = GridSizeHelper.get(map.getCameraPosition().zoom);
-        final LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
-
-        for (double latitude = bounds.southwest.latitude;
-                latitude < bounds.northeast.latitude;
-                latitude += gridSize.getLatitideStep()) {
-            for (double longitude = bounds.southwest.longitude;
-                    longitude < bounds.northeast.longitude;
-                    longitude += gridSize.getLongitudeStep()) {
-                map.addPolyline(new PolylineOptions()
-                        .add(new LatLng(latitude, longitude + gridSize.getLongitudeStep()))
-                        .add(new LatLng(latitude, longitude))
-                        .add(new LatLng(latitude + gridSize.getLatitideStep(), longitude))
-                        .color(Color.RED)
-                        .width(1.0f)
-                );
-            }
-        }
+        return snippetBuilder.toString();*/
+        return "Snippet.";
     }
 }

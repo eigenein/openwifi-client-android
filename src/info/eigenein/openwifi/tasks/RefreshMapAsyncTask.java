@@ -1,171 +1,282 @@
 package info.eigenein.openwifi.tasks;
 
+import android.content.*;
 import android.os.*;
 import android.util.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import com.google.common.collect.*;
 import info.eigenein.openwifi.activities.*;
 import info.eigenein.openwifi.helpers.*;
-import info.eigenein.openwifi.helpers.entities.*;
-import info.eigenein.openwifi.helpers.location.*;
-import info.eigenein.openwifi.helpers.ui.*;
 import info.eigenein.openwifi.persistence.*;
 
 import java.util.*;
 
 /**
- * Used to aggregate the scan results from the application database.
+ * Refreshes the map with the cluster markers.
  */
-@Deprecated
-public class RefreshMapAsyncTask extends AsyncTask<Void, Void, ClusterList> {
+public class RefreshMapAsyncTask extends AsyncTask<
+        RefreshMapAsyncTask.Params,
+        Void,
+        RefreshMapAsyncTask.Network.Cluster.List> {
 
-    private final String LOG_TAG = RefreshMapAsyncTask.class.getCanonicalName();
+    private static final String LOG_TAG = RefreshMapAsyncTask.class.getCanonicalName();
+
+    /**
+     * Maximum zoom that allows to see a cluster area.
+     */
+    private static final long QUERY_ADAPTER_SWITCH_ZOOM = 0L;
 
     private final MainActivity activity;
     private final GoogleMap map;
-
-    private final HashMap<String, Cluster> markerToClusterCache;
-
-    private final double minLatitude;
-    private final double minLongitude;
-    private final double maxLatitude;
-    private final double maxLongitude;
-
-    private final GridSize gridSize;
-
-    private final CancellationToken cancellationToken = new CancellationToken();
-
-    /**
-     * Groups scan results into the grid by their location.
-     */
-    private final Table<Integer, Integer, List<MyScanResult>> cellToScanResultCache = HashBasedTable.create();
+    private final HashMap<String, Network.Cluster> markerToClusterMapping;
 
     public RefreshMapAsyncTask(
             final MainActivity activity,
             final GoogleMap map,
-            final HashMap<String, Cluster> markerToClusterCache,
-            final double minLatitude,
-            final double minLongitude,
-            final double maxLatitude,
-            final double maxLongitude,
-            final GridSize gridSize) {
-        Log.d(LOG_TAG, String.format(
-                "RefreshMapAsyncTask[minLat=%s, minLon=%s, maxLat=%s, maxLon=%s, gridSize=%s]",
-                minLatitude,
-                minLongitude,
-                maxLatitude,
-                maxLongitude,
-                gridSize));
+            final HashMap<String, Network.Cluster> markerToClusterMapping) {
         this.activity = activity;
         this.map = map;
-        this.markerToClusterCache = markerToClusterCache;
-        this.minLatitude = minLatitude;
-        this.minLongitude = minLongitude;
-        this.maxLatitude = maxLatitude;
-        this.maxLongitude = maxLongitude;
-        this.gridSize = gridSize;
-    }
-
-    /**
-     * Cancels the task.
-     */
-    public void cancel() {
-        cancellationToken.cancel();
-        this.cancel(true);
+        this.markerToClusterMapping = markerToClusterMapping;
     }
 
     @Override
-    protected ClusterList doInBackground(final Void... params) {
-        // Retrieve scan results.
-        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(activity).getMyScanResultDao();
-        final Collection<MyScanResult> scanResults = dao.queryByLocation(
-                cancellationToken, minLatitude, minLongitude, maxLatitude, maxLongitude);
-        // Process them if we're still not cancelled.
-        if (isCancelled()) {
-            return null;
+    protected Network.Cluster.List doInBackground(final Params... paramsArray) {
+        // Check the arguments.
+        if (paramsArray.length != 1) {
+            throw new RuntimeException("Invalid number of arguments.");
         }
-        for (final MyScanResult scanResult : scanResults) {
-            // Check if we're cancelled.
-            if (isCancelled()) {
-                return null;
-            }
-            addScanResult(scanResult);
-        }
-        return buildClusterList();
+        // Initialize the query adapter.
+        final Params params = paramsArray[0];
+        final QueryAdapter queryAdapter = params.getZoom() <= QUERY_ADAPTER_SWITCH_ZOOM ?
+                new ClusteringQueryAdapter(activity, this) :
+                new NonClusteringQueryAdapter(activity, this);
+        // Initialize and execute the query.
+        final QuadtreeIndexer.Query query = new QuadtreeIndexer.Query(
+                MinimumQuadOrderHelper.getOrder(params.zoom),
+                params.getSouthE6(),
+                params.getWestE6(),
+                params.getNorthE6(),
+                params.getEastE6(),
+                queryAdapter);
+        query.execute();
+        // Return the cluster list.
+        return queryAdapter.getClusters();
     }
 
     @Override
-    protected synchronized void onPostExecute(final ClusterList clusterList) {
-        Log.d(LOG_TAG + ".onPostExecute", clusterList.toString());
+    protected void onPostExecute(final Network.Cluster.List clusters) {
+        Log.d(LOG_TAG + ".onPostExecute", String.format("%s clusters.", clusters.size()));
 
         final MapOverlayHelper helper = new MapOverlayHelper(activity, map);
         // Clear all the overlays.
-        markerToClusterCache.clear();
+        markerToClusterMapping.clear();
         helper.clear();
         // Add the overlays for the clusters.
-        for (final Cluster cluster : clusterList) {
+        for (final Network.Cluster cluster : clusters) {
             final Marker marker = helper.addCluster(cluster);
-            markerToClusterCache.put(marker.getId(), cluster);
+            markerToClusterMapping.put(marker.getId(), cluster);
         }
 
         activity.updateRefreshingScanResultsProgressBar(false);
     }
 
-    private void addScanResult(final MyScanResult scanResult) {
-        final int latitudeKey = (int)Math.floor(scanResult.getLatitude() / gridSize.getLatitideStep());
-        final int longitudeKey = (int)Math.floor(scanResult.getLongitude() / gridSize.getLongitudeStep());
+    /**
+     * Represents a visible region.
+     */
+    public static class Params {
 
-        List<MyScanResult> scanResults = cellToScanResultCache.get(latitudeKey, longitudeKey);
-        if (scanResults == null) {
-            scanResults = new ArrayList<MyScanResult>();
-            cellToScanResultCache.put(latitudeKey, longitudeKey, scanResults);
+        private final long zoom;
+        private final int southE6;
+        private final int westE6;
+        private final int northE6;
+        private final int eastE6;
+
+        public Params(
+                final long zoom,
+                final int southE6, final int westE6,
+                final int northE6, final int eastE6) {
+            this.zoom = zoom;
+            this.southE6 = southE6;
+            this.westE6 = westE6;
+            this.northE6 = northE6;
+            this.eastE6 = eastE6;
         }
 
-        scanResults.add(scanResult);
+        public long getZoom() {
+            return zoom;
+        }
+
+        public int getSouthE6() {
+            return southE6;
+        }
+
+        public int getWestE6() {
+            return westE6;
+        }
+
+        public int getNorthE6() {
+            return northE6;
+        }
+
+        public int getEastE6() {
+            return eastE6;
+        }
     }
 
-    private ClusterList buildClusterList() {
-        final ClusterList clusterList = new ClusterList();
+    /**
+     * Represents a single Wi-Fi network (i.e. access points with the same SSID).
+     */
+    public static class Network {
 
-        // Iterate through grid cells.
-        for (final List<MyScanResult> cellResults : cellToScanResultCache.values()) {
-            // Check if we're cancelled.
-            if (isCancelled()) {
-                return null;
+        /**
+         * Represents a cluster of adjacent networks.
+         */
+        public static class Cluster {
+
+            private final int size;
+            private final int latitudeE6;
+            private final int longitudeE6;
+
+            public Cluster(
+                    final int size,
+                    final int latitudeE6,
+                    final int longitudeE6) {
+                this.size = size;
+                this.latitudeE6 = latitudeE6;
+                this.longitudeE6 = longitudeE6;
             }
 
-            final Multimap<String, String> ssidToBssidCache = HashMultimap.create();
-
-            LocationProcessor locationProcessor = new LocationProcessor();
-            for (final MyScanResult scanResult : cellResults) {
-                // Check if we're cancelled.
-                if (isCancelled()) {
-                    return null;
-                }
-                // Union the scan results by SSID.
-                ssidToBssidCache.put(scanResult.getSsid(), scanResult.getBssid());
-                // Track the location.
-                locationProcessor.add(scanResult);
+            public LatLng getLatLng() {
+                return new LatLng(L.fromE6(latitudeE6), L.fromE6(longitudeE6));
             }
 
-            // Initialize a cluster.
-            final Area area = locationProcessor.getArea();
-            final List<Network> networks = new ArrayList<Network>();
-            // And fill it with networks.
-            for (final Map.Entry<String, Collection<String>> entry : ssidToBssidCache.asMap().entrySet()) {
-                // Check if we're cancelled.
-                if (isCancelled()) {
-                    return null;
-                }
-                networks.add(new Network(entry.getKey(), entry.getValue()));
+            public int size() {
+                return size;
             }
-            // Finally, insert the cluster to the cluster list.
-            final Cluster cluster = new Cluster(area, networks);
-            clusterList.add(cluster);
-            Log.d(LOG_TAG, "clusterList.insert " + cluster);
+
+            /**
+             * Represents a list of clusters.
+             */
+            public static class List extends ArrayList<Cluster> {
+                // Nothing.
+            }
+        }
+    }
+
+    /**
+     * Contains common query adapter code.
+     */
+    public static abstract class QueryAdapter implements QuadtreeIndexer.Query.Adapter {
+
+        protected final Context context;
+        private final RefreshMapAsyncTask asyncTask;
+
+        protected RefreshMapAsyncTask.Network.Cluster.List clusters =
+                new RefreshMapAsyncTask.Network.Cluster.List();
+
+        public QueryAdapter(
+                final Context context,
+                final RefreshMapAsyncTask asyncTask) {
+            this.context = context;
+            this.asyncTask = asyncTask;
         }
 
-        return clusterList;
+        public boolean isCancelled() {
+            return asyncTask.isCancelled();
+        }
+
+        public int resultsSize() {
+            return clusters.size();
+        }
+
+        public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
+            return clusters;
+        }
+
+        /**
+         * Checks if the task is cancelled and throws the exception.
+         */
+        protected void throwStopQueryExceptionIfCancelled()
+                throws QuadtreeIndexer.Query.StopQueryException {
+            if (asyncTask.isCancelled()) {
+                throw new QuadtreeIndexer.Query.StopQueryException();
+            }
+        }
+    }
+}
+
+class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
+
+    public NonClusteringQueryAdapter(
+            final Context context,
+            final RefreshMapAsyncTask asyncTask) {
+        super(context, asyncTask);
+    }
+
+    public void execute(final long leftIndex, final long rightIndex)
+            throws QuadtreeIndexer.Query.StopQueryException {
+        throwStopQueryExceptionIfCancelled();
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        final RefreshMapAsyncTask.Network.Cluster cluster =
+                dao.queryClusterByQuadtreeIndex(leftIndex, rightIndex);
+        if (cluster != null) {
+            clusters.add(cluster);
+        }
+    }
+}
+
+class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
+
+    public ClusteringQueryAdapter(
+            final Context context,
+            final RefreshMapAsyncTask asyncTask) {
+        super(context, asyncTask);
+    }
+
+    @Override
+    public void execute(final long leftIndex, final long rightIndex)
+            throws QuadtreeIndexer.Query.StopQueryException {
+        // TODO.
+    }
+}
+
+/**
+ * Maps zoom to minimal quad order.
+ */
+class MinimumQuadOrderHelper {
+
+    private static final HashMap<Long, Integer> MAPPING =
+            new HashMap<Long, Integer>();
+
+    static {
+        MAPPING.put(21L, 6);
+        MAPPING.put(20L, 7);
+        MAPPING.put(19L, 8);
+        MAPPING.put(18L, 9);
+        MAPPING.put(17L, 10);
+        MAPPING.put(16L, 11);
+        MAPPING.put(15L, 12);
+        MAPPING.put(14L, 13);
+        MAPPING.put(13L, 14);
+        MAPPING.put(12L, 15);
+        MAPPING.put(11L, 16);
+        MAPPING.put(10L, 17);
+        MAPPING.put(9L, 18);
+        MAPPING.put(8L, 19);
+        MAPPING.put(7L, 20);
+        MAPPING.put(6L, 21);
+        MAPPING.put(5L, 22);
+        MAPPING.put(4L, 23);
+        MAPPING.put(3L, 24);
+    }
+
+    public static int getOrder(final long zoom) {
+        if (zoom > 21L) {
+            return 22;
+        } else if (zoom < 3L) {
+            return 2;
+        } else {
+            return MAPPING.get(zoom);
+        }
     }
 }

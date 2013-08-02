@@ -8,6 +8,7 @@ import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
 import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.tasks.*;
 import org.json.*;
 
 import java.util.*;
@@ -202,6 +203,29 @@ public final class MyScanResult {
             if (newVersion == 2) {
                 database.execSQL("DROP TABLE my_scan_results;");
                 onCreate(database);
+            }
+        }
+
+        public RefreshMapAsyncTask.Network.Cluster queryClusterByQuadtreeIndex(
+                final long leftIndex,
+                final long rightIndex) {
+            final Cursor cursor = database.rawQuery(
+                    "SELECT COUNT(DISTINCT ssid), AVG(latitude), AVG(longitude) " +
+                            "FROM my_scan_results " +
+                            "WHERE quadtree_index BETWEEN ? AND ?;",
+                    new String[] { Long.toString(leftIndex), Long.toString(rightIndex) });
+            try {
+                cursor.moveToFirst();
+                final int size = cursor.getInt(0);
+                if (size != 0) {
+                    return new RefreshMapAsyncTask.Network.Cluster(
+                            size,
+                            cursor.getInt(1),
+                            cursor.getInt(2));
+                }
+                return null;
+            } finally {
+                cursor.close();
             }
         }
 

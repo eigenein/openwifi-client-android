@@ -14,8 +14,6 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.helpers.*;
-import info.eigenein.openwifi.helpers.entities.*;
-import info.eigenein.openwifi.helpers.ui.*;
 import info.eigenein.openwifi.services.*;
 import info.eigenein.openwifi.tasks.*;
 
@@ -27,7 +25,8 @@ import java.util.*;
 public class MainActivity extends FragmentActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
-    private final HashMap<String, Cluster> markerToClusterCache = new HashMap<String, Cluster>();
+    private final HashMap<String, RefreshMapAsyncTask.Network.Cluster> markerToClusterMapping =
+            new HashMap<String, RefreshMapAsyncTask.Network.Cluster>();
 
     private GoogleMap map;
 
@@ -105,7 +104,8 @@ public class MainActivity extends FragmentActivity {
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(final Marker marker) {
-                final Cluster cluster = markerToClusterCache.get(marker.getId());
+                final RefreshMapAsyncTask.Network.Cluster cluster =
+                        markerToClusterMapping.get(marker.getId());
                 if (cluster != null) {
                     VibratorHelper.vibrate(MainActivity.this);
 
@@ -113,7 +113,7 @@ public class MainActivity extends FragmentActivity {
                     final Bundle networkSetActivityBundle = new Bundle();
                     networkSetActivityBundle.putSerializable(
                             NetworkSetActivity.NETWORK_SET_KEY,
-                            cluster.getNetworks());
+                            null /*TODO: cluster.getNetworks()*/);
                     final Intent networkSetActivityIntent = new Intent(
                             MainActivity.this,
                             NetworkSetActivity.class);
@@ -245,7 +245,8 @@ public class MainActivity extends FragmentActivity {
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap(final CameraPosition cameraPosition) {
-        Log.d(LOG_TAG, "startRefreshingScanResultsOnMap");
+        Log.d(LOG_TAG + ".startRefreshingScanResultsOnMap", String.format(
+                "[zoom=%s]", cameraPosition.zoom));
         updateRefreshingScanResultsProgressBar(true);
 
         // Check if the task is already running.
@@ -265,20 +266,22 @@ public class MainActivity extends FragmentActivity {
         refreshScanResultsAsyncTask = new RefreshMapAsyncTask(
                 this,
                 map,
-                markerToClusterCache,
-                bounds.southwest.latitude,
-                bounds.southwest.longitude,
-                bounds.northeast.latitude,
-                bounds.northeast.longitude,
-                GridSizeHelper.get(cameraPosition.zoom)
+                markerToClusterMapping
         );
-        refreshScanResultsAsyncTask.execute();
+        refreshScanResultsAsyncTask.execute(new RefreshMapAsyncTask.Params[] {
+                new RefreshMapAsyncTask.Params(
+                        Math.round(cameraPosition.zoom),
+                        L.toE6(bounds.southwest.latitude),
+                        L.toE6(bounds.southwest.longitude),
+                        L.toE6(bounds.northeast.latitude),
+                        L.toE6(bounds.northeast.longitude))
+        });
     }
 
     private synchronized void cancelRefreshScanResultsAsyncTask() {
         if (refreshScanResultsAsyncTask != null) {
             // Cancel old task.
-            refreshScanResultsAsyncTask.cancel();
+            refreshScanResultsAsyncTask.cancel(true);
             refreshScanResultsAsyncTask = null;
         }
     }
