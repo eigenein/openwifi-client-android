@@ -12,7 +12,7 @@ public final class MyScanResult {
 
     private long id;
 
-    private float accuracy;
+    private int accuracy;
 
     /**
      * Latitude * 10e6.
@@ -37,7 +37,7 @@ public final class MyScanResult {
         try {
             scanResult.timestamp = object.getLong("ts");
             scanResult.ssid = object.getString("ssid");
-            scanResult.accuracy = (float)object.getDouble("acc");
+            scanResult.accuracy = (int)object.getDouble("acc");
             scanResult.bssid = object.getString("bssid");
             final JSONObject locationObject = object.getJSONObject("loc");
             scanResult.setLatitude(locationObject.getDouble("lat"));
@@ -53,7 +53,7 @@ public final class MyScanResult {
     }
 
     public MyScanResult(final ScanResult scanResult, final Location location) {
-        this.accuracy = location.getAccuracy();
+        this.accuracy = (int)location.getAccuracy();
         this.bssid = scanResult.BSSID;
         this.ssid = scanResult.SSID;
         this.timestamp = location.getTime();
@@ -94,7 +94,7 @@ public final class MyScanResult {
         return longitude;
     }
 
-    public float getAccuracy() {
+    public int getAccuracy() {
         return accuracy;
     }
 
@@ -106,7 +106,7 @@ public final class MyScanResult {
         this.id = id;
     }
 
-    public void setAccuracy(final float accuracy) {
+    public void setAccuracy(final int accuracy) {
         this.accuracy = accuracy;
     }
 

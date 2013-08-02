@@ -177,7 +177,7 @@ public class MyScanResultDao extends BaseDao {
                     new String[] { scanResult.BSSID, Long.toString(location.getTime()) });
             if (duplicatesCount == 0L) {
                 final ContentValues values = new ContentValues();
-                values.put("accuracy", location.getAccuracy());
+                values.put("accuracy", (int)location.getAccuracy());
                 final int latitudeE6 = L.toE6(location.getLatitude());
                 values.put("latitude", latitudeE6);
                 final int longitudeE6 = L.toE6(location.getLongitude());
@@ -324,7 +324,7 @@ public class MyScanResultDao extends BaseDao {
     private static MyScanResult read(final Cursor cursor) {
         final MyScanResult result = new MyScanResult();
         result.setId(cursor.getLong(0));
-        result.setAccuracy(cursor.getFloat(1));
+        result.setAccuracy(cursor.getInt(1));
         result.setLatitudeE6(cursor.getInt(2));
         result.setLongitudeE6(cursor.getInt(3));
         result.setTimestamp(cursor.getLong(4));
