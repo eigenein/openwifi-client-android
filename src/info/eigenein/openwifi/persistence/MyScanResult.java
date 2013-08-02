@@ -7,6 +7,7 @@ import android.location.*;
 import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
+import com.google.common.cache.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.tasks.*;
 import org.json.*;
@@ -159,8 +160,6 @@ public final class MyScanResult {
     public static class Dao extends BaseDao {
 
         private static final String LOG_TAG = Dao.class.getCanonicalName();
-
-        private static final int PAGE_SIZE = 4096;
 
         public Dao(final SQLiteDatabase database) {
             super(database);
