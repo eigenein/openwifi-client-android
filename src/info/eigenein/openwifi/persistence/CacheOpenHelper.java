@@ -9,10 +9,11 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
     private static final String LOG_TAG = CacheOpenHelper.class.getCanonicalName();
 
     private static final int DATABASE_VERSION = 2;
-
     private static final String DATABASE_NAME = "cache.db";
 
     private static CacheOpenHelper instance;
+
+    private final MyScanResult.Dao.Cache myScanResultDaoCache;
 
     /**
      * Lazy singleton.
@@ -27,6 +28,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     private CacheOpenHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        myScanResultDaoCache = new MyScanResult.Dao.Cache(getMyScanResultDao());
     }
 
     @Override
@@ -53,5 +55,9 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     public MyScanResult.Dao getMyScanResultDao() {
         return new MyScanResult.Dao(getWritableDatabase());
+    }
+
+    public MyScanResult.Dao.Cache getMyScanResultDaoCache() {
+        return myScanResultDaoCache;
     }
 }

@@ -73,8 +73,10 @@ public class RefreshMapAsyncTask extends AsyncTask<
         helper.clear();
         // Add the overlays for the clusters.
         for (final Network.Cluster cluster : clusters) {
-            final Marker marker = helper.addCluster(cluster);
-            markerToClusterMapping.put(marker.getId(), cluster);
+            if (cluster.size() != 0) {
+                final Marker marker = helper.addCluster(cluster);
+                markerToClusterMapping.put(marker.getId(), cluster);
+            }
         }
 
         activity.updateRefreshingScanResultsProgressBar(false);
@@ -216,12 +218,10 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
     public void execute(final long leftIndex, final long rightIndex)
             throws QuadtreeIndexer.Query.StopQueryException {
         throwStopQueryExceptionIfCancelled();
-        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        final MyScanResult.Dao.Cache cache = CacheOpenHelper.getInstance(context).getMyScanResultDaoCache();
         final RefreshMapAsyncTask.Network.Cluster cluster =
-                dao.queryClusterByQuadtreeIndex(leftIndex, rightIndex);
-        if (cluster != null) {
-            clusters.add(cluster);
-        }
+                cache.queryClusterByQuadtreeIndex(leftIndex, rightIndex);
+        clusters.add(cluster);
     }
 }
 

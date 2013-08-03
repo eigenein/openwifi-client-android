@@ -190,7 +190,8 @@ public class QuadtreeIndexer {
                 }
                 // Execute the query on these index values.
                 Log.d(LOG_TAG + ".execute", String.format(
-                        "[leftIndex=%s, rightIndex=%s]",
+                        "[currentOrder=%s, leftIndex=%s, rightIndex=%s]",
+                        currentOrder,
                         Long.toHexString(leftIndex),
                         Long.toHexString(rightIndex)));
                 adapter.execute(leftIndex, rightIndex);
