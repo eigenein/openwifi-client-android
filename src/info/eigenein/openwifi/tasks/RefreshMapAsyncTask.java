@@ -139,18 +139,25 @@ public class RefreshMapAsyncTask extends AsyncTask<
             private final int size;
             private final int latitudeE6;
             private final int longitudeE6;
+            private final Double radius;
 
             public Cluster(
                     final int size,
                     final int latitudeE6,
-                    final int longitudeE6) {
+                    final int longitudeE6,
+                    final Double radius) {
                 this.size = size;
                 this.latitudeE6 = latitudeE6;
                 this.longitudeE6 = longitudeE6;
+                this.radius = radius;
             }
 
             public LatLng getLatLng() {
                 return new LatLng(L.fromE6(latitudeE6), L.fromE6(longitudeE6));
+            }
+
+            public Double getRadius() {
+                return radius;
             }
 
             public int size() {
@@ -172,10 +179,8 @@ public class RefreshMapAsyncTask extends AsyncTask<
     public static abstract class QueryAdapter implements QuadtreeIndexer.Query.Adapter {
 
         protected final Context context;
-        private final RefreshMapAsyncTask asyncTask;
 
-        protected RefreshMapAsyncTask.Network.Cluster.List clusters =
-                new RefreshMapAsyncTask.Network.Cluster.List();
+        private final RefreshMapAsyncTask asyncTask;
 
         public QueryAdapter(
                 final Context context,
@@ -186,14 +191,6 @@ public class RefreshMapAsyncTask extends AsyncTask<
 
         public boolean isCancelled() {
             return asyncTask.isCancelled();
-        }
-
-        public int resultsSize() {
-            return clusters.size();
-        }
-
-        public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
-            return clusters;
         }
 
         /**
@@ -215,6 +212,9 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
 
     private static LocalCache cache;
 
+    private RefreshMapAsyncTask.Network.Cluster.List clusters =
+            new RefreshMapAsyncTask.Network.Cluster.List();
+
     private static synchronized LocalCache getCache(final Context context) {
         if (cache == null) {
             cache = new LocalCache(CacheOpenHelper.getInstance(context).getMyScanResultDao());
@@ -235,6 +235,10 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         final RefreshMapAsyncTask.Network.Cluster cluster =
                 cache.queryClusterByQuadtreeIndex(leftIndex, rightIndex);
         clusters.add(cluster);
+    }
+
+    public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
+        return clusters;
     }
 
     /**
@@ -297,6 +301,11 @@ class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
     public void execute(final long leftIndex, final long rightIndex)
             throws QuadtreeIndexer.Query.StopQueryException {
         // TODO.
+    }
+
+    @Override
+    public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
+        return null;
     }
 }
 

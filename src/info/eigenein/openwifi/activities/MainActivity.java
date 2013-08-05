@@ -23,6 +23,7 @@ import java.util.*;
  * Main application activity with the map.
  */
 public class MainActivity extends FragmentActivity {
+
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
     private final HashMap<String, RefreshMapAsyncTask.Network.Cluster> markerToClusterMapping =
@@ -268,14 +269,12 @@ public class MainActivity extends FragmentActivity {
                 map,
                 markerToClusterMapping
         );
-        refreshScanResultsAsyncTask.execute(new RefreshMapAsyncTask.Params[] {
-                new RefreshMapAsyncTask.Params(
-                        Math.round(cameraPosition.zoom),
-                        L.toE6(bounds.southwest.latitude),
-                        L.toE6(bounds.southwest.longitude),
-                        L.toE6(bounds.northeast.latitude),
-                        L.toE6(bounds.northeast.longitude))
-        });
+        refreshScanResultsAsyncTask.execute(new RefreshMapAsyncTask.Params(
+                Math.round(cameraPosition.zoom),
+                L.toE6(bounds.southwest.latitude),
+                L.toE6(bounds.southwest.longitude),
+                L.toE6(bounds.northeast.latitude),
+                L.toE6(bounds.northeast.longitude)));
     }
 
     private synchronized void cancelRefreshScanResultsAsyncTask() {

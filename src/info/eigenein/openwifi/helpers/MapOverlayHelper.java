@@ -70,23 +70,27 @@ public class MapOverlayHelper {
      * Adds the cluster marker and circle to the map.
      */
     public Marker addCluster(final RefreshMapAsyncTask.Network.Cluster cluster) {
+        final LatLng clusterPosition = cluster.getLatLng();
         // Add the marker.
         final Marker marker = map.addMarker(new MarkerOptions()
-                .position(cluster.getLatLng())
+                .position(clusterPosition)
                 .title(getClusterTitle(cluster))
                 .icon(getClusterIcon(cluster))
                 .anchor(0.5f, 0.5f)
                 .snippet(getClusterSnippet(cluster))
         );
         // Add the circle.
-        /* TODO: map.addCircle(new CircleOptions()
-                .center(cluster.getArea().getLatLng())
-                .radius(cluster.getArea().getAccuracy())
-                .fillColor(isDark ? DARK_CIRCLE_COLOR : LIGHT_CIRCLE_COLOR)
-                .strokeColor(isDark ? DARK_CIRCLE_STROKE : LIGHT_CIRCLE_STROKE)
-                .strokeWidth(1.0f)
-                .zIndex(-1.0f)
-        ); */
+        final Double clusterRadius = cluster.getRadius();
+        if (clusterRadius != null) {
+            map.addCircle(new CircleOptions()
+                    .center(clusterPosition)
+                    .radius(clusterRadius)
+                    .fillColor(isDark ? DARK_CIRCLE_COLOR : LIGHT_CIRCLE_COLOR)
+                    .strokeColor(isDark ? DARK_CIRCLE_STROKE : LIGHT_CIRCLE_STROKE)
+                    .strokeWidth(1.0f)
+                    .zIndex(-1.0f)
+            );
+        }
         // Return the marker.
         return marker;
     }

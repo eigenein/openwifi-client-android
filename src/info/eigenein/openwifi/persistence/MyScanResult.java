@@ -205,6 +205,10 @@ public final class MyScanResult {
             }
         }
 
+        /**
+         * Queries the cluster within the specified quad. This method
+         * returns the position and the size only (not scan results).
+         */
         public RefreshMapAsyncTask.Network.Cluster queryClusterByQuadtreeIndex(
                 final long leftIndex,
                 final long rightIndex) {
@@ -218,7 +222,8 @@ public final class MyScanResult {
                 return new RefreshMapAsyncTask.Network.Cluster(
                         cursor.getInt(0),
                         cursor.getInt(1),
-                        cursor.getInt(2));
+                        cursor.getInt(2),
+                        null);
             } finally {
                 cursor.close();
             }

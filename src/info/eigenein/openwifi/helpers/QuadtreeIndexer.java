@@ -2,6 +2,7 @@ package info.eigenein.openwifi.helpers;
 
 
 import android.util.*;
+import info.eigenein.openwifi.tasks.*;
 
 public class QuadtreeIndexer {
 
@@ -70,9 +71,9 @@ public class QuadtreeIndexer {
             public boolean isCancelled();
 
             /**
-             * Gets the cluster count.
+             * Gets the requested clusters.
              */
-            public int resultsSize();
+            public RefreshMapAsyncTask.Network.Cluster.List getClusters();
         }
 
         /**
@@ -123,8 +124,7 @@ public class QuadtreeIndexer {
                 Log.d(LOG_TAG + ".execute", "StopQueryException");
             } finally {
                 Log.d(LOG_TAG + ".execute", String.format(
-                        "Got %s clusters in %sms.",
-                        adapter.resultsSize(),
+                        "Executed in %sms.",
                         System.currentTimeMillis() - queriesStartTime));
             }
         }
