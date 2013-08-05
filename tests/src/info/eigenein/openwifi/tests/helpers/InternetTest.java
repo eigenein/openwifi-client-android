@@ -1,4 +1,4 @@
-package info.eigenein.openwifi.tests.helpers.io;
+package info.eigenein.openwifi.tests.helpers;
 
 import info.eigenein.openwifi.helpers.*;
 import junit.framework.*;

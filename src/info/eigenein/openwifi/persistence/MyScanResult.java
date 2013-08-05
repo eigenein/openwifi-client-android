@@ -7,7 +7,6 @@ import android.location.*;
 import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
-import com.google.common.cache.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.tasks.*;
 import org.json.*;
@@ -210,13 +209,14 @@ public final class MyScanResult {
          * returns the position and the size only (not scan results).
          */
         public RefreshMapAsyncTask.Network.Cluster queryClusterByQuadtreeIndex(
-                final long leftIndex,
-                final long rightIndex) {
+                final QuadtreeIndexer.Query.IndexRange indexRange) {
             final Cursor cursor = database.rawQuery(
                     "SELECT COUNT(DISTINCT ssid), AVG(latitude), AVG(longitude) " +
                             "FROM my_scan_results " +
                             "WHERE quadtree_index BETWEEN ? AND ?;",
-                    new String[] { Long.toString(leftIndex), Long.toString(rightIndex) });
+                    new String[] {
+                            Long.toString(indexRange.getLeftIndex()),
+                            Long.toString(indexRange.getRightIndex()) });
             try {
                 cursor.moveToFirst();
                 return new RefreshMapAsyncTask.Network.Cluster(

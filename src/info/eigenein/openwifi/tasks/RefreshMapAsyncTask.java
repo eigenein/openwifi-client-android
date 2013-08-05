@@ -228,12 +228,12 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         super(context, asyncTask);
     }
 
-    public void execute(final long leftIndex, final long rightIndex)
+    public void execute(final QuadtreeIndexer.Query.IndexRange indexRange)
             throws QuadtreeIndexer.Query.StopQueryException {
         throwStopQueryExceptionIfCancelled();
         final LocalCache cache = getCache(context);
         final RefreshMapAsyncTask.Network.Cluster cluster =
-                cache.queryClusterByQuadtreeIndex(leftIndex, rightIndex);
+                cache.queryClusterByQuadtreeIndex(indexRange);
         clusters.add(cluster);
     }
 
@@ -251,7 +251,7 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         private static final long CACHE_SIZE = 1024L;
 
         private final LoadingCache<
-                Map.Entry<Long, Long>,
+                QuadtreeIndexer.Query.IndexRange,
                 RefreshMapAsyncTask.Network.Cluster> cache;
 
         /**
@@ -261,21 +261,19 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
             this.cache = CacheBuilder.newBuilder()
                     .maximumSize(CACHE_SIZE)
                     .recordStats()
-                    .build(new CacheLoader<Map.Entry<Long, Long>, RefreshMapAsyncTask.Network.Cluster>() {
+                    .build(new CacheLoader<QuadtreeIndexer.Query.IndexRange, RefreshMapAsyncTask.Network.Cluster>() {
                         @Override
                         public RefreshMapAsyncTask.Network.Cluster load(
-                                final Map.Entry<Long, Long> index)
+                                final QuadtreeIndexer.Query.IndexRange indexRange)
                                 throws Exception {
-                            return dao.queryClusterByQuadtreeIndex(index.getKey(), index.getValue());
+                            return dao.queryClusterByQuadtreeIndex(indexRange);
                         }
                     });
         }
 
         public RefreshMapAsyncTask.Network.Cluster queryClusterByQuadtreeIndex(
-                final long leftIndex,
-                final long rightIndex) {
-            final RefreshMapAsyncTask.Network.Cluster cluster = cache.getUnchecked(
-                    new AbstractMap.SimpleImmutableEntry<Long, Long>(leftIndex, rightIndex));
+                final QuadtreeIndexer.Query.IndexRange indexRange) {
+            final RefreshMapAsyncTask.Network.Cluster cluster = cache.getUnchecked(indexRange);
             final CacheStats stats = cache.stats();
             Log.d(LOG_TAG + ".queryClusterByQuadtreeIndex", String.format(
                     "CacheStats[hitRate=%.3f, averageLoadPenalty=%.3fs]",
@@ -298,7 +296,7 @@ class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
     }
 
     @Override
-    public void execute(final long leftIndex, final long rightIndex)
+    public void execute(final QuadtreeIndexer.Query.IndexRange indexRange)
             throws QuadtreeIndexer.Query.StopQueryException {
         // TODO.
     }
