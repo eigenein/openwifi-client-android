@@ -6,6 +6,7 @@ import android.util.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.google.common.cache.*;
+import com.google.common.collect.*;
 import info.eigenein.openwifi.activities.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
@@ -25,7 +26,7 @@ public class RefreshMapAsyncTask extends AsyncTask<
     /**
      * Maximum zoom that allows to see a cluster area.
      */
-    private static final long QUERY_ADAPTER_SWITCH_ZOOM = 0L;
+    private static final long CLUSTERING_ADAPTER_ZOOM = 17L;
 
     private final MainActivity activity;
     private final GoogleMap map;
@@ -48,7 +49,7 @@ public class RefreshMapAsyncTask extends AsyncTask<
         }
         // Initialize the query adapter.
         final Params params = paramsArray[0];
-        final QueryAdapter queryAdapter = params.getZoom() <= QUERY_ADAPTER_SWITCH_ZOOM ?
+        final QueryAdapter queryAdapter = params.getZoom() >= CLUSTERING_ADAPTER_ZOOM ?
                 new ClusteringQueryAdapter(activity, this) :
                 new NonClusteringQueryAdapter(activity, this);
         // Initialize and execute the query.
@@ -182,6 +183,8 @@ public class RefreshMapAsyncTask extends AsyncTask<
 
         private final RefreshMapAsyncTask asyncTask;
 
+        private int queryCount;
+
         public QueryAdapter(
                 final Context context,
                 final RefreshMapAsyncTask asyncTask) {
@@ -189,8 +192,21 @@ public class RefreshMapAsyncTask extends AsyncTask<
             this.asyncTask = asyncTask;
         }
 
+        @Override
+        public void execute(final QuadtreeIndexer.Query.IndexRange indexRange)
+                throws QuadtreeIndexer.Query.StopQueryException {
+            throwStopQueryExceptionIfCancelled();
+            queryCount += 1;
+        }
+
+        @Override
         public boolean isCancelled() {
             return asyncTask.isCancelled();
+        }
+
+        @Override
+        public int getQueryCount() {
+            return queryCount;
         }
 
         /**
@@ -228,9 +244,11 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         super(context, asyncTask);
     }
 
+    @Override
     public void execute(final QuadtreeIndexer.Query.IndexRange indexRange)
             throws QuadtreeIndexer.Query.StopQueryException {
-        throwStopQueryExceptionIfCancelled();
+        super.execute(indexRange);
+
         final LocalCache cache = getCache(context);
         final RefreshMapAsyncTask.Network.Cluster cluster =
                 cache.queryClusterByQuadtreeIndex(indexRange);
@@ -289,6 +307,13 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
  */
 class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
 
+    private static final String LOG_TAG = ClusteringQueryAdapter.class.getCanonicalName();
+
+    /**
+     * Maps a quadtree index to a scan result.
+     */
+    private final Multimap<Long, MyScanResult> resultsMultimap = ArrayListMultimap.create();
+
     public ClusteringQueryAdapter(
             final Context context,
             final RefreshMapAsyncTask asyncTask) {
@@ -298,12 +323,28 @@ class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
     @Override
     public void execute(final QuadtreeIndexer.Query.IndexRange indexRange)
             throws QuadtreeIndexer.Query.StopQueryException {
-        // TODO.
+        super.execute(indexRange);
+
+        // Query the scan results.
+        final List<MyScanResult> results = CacheOpenHelper
+                .getInstance(context)
+                .getMyScanResultDao()
+                .queryScanResultsByQuadtreeIndex(indexRange);
+        Log.d(LOG_TAG + ".execute", String.format(
+                "Got %s results.",
+                results.size()));
+        // Move the results into the multimap.
+        // TODO: determine the cluster diameter and the corresponding shift and index mask.
+        // TODO: use this index mask to put the results into the multimap.
     }
 
     @Override
     public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
-        return null;
+        // TODO: go through the multimap and move the scan results into the clusters.
+        // TODO: http://habrahabr.ru/post/138185/
+        // TODO: compute the position and the radius of each cluster.
+        // TODO: group the scan results in each cluster by SSID.
+        return new RefreshMapAsyncTask.Network.Cluster.List();
     }
 }
 

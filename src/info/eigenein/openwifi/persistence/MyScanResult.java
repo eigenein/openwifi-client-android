@@ -230,6 +230,24 @@ public final class MyScanResult {
         }
 
         /**
+         * Queries the scan results within the specified quad.
+         */
+        public List<MyScanResult> queryScanResultsByQuadtreeIndex(
+                QuadtreeIndexer.Query.IndexRange indexRange) {
+            final List<MyScanResult> results = new ArrayList<MyScanResult>();
+            final Cursor cursor = database.rawQuery(
+                    "SELECT  id, accuracy, latitude, longitude, timestamp, bssid, ssid, quadtree_index " +
+                            "FROM my_scan_results " +
+                            "WHERE quadtree_index BETWEEN ? AND ?;",
+                    new String[] {
+                            Long.toString(indexRange.getLeftIndex()),
+                            Long.toString(indexRange.getRightIndex())
+                    });
+            read(cursor, results);
+            return results;
+        }
+
+        /**
          * Gets the unsynced results.
          */
         public List<MyScanResult> queryUnsynced(final int limit) {
@@ -237,7 +255,7 @@ public final class MyScanResult {
             final List<MyScanResult> results = new ArrayList<MyScanResult>();
             // Run the query.
             final Cursor cursor = database.rawQuery(
-                    "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid " +
+                    "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid, quadtree_index " +
                             "FROM my_scan_results " +
                             "WHERE NOT synced " +
                             "LIMIT ?;",
@@ -257,7 +275,7 @@ public final class MyScanResult {
 
             final List<MyScanResult> results = new ArrayList<MyScanResult>();
             final Cursor cursor = database.rawQuery(
-                    "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid " +
+                    "SELECT id, accuracy, latitude, longitude, timestamp, bssid, ssid, quadtree_index " +
                             "FROM my_scan_results " +
                             "WHERE bssid = ? " +
                             "ORDER BY timestamp DESC;",
@@ -439,6 +457,7 @@ public final class MyScanResult {
             result.setTimestamp(cursor.getLong(4));
             result.setBssid(cursor.getString(5));
             result.setSsid(cursor.getString(6));
+            result.setQuadtreeIndex(cursor.getLong(7));
             return result;
         }
     }

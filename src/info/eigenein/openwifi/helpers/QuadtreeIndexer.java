@@ -172,6 +172,11 @@ public class QuadtreeIndexer {
             public boolean isCancelled();
 
             /**
+             * Gets the query count.
+             */
+            public int getQueryCount();
+
+            /**
              * Gets the requested clusters.
              */
             public RefreshMapAsyncTask.Network.Cluster.List getClusters();
@@ -222,10 +227,13 @@ public class QuadtreeIndexer {
                         MapBoundsE6.SOUTH, MapBoundsE6.WEST,
                         MapBoundsE6.NORTH, MapBoundsE6.EAST);
             } catch (StopQueryException e) {
-                Log.d(LOG_TAG + ".execute", "StopQueryException");
+                Log.d(LOG_TAG + ".execute", String.format(
+                        "StopQueryException (%s queries already executed).",
+                        adapter.getQueryCount()));
             } finally {
                 Log.d(LOG_TAG + ".execute", String.format(
-                        "Executed in %sms.",
+                        "Executed %s queries in %sms.",
+                        adapter.getQueryCount(),
                         System.currentTimeMillis() - queriesStartTime));
             }
         }
@@ -291,8 +299,9 @@ public class QuadtreeIndexer {
                 }
                 // Execute the query on these index values.
                 Log.d(LOG_TAG + ".execute", String.format(
-                        "[currentOrder=%s, leftIndex=%s, rightIndex=%s]",
+                        "[currentOrder=%s, adapter=%s, indexRange=[leftIndex=%s, rightIndex=%s]]",
                         currentOrder,
+                        adapter.getClass().getSimpleName(),
                         Long.toHexString(leftIndex),
                         Long.toHexString(rightIndex)));
                 adapter.execute(new IndexRange(leftIndex, rightIndex));
