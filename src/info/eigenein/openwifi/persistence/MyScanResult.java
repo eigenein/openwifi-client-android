@@ -436,49 +436,5 @@ public final class MyScanResult {
             result.setSsid(cursor.getString(6));
             return result;
         }
-
-        /**
-         * Caches {@link Dao} results.
-         */
-        public static class Cache {
-
-            private static final String LOG_TAG = Cache.class.getCanonicalName();
-
-            private static final long CACHE_SIZE = 1024L;
-
-            private final LoadingCache<
-                    Map.Entry<Long, Long>,
-                    RefreshMapAsyncTask.Network.Cluster> cache;
-
-            /**
-             * Initializes a cache with the specified DAO.
-             */
-            public Cache(final Dao dao) {
-                this.cache = CacheBuilder.newBuilder()
-                        .maximumSize(CACHE_SIZE)
-                        .recordStats()
-                        .build(new CacheLoader<Map.Entry<Long, Long>, RefreshMapAsyncTask.Network.Cluster>() {
-                            @Override
-                            public RefreshMapAsyncTask.Network.Cluster load(
-                                    final Map.Entry<Long, Long> index)
-                                    throws Exception {
-                                return dao.queryClusterByQuadtreeIndex(index.getKey(), index.getValue());
-                            }
-                        });
-            }
-
-            public RefreshMapAsyncTask.Network.Cluster queryClusterByQuadtreeIndex(
-                    final long leftIndex,
-                    final long rightIndex) {
-                final RefreshMapAsyncTask.Network.Cluster cluster = cache.getUnchecked(
-                        new AbstractMap.SimpleImmutableEntry<Long, Long>(leftIndex, rightIndex));
-                final CacheStats stats = cache.stats();
-                Log.d(LOG_TAG + ".queryClusterByQuadtreeIndex", String.format(
-                        "CacheStats[hitRate=%.3f, averageLoadPenalty=%.3fs]",
-                        stats.hitRate(),
-                        stats.averageLoadPenalty() / 1.0e9));
-                return cluster;
-            }
-        }
     }
 }

@@ -13,8 +13,6 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     private static CacheOpenHelper instance;
 
-    private final MyScanResult.Dao.Cache myScanResultDaoCache;
-
     /**
      * Lazy singleton.
      * http://touchlabblog.tumblr.com/post/24474750219/single-sqlite-connection
@@ -28,7 +26,6 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     private CacheOpenHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        myScanResultDaoCache = new MyScanResult.Dao.Cache(getMyScanResultDao());
     }
 
     @Override
@@ -55,9 +52,5 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     public MyScanResult.Dao getMyScanResultDao() {
         return new MyScanResult.Dao(getWritableDatabase());
-    }
-
-    public MyScanResult.Dao.Cache getMyScanResultDaoCache() {
-        return myScanResultDaoCache;
     }
 }
