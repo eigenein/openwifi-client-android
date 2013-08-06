@@ -81,8 +81,10 @@ public class MapOverlayHelper {
                 .icon(getClusterIcon(cluster))
                 .anchor(0.5f, 0.5f);
         if (cluster.networks() != null) {
-                markerOptions.snippet(getClusterSnippet(cluster.networks()));
+            // Put network names onto the snippet.
+            markerOptions.snippet(getClusterSnippet(cluster.networks()));
         }
+        // Add the marker.
         final Marker marker = map.addMarker(markerOptions);
         // Add the circle.
         final Double clusterRadius = cluster.getRadius();

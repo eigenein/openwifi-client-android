@@ -26,6 +26,11 @@ public class MainActivity extends FragmentActivity {
 
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
+    /**
+     * Zoom that the map sets when the my location button is pressed.
+     */
+    private static final float FIRST_FIX_MAP_ZOOM = 15.0f;
+
     private final HashMap<String, RefreshMapAsyncTask.Network.Cluster> markerToClusterMapping =
             new HashMap<String, RefreshMapAsyncTask.Network.Cluster>();
 
@@ -61,10 +66,6 @@ public class MainActivity extends FragmentActivity {
         mapSettings.setCompassEnabled(false);
         // Set up the map handlers.
         map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-            /**
-             * Zoom that the map sets when the my location button is pressed.
-             */
-            private static final float FIRST_FIX_MAP_ZOOM = 15.0f;
 
             /**
              * A flag used to set up the camera for the first time.
@@ -107,9 +108,13 @@ public class MainActivity extends FragmentActivity {
             public void onInfoWindowClick(final Marker marker) {
                 final RefreshMapAsyncTask.Network.Cluster cluster =
                         markerToClusterMapping.get(marker.getId());
-                if (cluster != null) {
-                    VibratorHelper.vibrate(MainActivity.this);
-
+                if (cluster == null) {
+                    return;
+                }
+                // Vibrate on tap.
+                VibratorHelper.vibrate(MainActivity.this);
+                // Show network list if available.
+                if (cluster.networks() != null) {
                     // Start network set activity with the selected networks.
                     final Bundle networkSetActivityBundle = new Bundle();
                     networkSetActivityBundle.putSerializable(
@@ -120,6 +125,12 @@ public class MainActivity extends FragmentActivity {
                             NetworkSetActivity.class);
                     networkSetActivityIntent.putExtras(networkSetActivityBundle);
                     startActivity(networkSetActivityIntent);
+                } else {
+                    // Zoom into the cluster.
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            cluster.getLatLng(),
+                            // Zoom step by step.
+                            Math.min(map.getCameraPosition().zoom + 1.0f, map.getMaxZoomLevel())));
                 }
             }
         });
