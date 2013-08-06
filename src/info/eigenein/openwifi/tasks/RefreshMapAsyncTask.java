@@ -1,6 +1,7 @@
 package info.eigenein.openwifi.tasks;
 
 import android.content.*;
+import android.location.*;
 import android.os.*;
 import android.util.*;
 import com.google.android.gms.maps.*;
@@ -11,6 +12,7 @@ import info.eigenein.openwifi.activities.*;
 import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -130,7 +132,19 @@ public class RefreshMapAsyncTask extends AsyncTask<
     /**
      * Represents a single Wi-Fi network (i.e. access points with the same SSID).
      */
-    public static class Network {
+    public static class Network implements Serializable {
+
+        private final String ssid;
+        private final ArrayList<String> bssids;
+
+        public Network(final String ssid, final Collection<String> bssids) {
+            this.ssid = ssid;
+            this.bssids = new ArrayList<String>(bssids);
+        }
+
+        public String getSsid() {
+            return ssid;
+        }
 
         /**
          * Represents a cluster of adjacent networks.
@@ -138,8 +152,8 @@ public class RefreshMapAsyncTask extends AsyncTask<
         public static class Cluster {
 
             private final int size;
-            private final int latitudeE6;
-            private final int longitudeE6;
+            private final ArrayList<Network> networks;
+            private final LatLng latLng;
             private final Double radius;
 
             public Cluster(
@@ -148,13 +162,28 @@ public class RefreshMapAsyncTask extends AsyncTask<
                     final int longitudeE6,
                     final Double radius) {
                 this.size = size;
-                this.latitudeE6 = latitudeE6;
-                this.longitudeE6 = longitudeE6;
+                this.networks = null;
+                this.latLng = new LatLng(L.fromE6(latitudeE6), L.fromE6(longitudeE6));
                 this.radius = radius;
             }
 
+            public Cluster(
+                    final Collection<Network> networks,
+                    final double latitude,
+                    final double longitude,
+                    final Double radius) {
+                this.size = networks.size();
+                this.networks = new ArrayList<Network>(networks);
+                this.latLng = new LatLng(latitude, longitude);
+                this.radius = radius;
+            }
+
+            public ArrayList<Network> networks() {
+                return networks;
+            }
+
             public LatLng getLatLng() {
-                return new LatLng(L.fromE6(latitudeE6), L.fromE6(longitudeE6));
+                return latLng;
             }
 
             public Double getRadius() {
@@ -181,6 +210,9 @@ public class RefreshMapAsyncTask extends AsyncTask<
 
         protected final Context context;
 
+        protected final RefreshMapAsyncTask.Network.Cluster.List clusters =
+                new RefreshMapAsyncTask.Network.Cluster.List();
+
         private final RefreshMapAsyncTask asyncTask;
 
         private int queryCount;
@@ -197,6 +229,11 @@ public class RefreshMapAsyncTask extends AsyncTask<
                 throws QuadtreeIndexer.Query.StopQueryException {
             throwStopQueryExceptionIfCancelled();
             queryCount += 1;
+        }
+
+        @Override
+        public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
+            return clusters;
         }
 
         @Override
@@ -228,9 +265,6 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
 
     private static LocalCache cache;
 
-    private RefreshMapAsyncTask.Network.Cluster.List clusters =
-            new RefreshMapAsyncTask.Network.Cluster.List();
-
     private static synchronized LocalCache getCache(final Context context) {
         if (cache == null) {
             cache = new LocalCache(CacheOpenHelper.getInstance(context).getMyScanResultDao());
@@ -253,10 +287,6 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         final RefreshMapAsyncTask.Network.Cluster cluster =
                 cache.queryClusterByQuadtreeIndex(indexRange);
         clusters.add(cluster);
-    }
-
-    public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
-        return clusters;
     }
 
     /**
@@ -309,11 +339,6 @@ class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
 
     private static final String LOG_TAG = ClusteringQueryAdapter.class.getCanonicalName();
 
-    /**
-     * Maps a quadtree index to a scan result.
-     */
-    private final Multimap<Long, MyScanResult> resultsMultimap = ArrayListMultimap.create();
-
     public ClusteringQueryAdapter(
             final Context context,
             final RefreshMapAsyncTask asyncTask) {
@@ -326,25 +351,52 @@ class ClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         super.execute(indexRange);
 
         // Query the scan results.
-        final List<MyScanResult> results = CacheOpenHelper
+        final Collection<MyScanResult> results = CacheOpenHelper
                 .getInstance(context)
                 .getMyScanResultDao()
                 .queryScanResultsByQuadtreeIndex(indexRange);
+        final int resultsSize = results.size();
         Log.d(LOG_TAG + ".execute", String.format(
                 "Got %s results.",
-                results.size()));
-        // Move the results into the multimap.
-        // TODO: determine the cluster diameter and the corresponding shift and index mask.
-        // TODO: use this index mask to put the results into the multimap.
-    }
-
-    @Override
-    public RefreshMapAsyncTask.Network.Cluster.List getClusters() {
-        // TODO: go through the multimap and move the scan results into the clusters.
-        // TODO: http://habrahabr.ru/post/138185/
-        // TODO: compute the position and the radius of each cluster.
-        // TODO: group the scan results in each cluster by SSID.
-        return new RefreshMapAsyncTask.Network.Cluster.List();
+                resultsSize));
+        if (resultsSize == 0) {
+            return;
+        }
+        // Determine the cluster position and group the scan result by SSID.
+        final Multimap<String, String> networkBssids = HashMultimap.create();
+        double latitudeSum = 0, longitudeSum = 0;
+        for (final MyScanResult scanResult : results) {
+            latitudeSum += scanResult.getLatitude();
+            longitudeSum += scanResult.getLongitude();
+            networkBssids.put(scanResult.getSsid(), scanResult.getBssid());
+        }
+        final double clusterLatitude = latitudeSum / resultsSize;
+        final double clusterLongitude = longitudeSum / resultsSize;
+        // Determine the cluster radius.
+        float radius = 0.0f;
+        if (resultsSize != 1) {
+            final float[] distance = new float[1];
+            for (final MyScanResult scanResult : results) {
+                Location.distanceBetween(
+                        clusterLatitude, clusterLongitude,
+                        scanResult.getLatitude(), scanResult.getLongitude(),
+                        distance);
+                radius = Math.max(radius, distance[0]);
+            }
+        } else {
+            radius = results.iterator().next().getAccuracy();
+        }
+        // Create the list of all networks.
+        final Collection<RefreshMapAsyncTask.Network> networks = new ArrayList<RefreshMapAsyncTask.Network>();
+        for (final String ssid : networkBssids.keySet()) {
+            final Collection<String> bssids = networkBssids.get(ssid);
+            networks.add(new RefreshMapAsyncTask.Network(ssid, bssids));
+        }
+        // Create the cluster.
+        final RefreshMapAsyncTask.Network.Cluster cluster = new RefreshMapAsyncTask.Network.Cluster(
+                networks, clusterLatitude, clusterLongitude, Double.valueOf(radius));
+        // Add the cluster.
+        clusters.add(cluster);
     }
 }
 

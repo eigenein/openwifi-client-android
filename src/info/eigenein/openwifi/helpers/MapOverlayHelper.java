@@ -8,7 +8,10 @@ import com.google.android.gms.maps.model.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.tasks.*;
 
+import java.util.*;
+
 public class MapOverlayHelper {
+
     private static final int MAX_SNIPPET_LENGTH = 24;
 
     private static final int DARK_CIRCLE_COLOR = Color.argb(32, 0, 0, 0);
@@ -72,13 +75,15 @@ public class MapOverlayHelper {
     public Marker addCluster(final RefreshMapAsyncTask.Network.Cluster cluster) {
         final LatLng clusterPosition = cluster.getLatLng();
         // Add the marker.
-        final Marker marker = map.addMarker(new MarkerOptions()
+        final MarkerOptions markerOptions = new MarkerOptions()
                 .position(clusterPosition)
                 .title(getClusterTitle(cluster))
                 .icon(getClusterIcon(cluster))
-                .anchor(0.5f, 0.5f)
-                .snippet(getClusterSnippet(cluster))
-        );
+                .anchor(0.5f, 0.5f);
+        if (cluster.networks() != null) {
+                markerOptions.snippet(getClusterSnippet(cluster.networks()));
+        }
+        final Marker marker = map.addMarker(markerOptions);
         // Add the circle.
         final Double clusterRadius = cluster.getRadius();
         if (clusterRadius != null) {
@@ -100,8 +105,8 @@ public class MapOverlayHelper {
      */
     private String getClusterTitle(final RefreshMapAsyncTask.Network.Cluster cluster) {
         final int clusterSize = cluster.size();
-        /* TODO: return clusterSize == 1 ?
-                cluster.iterator().next().getSsid() :
+        return clusterSize == 1 && cluster.networks() != null ?
+                cluster.networks().iterator().next().getSsid() :
                 String.format(
                         "%d %s",
                         clusterSize,
@@ -110,15 +115,7 @@ public class MapOverlayHelper {
                                 R.string.overlay_networks_string_1,
                                 R.string.overlay_networks_string_2,
                                 R.string.overlay_networks_string_3)));
-        */
-        return String.format(
-                "%d %s",
-                clusterSize,
-                context.getString(CountFormatter.format(
-                        clusterSize,
-                        R.string.overlay_networks_string_1,
-                        R.string.overlay_networks_string_2,
-                        R.string.overlay_networks_string_3)));
+
     }
 
     /**
@@ -168,9 +165,9 @@ public class MapOverlayHelper {
     /**
      * Gets the cluster marker snippet.
      */
-    private static String getClusterSnippet(final RefreshMapAsyncTask.Network.Cluster cluster) {
-        /*TODO: final StringBuilder snippetBuilder = new StringBuilder();
-        Iterator<RefreshMapAsyncTask.Network> networkIterator = cluster.iterator();
+    private static String getClusterSnippet(final ArrayList<RefreshMapAsyncTask.Network> networks) {
+        final StringBuilder snippetBuilder = new StringBuilder();
+        final Iterator<RefreshMapAsyncTask.Network> networkIterator = networks.iterator();
         //noinspection WhileLoopReplaceableByForEach
         while (networkIterator.hasNext()) {
             if (snippetBuilder.length() != 0) {
@@ -183,7 +180,6 @@ public class MapOverlayHelper {
                 break;
             }
         }
-        return snippetBuilder.toString();*/
-        return "Snippet.";
+        return snippetBuilder.toString();
     }
 }

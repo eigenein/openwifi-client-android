@@ -114,7 +114,7 @@ public class MainActivity extends FragmentActivity {
                     final Bundle networkSetActivityBundle = new Bundle();
                     networkSetActivityBundle.putSerializable(
                             NetworkSetActivity.NETWORK_SET_KEY,
-                            null /*TODO: cluster.getNetworks()*/);
+                            cluster.networks());
                     final Intent networkSetActivityIntent = new Intent(
                             MainActivity.this,
                             NetworkSetActivity.class);

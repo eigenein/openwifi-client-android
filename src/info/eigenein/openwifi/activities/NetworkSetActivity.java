@@ -146,7 +146,7 @@ public class NetworkSetActivity extends ListActivity {
      */
     private HashMap<String, String> createItem(final RefreshMapAsyncTask.Network network) {
         final HashMap<String, String> item = new HashMap<String, String>();
-        item.put("network_name", "SSID" /*TODO: network.getSsid()*/);
+        item.put("network_name", network.getSsid());
         return item;
     }
 }
