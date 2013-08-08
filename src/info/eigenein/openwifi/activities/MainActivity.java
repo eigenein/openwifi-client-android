@@ -111,8 +111,6 @@ public class MainActivity extends FragmentActivity {
                 if (cluster == null) {
                     return;
                 }
-                // Vibrate on tap.
-                VibratorHelper.vibrate(MainActivity.this);
                 // Show network list if available.
                 if (cluster.networks() != null) {
                     // Start network set activity with the selected networks.
@@ -132,6 +130,8 @@ public class MainActivity extends FragmentActivity {
                             // Zoom step by step.
                             Math.min(map.getCameraPosition().zoom + 1.0f, map.getMaxZoomLevel())));
                 }
+                // Vibrate on tap.
+                VibratorHelper.vibrate(MainActivity.this);
             }
         });
     }
