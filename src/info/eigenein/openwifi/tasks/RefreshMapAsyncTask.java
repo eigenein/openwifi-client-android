@@ -14,6 +14,7 @@ import info.eigenein.openwifi.persistence.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Refreshes the map with the cluster markers.
@@ -308,6 +309,8 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
         public LocalCache(final MyScanResult.Dao dao) {
             this.cache = CacheBuilder.newBuilder()
                     .maximumSize(CACHE_SIZE)
+                    // Average session duration is 3 minutes.
+                    .expireAfterWrite(3, TimeUnit.MINUTES)
                     .recordStats()
                     .build(new CacheLoader<QuadtreeIndexer.Query.IndexRange, RefreshMapAsyncTask.Network.Cluster>() {
                         @Override
