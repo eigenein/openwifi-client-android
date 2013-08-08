@@ -7,8 +7,8 @@ import android.location.Location;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-import info.eigenein.openwifi.helpers.parsers.ScanResultCapabilities;
-import info.eigenein.openwifi.helpers.location.LocationTracker;
+import info.eigenein.openwifi.helpers.ScanResultCapabilities;
+import info.eigenein.openwifi.helpers.CurrentLocationTracker;
 import info.eigenein.openwifi.persistence.*;
 import info.eigenein.openwifi.services.*;
 
@@ -29,7 +29,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         // Check current location.
-        final Location location = LocationTracker.getInstance().getLocation(context);
+        final Location location = CurrentLocationTracker.getInstance().getLocation(context);
         if (location == null) {
             Log.w(LOG_TAG, "getLocation returned null.");
             return;
@@ -64,8 +64,8 @@ public class ScanResultsReceiver extends BroadcastReceiver {
 
         if (openScanResults.size() != 0) {
             // Add all these scan results.
-            final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
-            dao.insert(location, openScanResults);
+            final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+            dao.insert(location, openScanResults, false, true);
             // Start the cleanup service.
             CleanupIntentService.queueNativeScanResults(context, openScanResults);
         } else {

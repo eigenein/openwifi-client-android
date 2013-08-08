@@ -9,8 +9,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import info.eigenein.openwifi.helpers.internal.Settings;
-import info.eigenein.openwifi.helpers.io.Internet;
+import info.eigenein.openwifi.helpers.Settings;
+import info.eigenein.openwifi.helpers.Internet;
 import info.eigenein.openwifi.services.SyncIntentService;
 
 import java.util.Date;
@@ -86,7 +86,10 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
         @Override
         protected Void doInBackground(final Void... voids) {
             if (Internet.check()) {
-                onSucceeded(context, getInfo(context));
+                final WifiInfo info = getInfo(context);
+                if (info != null) {
+                    onSucceeded(context, info);
+                }
             } else {
                 onFailed(getInfo(context));
             }

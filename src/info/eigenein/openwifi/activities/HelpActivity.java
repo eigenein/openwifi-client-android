@@ -1,8 +1,6 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.*;
-import android.content.*;
-import android.net.*;
 import android.os.*;
 import android.support.v4.view.*;
 import android.view.*;
@@ -10,9 +8,7 @@ import android.widget.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.enums.*;
-import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.services.*;
-import info.eigenein.openwifi.helpers.ui.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.services.*;
 
 import java.util.*;

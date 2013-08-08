@@ -20,7 +20,7 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
     public TaggedRequest getNextRequest(final Context context) {
         // Prepare the page.
         Log.d(LOG_TAG + ".getNextRequest", "Querying for the page ...");
-        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
         final List<MyScanResult> scanResults = dao.queryUnsynced(PAGE_SIZE);
         Log.d(LOG_TAG + ".getNextRequest", "scanResults: " + scanResults.size());
         if (scanResults.isEmpty()) {
@@ -49,7 +49,7 @@ public class ScanResultUpSyncer extends ScanResultSyncer {
             final HttpResponse response) {
         Log.d(LOG_TAG + ".processResponse", "Marking the results as synced ...");
         final List<MyScanResult> scanResults = (List<MyScanResult>)request.getTag();
-        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
         dao.setSynced(scanResults);
         syncedEntitiesCount += scanResults.size();
         return scanResults.size() != 0;

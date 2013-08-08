@@ -5,7 +5,7 @@ import android.content.*;
 import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
-import info.eigenein.openwifi.helpers.internal.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class CleanupIntentService extends IntentService {
         // Read the setting.
         final int maxScanResultsForBssidCount = Settings.with(this).maxScanResultsForBssidCount();
         // Initialize the DAO.
-        final MyScanResultDao dao = CacheOpenHelper.getInstance(this).getMyScanResultDao();
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(this).getMyScanResultDao();
         // Iterate over the BSSIDs.
         for (final String bssid : bssids) {
             // Get the results for this BSSID.

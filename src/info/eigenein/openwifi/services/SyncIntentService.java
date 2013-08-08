@@ -10,9 +10,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.enums.*;
-import info.eigenein.openwifi.helpers.internal.Settings;
-import info.eigenein.openwifi.helpers.io.SyncHttpClient;
-import info.eigenein.openwifi.helpers.services.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.sync.ScanResultDownSyncer;
 import info.eigenein.openwifi.sync.ScanResultUpSyncer;
 import info.eigenein.openwifi.sync.Syncer;
@@ -128,13 +126,13 @@ public class SyncIntentService extends IntentService {
 
     /**
      * Runs the syncing service with the specified authentication token.
-     * @param authToken
      */
     private void syncAll(final String authToken) {
         final Settings settings = Settings.with(this);
 
         // Notify the receivers that we're syncing.
         setStatus(SyncIntentServiceStatus.SYNCING);
+        NotificationHelper.notifySyncingStarted(this);
         // These will be used as the additional headers.
         final String clientId = settings.clientId();
         assert(clientId != null);
@@ -161,6 +159,7 @@ public class SyncIntentService extends IntentService {
             // Ensure immediate deallocation of all system resources.
             client.getConnectionManager().shutdown();
             // Notify the receiver that we've finished.
+            NotificationHelper.notifySyncingFinished(this);
             setStatus(SyncIntentServiceStatus.NOT_SYNCING);
         }
     }

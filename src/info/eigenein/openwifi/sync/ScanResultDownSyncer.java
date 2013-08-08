@@ -1,7 +1,7 @@
 package info.eigenein.openwifi.sync;
 
 import android.content.Context;
-import info.eigenein.openwifi.helpers.internal.Settings;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
 import info.eigenein.openwifi.services.*;
 import org.apache.http.HttpResponse;
@@ -55,8 +55,8 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             } catch (JSONException e) {
                 throw new RuntimeException("Could not parse the response item.", e);
             }
-            scanResult.setOwn(false);
-            scanResult.setSynced(true);
+            scanResult.setQuadtreeIndex(QuadtreeIndexer.getIndex(
+                    scanResult.getLatitudeE6(), scanResult.getLongitudeE6()));
             // Add to the list.
             scanResults.add(scanResult);
             // Update lastSyncId.
@@ -65,8 +65,8 @@ public class ScanResultDownSyncer extends ScanResultSyncer {
             }
         }
         // Store the entities.
-        final MyScanResultDao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
-        dao.insert(scanResults);
+        final MyScanResult.Dao dao = CacheOpenHelper.getInstance(context).getMyScanResultDao();
+        dao.insert(scanResults, true, false);
         // Start the cleanup service.
         CleanupIntentService.queueMyScanResults(context, scanResults);
         // Update lastSyncId setting.

@@ -13,10 +13,7 @@ import com.google.analytics.tracking.android.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import info.eigenein.openwifi.*;
-import info.eigenein.openwifi.helpers.entities.*;
-import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.location.*;
-import info.eigenein.openwifi.helpers.ui.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.services.*;
 import info.eigenein.openwifi.tasks.*;
 
@@ -26,9 +23,16 @@ import java.util.*;
  * Main application activity with the map.
  */
 public class MainActivity extends FragmentActivity {
+
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
-    private final HashMap<String, Cluster> markerToClusterCache = new HashMap<String, Cluster>();
+    /**
+     * Zoom that the map sets when the my location button is pressed.
+     */
+    private static final float FIRST_FIX_MAP_ZOOM = 15.0f;
+
+    private final HashMap<String, RefreshMapAsyncTask.Network.Cluster> markerToClusterMapping =
+            new HashMap<String, RefreshMapAsyncTask.Network.Cluster>();
 
     private GoogleMap map;
 
@@ -62,10 +66,6 @@ public class MainActivity extends FragmentActivity {
         mapSettings.setCompassEnabled(false);
         // Set up the map handlers.
         map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-            /**
-             * Zoom that the map sets when the my location button is pressed.
-             */
-            private static final float FIRST_FIX_MAP_ZOOM = 15.0f;
 
             /**
              * A flag used to set up the camera for the first time.
@@ -75,7 +75,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onMyLocationChange(final Location location) {
                 // Track the location.
-                LocationTracker.getInstance().notifyLocationChanged(location);
+                CurrentLocationTracker.getInstance().notifyLocationChanged(location);
                 // Animate to the current location for the first time.
                 if (!firstFixReceived) {
                     firstFixReceived = true;
@@ -106,21 +106,32 @@ public class MainActivity extends FragmentActivity {
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(final Marker marker) {
-                final Cluster cluster = markerToClusterCache.get(marker.getId());
-                if (cluster != null) {
-                    VibratorHelper.vibrate(MainActivity.this);
-
+                final RefreshMapAsyncTask.Network.Cluster cluster =
+                        markerToClusterMapping.get(marker.getId());
+                if (cluster == null) {
+                    return;
+                }
+                // Show network list if available.
+                if (cluster.networks() != null) {
                     // Start network set activity with the selected networks.
                     final Bundle networkSetActivityBundle = new Bundle();
                     networkSetActivityBundle.putSerializable(
                             NetworkSetActivity.NETWORK_SET_KEY,
-                            cluster.getNetworks());
+                            cluster.networks());
                     final Intent networkSetActivityIntent = new Intent(
                             MainActivity.this,
                             NetworkSetActivity.class);
                     networkSetActivityIntent.putExtras(networkSetActivityBundle);
                     startActivity(networkSetActivityIntent);
+                } else {
+                    // Zoom into the cluster.
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            cluster.getLatLng(),
+                            // Zoom step by step.
+                            Math.min(map.getCameraPosition().zoom + 1.0f, map.getMaxZoomLevel())));
                 }
+                // Vibrate on tap.
+                VibratorHelper.vibrate(MainActivity.this);
             }
         });
     }
@@ -246,7 +257,8 @@ public class MainActivity extends FragmentActivity {
      * Refreshes the scan results on the map.
      */
     private void startRefreshingScanResultsOnMap(final CameraPosition cameraPosition) {
-        Log.d(LOG_TAG, "startRefreshingScanResultsOnMap");
+        Log.d(LOG_TAG + ".startRefreshingScanResultsOnMap", String.format(
+                "[zoom=%s]", cameraPosition.zoom));
         updateRefreshingScanResultsProgressBar(true);
 
         // Check if the task is already running.
@@ -266,20 +278,20 @@ public class MainActivity extends FragmentActivity {
         refreshScanResultsAsyncTask = new RefreshMapAsyncTask(
                 this,
                 map,
-                markerToClusterCache,
-                bounds.southwest.latitude,
-                bounds.southwest.longitude,
-                bounds.northeast.latitude,
-                bounds.northeast.longitude,
-                GridSizeHelper.get(cameraPosition.zoom)
+                markerToClusterMapping
         );
-        refreshScanResultsAsyncTask.execute();
+        refreshScanResultsAsyncTask.execute(new RefreshMapAsyncTask.Params(
+                Math.round(cameraPosition.zoom),
+                L.toE6(bounds.southwest.latitude),
+                L.toE6(bounds.southwest.longitude),
+                L.toE6(bounds.northeast.latitude),
+                L.toE6(bounds.northeast.longitude)));
     }
 
     private synchronized void cancelRefreshScanResultsAsyncTask() {
         if (refreshScanResultsAsyncTask != null) {
             // Cancel old task.
-            refreshScanResultsAsyncTask.cancel();
+            refreshScanResultsAsyncTask.cancel(true);
             refreshScanResultsAsyncTask = null;
         }
     }

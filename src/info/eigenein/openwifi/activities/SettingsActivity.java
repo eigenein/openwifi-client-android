@@ -9,8 +9,7 @@ import android.view.*;
 import com.google.analytics.tracking.android.*;
 import info.eigenein.openwifi.*;
 import info.eigenein.openwifi.enums.*;
-import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.services.*;
+import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.services.*;
 
 import java.text.*;
@@ -18,6 +17,7 @@ import java.util.*;
 
 public class SettingsActivity extends PreferenceActivity
                               implements SharedPreferences.OnSharedPreferenceChangeListener {
+
     private static final String LOG_TAG = SettingsActivity.class.getCanonicalName();
 
     private final Authenticator.AuthenticatedHandler authenticatedHandler = new Authenticator.AuthenticatedHandler() {

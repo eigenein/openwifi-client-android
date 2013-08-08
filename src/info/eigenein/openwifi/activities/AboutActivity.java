@@ -1,6 +1,7 @@
 package info.eigenein.openwifi.activities;
 
 import android.app.*;
+import android.content.*;
 import android.content.pm.*;
 import android.content.res.*;
 import android.os.*;
@@ -10,9 +11,9 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.google.analytics.tracking.android.*;
+import com.google.android.gms.common.*;
 import info.eigenein.openwifi.*;
-import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.ui.*;
+import info.eigenein.openwifi.helpers.*;
 
 public class AboutActivity extends Activity {
     private static final String LOG_TAG = AboutActivity.class.getCanonicalName();
@@ -45,6 +46,27 @@ public class AboutActivity extends Activity {
         copyrightTextView.setText(Html.fromHtml(getString(R.string.text_view_about_copyright)));
         copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
+        // Open source licenses link.
+        final View openSourceLicensesView = findViewById(R.id.text_view_open_source_licenses);
+        openSourceLicensesView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                final Dialog dialog = new AlertDialog.Builder(AboutActivity.this)
+                        .setTitle(R.string.dialog_title_open_source_licenses)
+                        .setMessage(GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(AboutActivity.this))
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialogInterface, final int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setCancelable(true)
+                        .create();
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
+            }
+        });
+
         // Linkify project link.
         final TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
         projectLinkTextView.setText(Html.fromHtml(getString(R.string.text_view_about_project_link)));
@@ -65,24 +87,28 @@ public class AboutActivity extends Activity {
         findViewById(R.id.goto_vkontakte_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoVKontakte(AboutActivity.this);
             }
         });
         findViewById(R.id.goto_facebook_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoFacebook(AboutActivity.this);
             }
         });
         findViewById(R.id.goto_twitter_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoTwitter(AboutActivity.this);
             }
         });
         findViewById(R.id.goto_google_plus_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                VibratorHelper.vibrate(AboutActivity.this);
                 SocialNetworksHelper.gotoGooglePlus(AboutActivity.this);
             }
         });
@@ -96,7 +122,7 @@ public class AboutActivity extends Activity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();

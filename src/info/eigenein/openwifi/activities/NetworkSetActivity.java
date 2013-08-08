@@ -1,19 +1,15 @@
 package info.eigenein.openwifi.activities;
 
-import android.app.ListActivity;
+import android.app.*;
 import android.content.res.*;
-import android.os.Bundle;
+import android.os.*;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
-import com.google.analytics.tracking.android.EasyTracker;
-import info.eigenein.openwifi.R;
-import info.eigenein.openwifi.helpers.entities.Network;
-import info.eigenein.openwifi.helpers.internal.*;
-import info.eigenein.openwifi.helpers.ui.VibratorHelper;
+import com.google.analytics.tracking.android.*;
+import info.eigenein.openwifi.*;
+import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.tasks.*;
 
 import java.util.*;
 
@@ -35,7 +31,8 @@ public class NetworkSetActivity extends ListActivity {
 
         final Bundle networkSetActivityBundle = getIntent().getExtras();
         if (networkSetActivityBundle != null) {
-            final ArrayList<Network> networkSet = (ArrayList<Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);
+            final ArrayList<RefreshMapAsyncTask.Network> networkSet =
+                    (ArrayList<RefreshMapAsyncTask.Network>)networkSetActivityBundle.getSerializable(NETWORK_SET_KEY);
             setListAdapter(createAdapter(networkSet));
         } else {
             setListAdapter(createAdapter(null));
@@ -129,10 +126,10 @@ public class NetworkSetActivity extends ListActivity {
     /**
      * Creates the adapter for the list.
      */
-    private SimpleAdapter createAdapter(final Collection<Network> networkSet) {
+    private SimpleAdapter createAdapter(final Collection<RefreshMapAsyncTask.Network> networks) {
         final ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
-        for (final Network network : networkSet) {
+        for (final RefreshMapAsyncTask.Network network : networks) {
             items.add(createItem(network));
         }
 
@@ -147,7 +144,7 @@ public class NetworkSetActivity extends ListActivity {
     /**
      * Creates the list item.
      */
-    private HashMap<String, String> createItem(final Network network) {
+    private HashMap<String, String> createItem(final RefreshMapAsyncTask.Network network) {
         final HashMap<String, String> item = new HashMap<String, String>();
         item.put("network_name", network.getSsid());
         return item;
