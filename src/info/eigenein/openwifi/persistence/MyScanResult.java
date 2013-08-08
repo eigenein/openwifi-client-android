@@ -8,6 +8,7 @@ import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
 import info.eigenein.openwifi.helpers.*;
+import info.eigenein.openwifi.services.*;
 import info.eigenein.openwifi.tasks.*;
 import org.json.*;
 
@@ -196,11 +197,18 @@ public final class MyScanResult {
         @Override
         public void onUpgrade(
                 final SQLiteDatabase database,
+                final Context context,
                 final int oldVersion,
                 final int newVersion) {
-            if (newVersion == 2) {
+            if (newVersion == CacheOpenHelper.DatabaseVersion.QUADTREES) {
+                // Drop the table.
                 database.execSQL("DROP TABLE my_scan_results;");
+                // Create the table.
                 onCreate(database);
+                // Reset the last sync ID.
+                Settings.with(context).edit().lastSyncId(Settings.DEFAULT_LAST_SYNC_ID).commit();
+                // Start sync.
+                SyncIntentService.start(context, true);
             }
         }
 

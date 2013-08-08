@@ -6,12 +6,19 @@ import android.util.*;
 
 public final class CacheOpenHelper extends SQLiteOpenHelper {
 
+    public static class DatabaseVersion {
+
+        public static final int QUADTREES = 5;
+    }
+
     private static final String LOG_TAG = CacheOpenHelper.class.getCanonicalName();
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = DatabaseVersion.QUADTREES;
     private static final String DATABASE_NAME = "cache.db";
 
     private static CacheOpenHelper instance;
+
+    private final Context context;
 
     /**
      * Lazy singleton.
@@ -26,6 +33,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
 
     private CacheOpenHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -39,7 +47,7 @@ public final class CacheOpenHelper extends SQLiteOpenHelper {
             final int oldVersion,
             final int newVersion) {
         Log.i(LOG_TAG + ".onUpgrade", String.format("%s, %s", oldVersion, newVersion));
-        new MyScanResult.Dao(database).onUpgrade(database, oldVersion, newVersion);
+        new MyScanResult.Dao(database).onUpgrade(database, context, oldVersion, newVersion);
     }
 
     @Override

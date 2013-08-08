@@ -34,6 +34,8 @@ public class Settings {
 
     public static final String IS_HELP_SHOWN_KEY = "is_help_shown";
 
+    public static final String DEFAULT_LAST_SYNC_ID = "000000000000000000000000";
+
     private final SharedPreferences preferences;
 
     public static Settings with(final Context context) {
@@ -82,7 +84,7 @@ public class Settings {
             return syncId;
         } else {
             // Return the minimal object ID.
-            return "000000000000000000000000";
+            return DEFAULT_LAST_SYNC_ID;
         }
     }
 
