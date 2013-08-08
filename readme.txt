@@ -7,6 +7,27 @@ Open Wi-Fi networks map.
 – Customizable map view: normal or hybrid.
 – Customizable Wi-Fi search interval.
 
+Join us on Facebook: https://www.facebook.com/groups/openwifi.project/
+Follow us on Twitter: https://twitter.com/owifi
+Join us on VK: http://vk.com/owifi
+Join our community on Google+: https://plus.google.com/communities/106829221677020050162
+
+0.1.7
+
+This update changes the map refreshing algorithm. The new algorithm should work many times faster than the old one.
+
+The update requires full re-sync as the cache structure was changed.
+
+Full change list:
+
+– The cache structure was changed. New map refreshing algorithm was implemented.
+– "Wi-Fi is disabled" notification icon was changed to the standard one.
+– Active sync notification was added.
+– Statistics loading animation was added.
+– Rare failures were fixed.
+– Open source licenses screen was added.
+– Icons were added to the social network buttons.
+
 0.1.6-beta
 
 – Significantly increased the speed of displaying networks on the map.
