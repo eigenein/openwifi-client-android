@@ -200,10 +200,14 @@ public final class MyScanResult {
                 final Context context,
                 final int oldVersion,
                 final int newVersion) {
+            Log.i(LOG_TAG + ".onUpgrade", String.format("From v%s to v%s.", oldVersion, newVersion));
+
             if (newVersion == CacheOpenHelper.DatabaseVersion.QUADTREES) {
                 // Drop the table.
+                Log.d(LOG_TAG + ".onUpgrade", "Dropping the table ...");
                 database.execSQL("DROP TABLE my_scan_results;");
                 // Create the table.
+                Log.d(LOG_TAG + ".onUpgrade", "Creating the table ...");
                 onCreate(database);
                 // Reset the last sync ID.
                 Settings.with(context).edit().lastSyncId(Settings.DEFAULT_LAST_SYNC_ID).commit();
