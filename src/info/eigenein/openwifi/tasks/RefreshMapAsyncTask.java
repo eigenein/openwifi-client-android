@@ -310,7 +310,7 @@ class NonClusteringQueryAdapter extends RefreshMapAsyncTask.QueryAdapter {
             this.cache = CacheBuilder.newBuilder()
                     .maximumSize(CACHE_SIZE)
                     // Average session duration is 3 minutes.
-                    .expireAfterWrite(3, TimeUnit.MINUTES)
+                    .expireAfterWrite(180, TimeUnit.SECONDS)
                     .recordStats()
                     .build(new CacheLoader<QuadtreeIndexer.Query.IndexRange, RefreshMapAsyncTask.Network.Cluster>() {
                         @Override
