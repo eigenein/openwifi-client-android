@@ -41,7 +41,4 @@
     public static <fields>;
 }
 
--keep class com.google.** { *; }
--keep class android.support.** { *; }
-
 -keep class info.eigenein.openwifi.** { *; }
