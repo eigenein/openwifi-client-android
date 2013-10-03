@@ -20,15 +20,25 @@
 #}
 
 -dontobfuscate
--optimizationpasses 4
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable
+-optimizationpasses 5
 
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 -dontwarn android.view.**
 -dontwarn sun.misc.**
 
+# The support library contains references to newer platform versions.
+# Don't warn about those in case this app is linking against an older
+# platform version.  We know about them, and they are safe.
+-dontwarn android.support.**
+
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
+}
+
+-keepclassmembers class **.R$* {
+    public static <fields>;
 }
 
 -keep class info.eigenein.openwifi.** { *; }
