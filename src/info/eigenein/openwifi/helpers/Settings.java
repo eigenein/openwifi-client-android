@@ -18,8 +18,6 @@ public class Settings {
 
     public static final String STATISTICS_KEY = "show_statistics";
 
-    public static final String MAX_SCAN_RESULTS_FOR_BSSID_KEY = "max_scan_results_for_bssid";
-
     public static final String CLIENT_ID_KEY = "client_id";
 
     public static final String LAST_SYNC_ID_KEY = "last_sync_id";
@@ -48,10 +46,6 @@ public class Settings {
 
     public boolean isNetworkProviderEnabled() {
         return preferences.getBoolean(IS_NETWORK_PROVIDER_ENABLED_KEY, false);
-    }
-
-    public int maxScanResultsForBssidCount() {
-        return Integer.parseInt(preferences.getString(MAX_SCAN_RESULTS_FOR_BSSID_KEY, "4"));
     }
 
     public long scanPeriod() {
