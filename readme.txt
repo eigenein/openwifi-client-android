@@ -12,6 +12,12 @@ Follow us on Twitter: https://twitter.com/owifi
 Join us on VK: http://vk.com/owifi
 Join our community on Google+: https://plus.google.com/communities/106829221677020050162
 
+0.1.7.2
+
+– Fixed the crash when a location provider is unavailable.
+– Removed unused advanced setting.
+– Local database size is slightly reduced.
+
 0.1.7
 
 This update changes the map refreshing algorithm. The new algorithm should work many times faster than the old one.
