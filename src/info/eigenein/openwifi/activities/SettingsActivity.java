@@ -151,7 +151,6 @@ public class SettingsActivity extends PreferenceActivity
 
         // Update UI.
         updatePeriodPreference();
-        updateMaxScanResultsForBssidPreference();
         updateSyncNowPreference();
 
         // Update the authentication state.
@@ -181,9 +180,6 @@ public class SettingsActivity extends PreferenceActivity
         } else if (key.equals(Settings.IS_NETWORK_PROVIDER_ENABLED_KEY)) {
             // Restart the service so that the new provider set is used.
             ScanIntentService.restartIfStarted(this);
-        } else if (key.equals(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY)) {
-            // Update UI.
-            updateMaxScanResultsForBssidPreference();
         }
     }
 
@@ -203,13 +199,6 @@ public class SettingsActivity extends PreferenceActivity
         final ListPreference periodPreference =
                 (ListPreference)getPreferenceScreen().findPreference(Settings.SCAN_PERIOD_KEY);
         periodPreference.setSummary(periodPreference.getEntry());
-    }
-
-    @SuppressWarnings("deprecation")
-    private void updateMaxScanResultsForBssidPreference() {
-        final ListPreference maxScanResultsForBssidPreference =
-                (ListPreference)getPreferenceScreen().findPreference(Settings.MAX_SCAN_RESULTS_FOR_BSSID_KEY);
-        maxScanResultsForBssidPreference.setSummary(maxScanResultsForBssidPreference.getEntry());
     }
 
     private void updateSyncNowPreference() {

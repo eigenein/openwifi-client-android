@@ -5,7 +5,6 @@ import android.content.*;
 import android.net.wifi.*;
 import android.text.*;
 import android.util.*;
-import info.eigenein.openwifi.helpers.*;
 import info.eigenein.openwifi.persistence.*;
 
 import java.util.*;
@@ -17,6 +16,8 @@ public class CleanupIntentService extends IntentService {
     private static final String SERVICE_NAME = CleanupIntentService.class.getCanonicalName();
 
     private static final String BSSIDS_EXTRA_KEY = "bssids";
+
+    private static final int MAX_SCAN_RESULTS_FOR_BSSID_COUNT = 3;
 
     public static void queueMyScanResults(final Context context, final Collection<MyScanResult> scanResults) {
         // Get the BSSIDs.
@@ -59,8 +60,6 @@ public class CleanupIntentService extends IntentService {
     protected void onHandleIntent(final Intent intent) {
         final HashSet<String> bssids = (HashSet<String>)intent.getSerializableExtra(BSSIDS_EXTRA_KEY);
         Log.d(SERVICE_NAME + ".onHandleIntent", TextUtils.join(", ", bssids));
-        // Read the setting.
-        final int maxScanResultsForBssidCount = Settings.with(this).maxScanResultsForBssidCount();
         // Initialize the DAO.
         final MyScanResult.Dao dao = CacheOpenHelper.getInstance(this).getMyScanResultDao();
         // Iterate over the BSSIDs.
@@ -73,7 +72,7 @@ public class CleanupIntentService extends IntentService {
                 // Move to the next result.
                 final MyScanResult scanResult = resultIterator.next();
                 // If maximum count is exceeded.
-                if (i >= maxScanResultsForBssidCount) {
+                if (i >= MAX_SCAN_RESULTS_FOR_BSSID_COUNT) {
                     // Add to the delete list.
                     ids.add(scanResult.getId());
                 }

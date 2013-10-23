@@ -16,6 +16,15 @@ public class CurrentLocationTracker {
      */
     private static final long OUTDATED_TIME_DELTA = 1000 * 10 * 2;
 
+    /**
+     * Used providers.
+     */
+    private static final String[] PROVIDERS = new String[] {
+            LocationManager.PASSIVE_PROVIDER,
+            LocationManager.NETWORK_PROVIDER,
+            LocationManager.GPS_PROVIDER
+    };
+
     private static final CurrentLocationTracker instance = new CurrentLocationTracker();
 
     /**
@@ -37,16 +46,20 @@ public class CurrentLocationTracker {
         final LocationManager locationManager = getLocationManager(context);
 
         // Find the best location from the current location and last known locations.
-        final Location bestLocation = getBestLocation(
-                getBestLocation(
-                        location,
-                        locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
-                ),
-                getBestLocation(
-                        locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
-                        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                )
-        );
+        Location bestLocation = location;
+        for (final String provider : PROVIDERS) {
+            // Skip provider if not available.
+            if (!locationManager.isProviderEnabled(provider)) {
+                Log.w(LOG_TAG + ".getLocation", provider + " is not available");
+                continue;
+            }
+            // Find best location.
+            Log.d(LOG_TAG + ".getLocation", "trying " + provider);
+            bestLocation = getBestLocation(
+                    bestLocation,
+                    locationManager.getLastKnownLocation(provider)
+            );
+        }
 
         // Check if the best location is not outdated.
         if (bestLocation != null && System.currentTimeMillis() - bestLocation.getTime() < OUTDATED_TIME_DELTA) {

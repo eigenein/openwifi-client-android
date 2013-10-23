@@ -26,14 +26,6 @@
             android:summary="@string/preference_is_network_provider_enabled_summary"
             android:defaultValue="true"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/preferences_category_advanced">
-        <ListPreference
-            android:title="@string/preference_max_scan_results_for_bssid"
-            android:key="max_scan_results_for_bssid"
-            android:entries="@array/max_scan_results_for_bssid_entries"
-            android:entryValues="@array/max_scan_results_for_bssid_values"
-            android:defaultValue="4"/>
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/preference_category_support" android:key="support_settings">
         <CheckBoxPreference
             android:key="acra.enable"
