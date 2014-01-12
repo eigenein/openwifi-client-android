@@ -340,6 +340,7 @@ public final class MyScanResult {
         /**
          * Inserts the results.
          */
+        @SuppressWarnings("deprecation")
         public void insert(
                 final Collection<MyScanResult> results,
                 final boolean synced,
