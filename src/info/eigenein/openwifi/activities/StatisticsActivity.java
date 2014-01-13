@@ -155,10 +155,7 @@ public class StatisticsActivity extends ListActivity {
             }
             // Update UI.
             final ListAdapter adapter = createAdapter(
-                    uniqueBssidCount,
-                    uniqueSsidCount,
-                    scanResultCount
-            );
+                    uniqueBssidCount, uniqueSsidCount, scanResultCount);
             if (adapter != null) {
                 setListAdapter(adapter);
             }
