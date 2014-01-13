@@ -26,4 +26,8 @@
           android:title="@string/activity_title_about"
           android:icon="@drawable/ic_action_about"
           android:showAsAction="never"/>
+    <item android:id="@+id/menuitem_kill_app"
+          android:title="@string/menu_item_kill_app"
+          android:icon="@drawable/ic_action_about"
+          android:showAsAction="never"/>
 </menu>
