@@ -340,6 +340,7 @@ public final class MyScanResult {
         /**
          * Inserts the results.
          */
+        @SuppressWarnings("deprecation")
         public void insert(
                 final Collection<MyScanResult> results,
                 final boolean synced,
@@ -348,7 +349,9 @@ public final class MyScanResult {
             if (results.isEmpty()) {
                 return;
             }
+            // Begin transaction.
             final long startTimeMillis = System.currentTimeMillis();
+            database.beginTransaction();
             // Initialize the helper.
             final DatabaseUtils.InsertHelper insertHelper =
                     new DatabaseUtils.InsertHelper(database, "my_scan_results");
@@ -378,8 +381,10 @@ public final class MyScanResult {
                     // Insert the result.
                     insertHelper.execute();
                 }
+                database.setTransactionSuccessful();
             } finally {
                 insertHelper.close();
+                database.endTransaction();
             }
             // Done.
             Log.d(LOG_TAG + ".insert(results)", String.format(

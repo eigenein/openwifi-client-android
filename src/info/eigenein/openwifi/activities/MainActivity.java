@@ -1,5 +1,6 @@
 package info.eigenein.openwifi.activities;
 
+import android.annotation.SuppressLint;
 import android.app.*;
 import android.content.*;
 import android.location.*;
@@ -232,11 +233,28 @@ public class MainActivity extends FragmentActivity {
             case R.id.menuitem_help:
                 startActivity(new Intent(this, HelpActivity.class));
                 return true;
+            case R.id.menuitem_kill_app:
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_title_kill_app)
+                        .setMessage(R.string.dialog_message_kill_app)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                android.os.Process.killProcess(android.os.Process.myPid());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                // User cancelled the dialog.
+                            }
+                        })
+                        .show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    @SuppressLint("NewApi")
     @Override
     public void invalidateOptionsMenu() {
         if (BuildHelper.isHoneyComb()) {

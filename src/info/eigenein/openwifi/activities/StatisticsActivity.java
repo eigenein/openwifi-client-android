@@ -155,15 +155,14 @@ public class StatisticsActivity extends ListActivity {
             }
             // Update UI.
             final ListAdapter adapter = createAdapter(
-                    uniqueBssidCount,
-                    uniqueSsidCount,
-                    scanResultCount
-            );
+                    uniqueBssidCount, uniqueSsidCount, scanResultCount);
             if (adapter != null) {
                 setListAdapter(adapter);
             }
             // Hide the progress dialog.
-            progressDialog.dismiss();
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
         }
     }
 }
