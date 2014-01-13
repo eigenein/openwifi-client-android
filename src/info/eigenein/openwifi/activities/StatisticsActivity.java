@@ -160,7 +160,9 @@ public class StatisticsActivity extends ListActivity {
                 setListAdapter(adapter);
             }
             // Hide the progress dialog.
-            progressDialog.dismiss();
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
         }
     }
 }
