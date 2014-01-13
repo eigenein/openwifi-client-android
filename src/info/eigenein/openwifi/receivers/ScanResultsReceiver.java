@@ -56,7 +56,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
         for (ScanResult scanResult : scanResults) {
             final ScanResultCapabilities capabilities = ScanResultCapabilities.fromString(
                     scanResult.capabilities);
-            if (!capabilities.isSecured()) {
+            if (!capabilities.isSecured() && scanResult.SSID.length() != 0) {
                 openScanResults.add(scanResult);
                 Log.d(LOG_TAG, scanResult.toString());
             }
