@@ -9,6 +9,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.google.common.base.Objects;
 import info.eigenein.openwifi.helpers.Settings;
 import info.eigenein.openwifi.helpers.Internet;
 import info.eigenein.openwifi.services.SyncIntentService;
@@ -48,7 +49,7 @@ public class ConnectivityChangeBroadcastReceiver extends BroadcastReceiver {
      * Called when the device is successfully connected to the Internet.
      */
     private void onSucceeded(final Context context, final WifiInfo info) {
-        Log.i(LOG_TAG + ".onSucceeded", info.getSSID());
+        Log.i(LOG_TAG + ".onSucceeded", Objects.firstNonNull(info.getSSID(), "null"));
 
         // Check the last sync time.
         final long lastSyncTime = Settings.with(context).lastSyncTime();
