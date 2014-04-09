@@ -2,8 +2,6 @@ Open Wi-Fi networks map.
 
  – Makes the map of Wi-Fi networks as you walk around even if the application is minimized.
  – Displays the coverage of each Wi-Fi network.
- – The information is stored in a cloud – you will see networks that are found by other users.
- – Automatically downloads updates when connected to Wi-Fi.
  – Customizable map view: normal or hybrid.
  – Customizable Wi-Fi search interval.
 
@@ -11,6 +9,10 @@ Join us on Facebook: https://www.facebook.com/groups/openwifi.project/
 Follow us on Twitter: https://twitter.com/owifi
 Join us on VK: http://vk.com/owifi
 Join our community on Google+: https://plus.google.com/communities/106829221677020050162
+
+0.1.8
+
+ – Project is closed. Sync feature is removed.
 
 0.1.7.3
 

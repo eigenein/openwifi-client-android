@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="info.eigenein.openwifi"
-          android:versionCode="16"
-          android:versionName="0.1.7.3">
+          android:versionCode="17"
+          android:versionName="0.1.8">
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16"/>
     <!-- Common permissions. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,10 +13,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <!-- For authenticating with Account Manager. -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <!-- For ACRA. -->
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <!-- Google Maps Android API v2. -->
@@ -55,9 +51,6 @@
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/activity_title_about"/>
-        <activity
-            android:name=".activities.HelpActivity"
-            android:label="@string/activity_title_help"/>
         <activity android:name="org.acra.CrashReportDialog"
                   android:theme="@style/OpenWiFi.Theme.Dialog"
                   android:launchMode="singleInstance"
@@ -79,20 +72,10 @@
                 <action android:name="android.net.wifi.SCAN_RESULTS"/>
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".receivers.ConnectivityChangeBroadcastReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
         <!-- /Receivers. -->
         <!-- Services. -->
         <service
             android:name=".services.ScanIntentService"
-            android:exported="false"/>
-        <service
-            android:name=".services.SyncIntentService"
             android:exported="false"/>
         <service
             android:name=".services.CleanupIntentService"
@@ -102,6 +85,9 @@
         <!-- Google Maps Android API v2. -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBpRiLItujKqVsghVEVWERHVzK5MTPH2Yc"/>
+            android:value="AIzaSyDh0xIoGG5JNpVdGB8GTjO5HrdNS2LTYvA"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 </manifest>

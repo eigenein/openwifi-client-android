@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="help_scan">
-        Just run a search, and as long as you move around – the application will remember and
-        display networks on the map.\n
-        \n
-        You\'d be surprised how many open networks you have on your usual way!
-    </string>
-    <string name="help_finish">
-        Log in with your account Google, to share information about Wi-Fi networks.
-        This allows us to ensure its authenticity for you.\n
-        \n
-        The first time, it may take several minutes before the data is received from the server
-        and networks are shown on the map.\n
-        \n
-        The map will be updated every time the device is connected to Wi-Fi.
-    </string>
     <string name="activity_title_about">About Application</string>
-    <string name="activity_title_help">Help</string>
     <string name="activity_title_network_set">Networks available in this place</string>
     <string name="application_name">Open WiFi</string>
     <string name="button_install">Install</string>
@@ -24,23 +8,15 @@
     <string name="crash_dialog_comment_prompt">Please describe what was you are doing right before the error has occurred:</string>
     <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK.</string>
     <string name="dialog_install_google_maps_message">Please install the Google Maps application.</string>
-    <string name="dialog_message_get_auth_token">Please wait while you will be authenticated.</string>
     <string name="dialog_message_refresh_statistics">Please wait while statistics are being refreshed&#8230;</string>
-    <string name="dialog_title_get_auth_token">Authenticating</string>
     <string name="dialog_title_map_view">Map View</string>
     <string name="dialog_title_open_source_licenses">Open source licenses</string>
     <string name="dialog_title_refresh_statistics">Refreshing Statistics</string>
     <string name="dialog_title_kill_app">Quit the application?</string>
-    <string name="help_close">Close help</string>
-    <string name="help_finish_logged_in">Successfully logged in</string>
-    <string name="help_log_in">Log in with Google</string>
-    <string name="help_start_scan_now">Start your search now</string>
-    <string name="help_welcome">Open WiFi regularly in the background updates the available open Wi-Fi networks around the world and displays them on the map.</string>
     <string name="image_button_facebook">Open WiFi on Facebook</string>
     <string name="image_button_google">Open WiFi on Google+</string>
     <string name="image_button_twitter">Open WiFi in Twitter</string>
     <string name="image_button_vkontakte">Open WiFi on VKontakte</string>
-    <string name="menu_item_help">Help</string>
     <string name="menu_item_ignore_network_name">Ignore %s</string>
     <string name="menu_item_ignore_similar_networks">Ignore similar networks</string>
     <string name="menu_item_kill_app">Quit</string>
@@ -48,10 +24,7 @@
     <string name="menu_item_settings">Settings</string>
     <string name="menu_item_show_details">Show details</string>
     <string name="menu_item_start_scan">Start Searching for Wi-Fi</string>
-    <string name="notification_text_syncing">Syncing Wi-Fi networks map</string>
     <string name="notification_text_wifi_is_disabled">To resume searching please enable WiFi.</string>
-    <string name="notification_ticker_syncing">Open WiFi\nWi-Fi networks map is being synced</string>
-    <string name="notification_title_syncing">Open WiFi</string>
     <string name="notification_title_wifi_is_disabled">Wi-Fi is disabled</string>
     <string name="overlay_networks_string_1">network</string>
     <string name="overlay_networks_string_2">networks</string>
@@ -68,36 +41,18 @@
     <string name="preference_is_network_provider_enabled_summary">Allows to find more access points but uses existing Internet connection</string>
     <string name="preference_max_scan_results_for_bssid">Remember for a single access point</string>
     <string name="preference_scan_period">Period</string>
-    <string name="preference_sign_in">Sign in using your Google Account</string>
-    <string name="preference_sign_in_again">Sign in again</string>
-    <string name="preference_sign_in_error">Network is not available.</string>
-    <string name="preference_sign_in_summary">Sign in to share the Wi-Fi networks with other users.</string>
     <string name="preference_statistics">Statistics</string>
     <string name="preference_statistics_summary">View collected data summary</string>
-    <string name="preference_sync_now">Synchronize Now</string>
-    <string name="preference_sync_now_authenticating">Authenticating&#8230;</string>
-    <string name="preference_sync_now_never_synced_summary">Never synced</string>
-    <string name="preference_sync_now_synced_at_summary">Last synced: %1$s</string>
-    <string name="preference_sync_now_syncing_summary">Syncing&#8230;</string>
     <string name="preferences_category_advanced">Advanced</string>
     <string name="preferences_category_scan">Searching</string>
     <string name="statistics_scan_result_count">Database Record Count</string>
     <string name="statistics_unique_bssid_count">Access Point Count</string>
     <string name="statistics_unique_ssid_count">Network Count</string>
-    <string name="tab_help_finish">Log In</string>
-    <string name="tab_help_scan">Searching</string>
-    <string name="tab_help_welcome">Welcome</string>
-    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
-    <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
+    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigene.in\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
     <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="text_view_open_source_licenses"><u>Open source licenses</u></string>
-    <string name="text_view_rating_is_not_implemented">Rating is not yet implemented.</string>
     <string name="text_view_version">Version %s</string>
-    <string name="toast_authentication_io_exception">Authentication has failed due to a network error. Please try again later.</string>
-    <string name="toast_feature_is_not_implemented">The feature is not yet implemented. Please follow updates.</string>
-    <string name="toast_no_google_account">You need a Google Account to sign in.</string>
     <string name="toast_scan_started">Started to scan for Wi-Fi networks.</string>
-    <string name="toast_sync_now_started">Wi-Fi networks map is being synced.</string>
     <string name="toats_scan_paused">Paused to search.</string>
     <string name="dialog_message_kill_app">This will forcibly unload the application.</string>
 </resources>

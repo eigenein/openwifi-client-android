@@ -18,10 +18,6 @@
           android:title="@string/menu_item_settings"
           android:icon="@drawable/ic_action_settings"
           android:showAsAction="never"/>
-    <item android:id="@+id/menuitem_help"
-          android:title="@string/menu_item_help"
-          android:icon="@drawable/ic_action_help"
-          android:showAsAction="never"/>
     <item android:id="@+id/menuitem_about"
           android:title="@string/activity_title_about"
           android:icon="@drawable/ic_action_about"
