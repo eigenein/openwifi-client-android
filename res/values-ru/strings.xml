@@ -7,9 +7,7 @@
     <string name="crash_dialog_comment_prompt">Опишите, пожалуйста, что вы делали в приложении непосредственно перед ошибкой:</string>
     <string name="crash_dialog_text">В приложении произошла непредвиденная ошибка. Хотите ли вы отправить информацию об ошибке, чтобы помочь исправить ее?</string>
     <string name="dialog_install_google_maps_message">Установите, пожалуйста, приложение Google Maps, необходимое для работы данного приложения.</string>
-    <string name="dialog_message_get_auth_token">Подождите, пожалуйста. Осуществляется вход&#8230;</string>
     <string name="dialog_message_refresh_statistics">Подождите, пожалуйста. Обновляется статистика&#8230;</string>
-    <string name="dialog_title_get_auth_token">Вход</string>
     <string name="dialog_title_map_view">Вид</string>
     <string name="dialog_title_open_source_licenses">Лицензии открытого ПО</string>
     <string name="dialog_title_refresh_statistics">Обновление статистики</string>

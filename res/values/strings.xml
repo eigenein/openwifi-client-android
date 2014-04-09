@@ -48,14 +48,11 @@
     <string name="statistics_scan_result_count">Database Record Count</string>
     <string name="statistics_unique_bssid_count">Access Point Count</string>
     <string name="statistics_unique_ssid_count">Network Count</string>
-    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigenein.info\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
+    <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigene.in\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
     <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
     <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="text_view_open_source_licenses"><u>Open source licenses</u></string>
     <string name="text_view_version">Version %s</string>
-    <string name="toast_authentication_io_exception">Authentication has failed due to a network error. Please try again later.</string>
-    <string name="toast_feature_is_not_implemented">The feature is not yet implemented. Please follow updates.</string>
-    <string name="toast_no_google_account">You need a Google Account to sign in.</string>
     <string name="toast_scan_started">Started to scan for Wi-Fi networks.</string>
     <string name="toats_scan_paused">Paused to search.</string>
     <string name="dialog_message_kill_app">This will forcibly unload the application.</string>
