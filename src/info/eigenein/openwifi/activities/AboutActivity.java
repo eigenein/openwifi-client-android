@@ -69,11 +69,6 @@ public class AboutActivity extends Activity {
             }
         });
 
-        // Linkify project link.
-        final TextView projectLinkTextView = (TextView)findViewById(R.id.about_project_link_text_view);
-        projectLinkTextView.setText(Html.fromHtml(getString(R.string.text_view_about_project_link)));
-        projectLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
         // Linkify feedback link.
         final TextView feedbackLinkTextView = (TextView)findViewById(R.id.feedback_link_text_view);
         feedbackLinkTextView.setText(Html.fromHtml(getString(R.string.text_view_feedback)));

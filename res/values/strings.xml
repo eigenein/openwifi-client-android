@@ -49,7 +49,6 @@
     <string name="statistics_unique_bssid_count">Access Point Count</string>
     <string name="statistics_unique_ssid_count">Network Count</string>
     <string name="text_view_about_copyright">&#169; 2013 &lt;a href=\'http://eigene.in\'&gt;Pavel Perestoronin&lt;/a&gt;</string>
-    <string name="text_view_about_project_link">&lt;a href=\'http://openwifi.info\'&gt;Project Website&lt;/a&gt;</string>
     <string name="text_view_feedback">&lt;a href=\'mailto:feedback@openwifi.info\'&gt;Send Feedback&lt;/a&gt;</string>
     <string name="text_view_open_source_licenses"><u>Open source licenses</u></string>
     <string name="text_view_version">Version %s</string>
