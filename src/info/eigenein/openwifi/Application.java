@@ -9,7 +9,7 @@ import org.acra.annotation.ReportsCrashes;
         mode = ReportingInteractionMode.DIALOG,
         resDialogText = R.string.crash_dialog_text,
         resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
-        mailTo = "reports@openwifi.info")
+        mailTo = "eigenein@gmail.com")
 public class Application extends android.app.Application {
     @Override
     public void onCreate() {
