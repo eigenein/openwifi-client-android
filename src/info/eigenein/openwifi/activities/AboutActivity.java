@@ -1,5 +1,6 @@
 package info.eigenein.openwifi.activities;
 
+import android.annotation.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
@@ -18,6 +19,7 @@ import info.eigenein.openwifi.helpers.*;
 public class AboutActivity extends Activity {
     private static final String LOG_TAG = AboutActivity.class.getCanonicalName();
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -76,12 +78,6 @@ public class AboutActivity extends Activity {
         final TextView feedbackLinkTextView = (TextView)findViewById(R.id.feedback_link_text_view);
         feedbackLinkTextView.setText(Html.fromHtml(getString(R.string.text_view_feedback)));
         feedbackLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-        // Client ID.
-        final TextView clientIdTextView = (TextView)findViewById(R.id.client_id_text_view);
-        clientIdTextView.setText(String.format(
-                getString(R.string.client_id),
-                Settings.with(this).clientId()));
 
         // Social network links.
         findViewById(R.id.goto_vkontakte_button).setOnClickListener(new View.OnClickListener() {

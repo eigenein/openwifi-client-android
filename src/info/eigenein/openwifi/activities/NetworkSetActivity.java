@@ -1,5 +1,6 @@
 package info.eigenein.openwifi.activities;
 
+import android.annotation.*;
 import android.app.*;
 import android.content.res.*;
 import android.os.*;
@@ -22,6 +23,7 @@ public class NetworkSetActivity extends ListActivity {
 
     private static final int[] adapterTo = { R.id.network_list_item_name };
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

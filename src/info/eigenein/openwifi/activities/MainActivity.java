@@ -159,13 +159,6 @@ public class MainActivity extends FragmentActivity {
     public void onStart() {
         super.onStart();
 
-        // Show the help for the very first time.
-        final Settings settings = Settings.with(this);
-        if (!settings.isHelpShown()) {
-            settings.edit().helpShown(true).commit();
-            startActivity(new Intent(this, HelpActivity.class));
-        }
-
         // Update overlays.
         if (map != null) {
             startRefreshingScanResultsOnMap(map.getCameraPosition());
@@ -229,9 +222,6 @@ public class MainActivity extends FragmentActivity {
                 return true;
             case R.id.menuitem_about:
                 startActivity(new Intent(this, AboutActivity.class));
-                return true;
-            case R.id.menuitem_help:
-                startActivity(new Intent(this, HelpActivity.class));
                 return true;
             case R.id.menuitem_kill_app:
                 new AlertDialog.Builder(this)
